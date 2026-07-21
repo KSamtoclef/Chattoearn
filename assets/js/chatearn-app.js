@@ -1,8 +1,8 @@
 (()=>{'use strict';
 
-const SUPABASE_URL='https://cqnovqvmxwmfngupgtov.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxbm92cXZteHdtZm5ndXBndG92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODA0NzQsImV4cCI6MjA5OTg1NjQ3NH0.ZamXPTmqVsdHu1pD1EZLxPeSqWemBsj28Y1f-NOCEZs';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'ce-auth-v6'}});
+const SUPABASE_URL='https://dtjxcgzpwemdgdeinkcl.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'ce-auth-chattoearn-v1'}});
 
 const SIGNUP_BONUS=10000;
 const FIRST_WITHDRAWAL_MINIMUM=30000;
@@ -263,7 +263,13 @@ window.doRegister=async()=>{
   if(!session){result=await sb.auth.signInWithPassword({email,password});if(result.error)throw result.error;session=result.data.session}
   authUser=session?.user||result.data.user;if(!authUser)throw Error('Session could not start');
   loadState();state.name=name;creditSignupOnce();runSetup(true);
- }catch(error){toast(error.message||'Registration failed.',true)}
+ }catch(error){
+   const message=String(error?.message||'Registration failed.');
+   if(/already|registered|exists/i.test(message)){
+    if($('loginEmail'))$('loginEmail').value=email;
+    openLogin();toast('This email already has an account. Log in to continue.',true);
+   }else toast(message,true)
+  }
  finally{if(button){button.disabled=false;button.textContent='Create Account & Get ₦10,000 →'}}
 };
 window.doLogin=async()=>{
