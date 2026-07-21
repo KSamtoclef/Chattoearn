@@ -24,17 +24,18 @@ def replace_once(text: str, old: str, new: str) -> str:
 
 
 def patch_controller(source: str) -> str:
-    source = source.replace("const FIRST_WITHDRAWAL_THRESHOLD=60000;", "const FIRST_WITHDRAWAL_MINIMUM=30000;\nconst FIRST_WITHDRAWAL_MAXIMUM=50000;")
+    source = source.replace(
+        "const FIRST_WITHDRAWAL_THRESHOLD=60000;",
+        "const FIRST_WITHDRAWAL_MINIMUM=30000;\nconst FIRST_WITHDRAWAL_MAXIMUM=50000;",
+    )
     source = source.replace("FIRST_WITHDRAWAL_THRESHOLD", "FIRST_WITHDRAWAL_MINIMUM")
 
-    rate_changes = {
-        "rate:7000": "rate:5000",
-        "rate:6000": "rate:4000",
-        "rate:5000": "rate:3500",
-        "rate:8000": "rate:5000",
-    }
-    for old, new in rate_changes.items():
-        source = source.replace(old, new)
+    rate_map = {7000: 5000, 6000: 4000, 5000: 3500, 8000: 5000}
+    source = re.sub(
+        r"rate:(7000|6000|5000|8000)",
+        lambda match: f"rate:{rate_map[int(match.group(1))]}",
+        source,
+    )
 
     source = source.replace("const AD_CONFIG={", "const AD_MANAGER={")
     source = source.replace("AD_CONFIG", "AD_MANAGER")
@@ -82,8 +83,19 @@ def patch_controller(source: str) -> str:
  {match:[],reply:'What is the main reason you would like to travel?',suggestions:['Education','Work opportunities','Tourism']}
 ]}
 '''
-    marker = "\n];\n\nlet authUser="
-    source = replace_once(source, marker, ",\n" + extra_partners + "];\n\nlet authUser=")
+
+    markers = [
+        "\n];\n\n\nconst PERSONALITY_OPENERS=",
+        "\n];\n\nconst PERSONALITY_OPENERS=",
+        "\n];\n\nlet authUser=",
+    ]
+    for marker in markers:
+        if marker in source:
+            suffix = marker[4:]
+            source = source.replace(marker, ",\n" + extra_partners + "];\n" + suffix, 1)
+            break
+    else:
+        raise RuntimeError("Could not locate partner-list closing marker")
 
     cap_guard = """
   if(!state.withdrawal&&state.availableBalance>=FIRST_WITHDRAWAL_MAXIMUM){
@@ -91,16 +103,27 @@ def patch_controller(source: str) -> str:
    withdrawalUnlockCard();busy=false;input.disabled=false;return;
   }
 """
-    source = replace_once(source, " const qualification=qualifiesForReward(text);", cap_guard + " const qualification=qualifiesForReward(text);")
+    source = replace_once(
+        source,
+        " const qualification=qualifiesForReward(text);",
+        cap_guard + " const qualification=qualifiesForReward(text);",
+    )
 
-    source = source.replace("state.chatEarnings+=reward;", "state.chatEarnings+=Math.min(reward,Math.max(0,FIRST_WITHDRAWAL_MAXIMUM-state.availableBalance));")
-    source = source.replace("state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM&&!state.unlockShown", "state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM&&!state.unlockShown")
+    source = source.replace(
+        "state.chatEarnings+=reward;",
+        "state.chatEarnings+=state.withdrawal?reward:Math.min(reward,Math.max(0,FIRST_WITHDRAWAL_MAXIMUM-state.availableBalance));",
+    )
     source = source.replace("Withdrawal Unlocked 🎉", "First Withdrawal Ready 🎉")
-    source = source.replace("You can withdraw now or continue chatting to earn more.", "You have reached your first earning range. Complete your withdrawal setup to continue earning without this first-stage limit.")
+    source = source.replace(
+        "You can withdraw now or continue chatting to earn more.",
+        "You have reached your first earning limit. Complete your withdrawal setup to continue earning without this first-stage limit.",
+    )
     source = source.replace("VIEW MY EARNINGS", "WITHDRAW MY EARNINGS")
     source = source.replace("KEEP CHATTING", "VIEW MY BALANCE")
-
-    source = source.replace("document.documentElement.dataset.build='ChatEarn Complete Directive 2026.07.21'", "document.documentElement.dataset.build='ChatEarn Production 2026.07.21 Chattoearn'")
+    source = source.replace(
+        "document.documentElement.dataset.build='ChatEarn Complete Directive 2026.07.21'",
+        "document.documentElement.dataset.build='ChatEarn Production 2026.07.21 Chattoearn'",
+    )
     return source
 
 
@@ -111,9 +134,33 @@ def patch_index(html: str) -> str:
     end = html.rfind("</script>")
     if start < 0 or end < start:
         raise RuntimeError("Could not locate legacy inline runtime")
-    replacement = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n<script src="./assets/js/chatearn-app.js?v=20260721-chattoearn"></script>'
+
+    replacement = (
+        '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n'
+        '<script src="./assets/js/chatearn-app.js?v=20260721-chattoearn2"></script>'
+    )
     html = html[:start] + replacement + html[end + len("</script>"):]
-    html = html.replace('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n', '', 1)
+    html = html.replace(
+        '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n',
+        "",
+        1,
+    )
+
+    visible_rate_changes = {
+        "₦15,000/reply": "₦5,000/reply",
+        "₦12,000/reply": "₦4,500/reply",
+        "₦10,000/reply": "₦4,000/reply",
+        "₦8,000/reply": "₦3,500/reply",
+        "₦15K/reply": "₦5K/reply",
+        "₦12K/reply": "₦4.5K/reply",
+        "₦10K/reply": "₦4K/reply",
+        "₦8K/reply": "₦3.5K/reply",
+        "+₦15K/reply": "+₦5K/reply",
+        "+₦8,000 Earned!": "+₦4,000 Earned!",
+    }
+    for old, new in visible_rate_changes.items():
+        html = html.replace(old, new)
+
     return html
 
 
@@ -122,7 +169,10 @@ def main() -> None:
     controller = patch_controller(fetch("chatearn-app.js"))
     INDEX.write_text(patch_index(html), encoding="utf-8")
     (ASSETS / "chatearn-app.js").write_text(controller, encoding="utf-8")
-    (ROOT / "vercel.json").write_text('{"cleanUrls":true,"trailingSlash":false}', encoding="utf-8")
+    (ROOT / "vercel.json").write_text(
+        '{"cleanUrls":true,"trailingSlash":false}',
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
