@@ -9,7 +9,7 @@ const FIRST_WITHDRAWAL_MINIMUM=30000;
 const FIRST_WITHDRAWAL_MAXIMUM=50000;
 const REQUIRED_SHARE_ACTIONS=5;
 const SHARE_COOLDOWN_MS=5000;
-const KYC_CONFIG={url:'PASTE_KYC_URL_HERE',active:true};
+const KYC_CONFIG={url:'https://example.com',active:true};
 const AD_MANAGER={
  inlineChat:[{id:'inline_chat_1',title:'Sponsored Reward',description:'Explore today’s featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'PASTE_INLINE_CHAT_AD_URL_HERE',active:true,minimumMessages:3,maximumShowsPerSession:1,cooldownMinutes:20}],
  partnerList:[{id:'partner_list_1',title:'Featured Opportunity',description:'See today’s sponsored opportunity.',buttonText:'OPEN',url:'PASTE_PARTNER_LIST_AD_URL_HERE',active:true}],
@@ -319,8 +319,14 @@ function messageBubble(message){
   const ad=AD_MANAGER.inlineChat.find(item=>item.id===message.adId);if(ad)body.appendChild(adCard(ad,'inlineChat'));return;
  }
  const row=document.createElement('div');row.className=`msg-row ${message.type==='user'?'mine':''}`;
- row.innerHTML=`<div class="msg-bubble ${message.type==='user'?'msg-mine':'msg-theirs'}"><div>${esc(message.text)}</div><div style="font-size:9px;opacity:.65;text-align:right;margin-top:5px">${message.time||stamp()}${message.type==='user'?' ✓✓':''}</div></div>${message.reward?`<div style="font-size:10px;color:#69F0AE;margin-top:4px">Reply accepted<br>+${money(message.reward)} added to your earnings</div>`:''}`;
+ row.innerHTML=`<div class="msg-bubble ${message.type==='user'?'msg-mine':'msg-theirs'}"><div>${esc(message.text)}</div><div style="font-size:9px;opacity:.65;text-align:right;margin-top:5px">${message.time||stamp()}${message.type==='user'?' ✓✓':''}</div></div>${message.reward?`<div style="font-size:11px;color:#00E676;font-weight:800;margin-top:5px">+${money(message.reward)} earned! 💰</div>`:''}`;
  body.appendChild(row);
+}
+function showRewardToast(amount){
+ const old=document.getElementById('rewardToast');if(old)old.remove();
+ const badge=document.createElement('div');badge.id='rewardToast';badge.textContent=`+${money(amount)} Earned! 💰`;
+ badge.style.cssText='position:fixed;right:14px;top:110px;z-index:5000;background:#00C853;color:#001b0b;padding:13px 18px;border-radius:16px;font-weight:900;box-shadow:0 10px 28px rgba(0,0,0,.35);animation:earnPop .28s ease';
+ document.body.appendChild(badge);setTimeout(()=>badge.remove(),1800);
 }
 function typingIndicator(){const body=$('chatBody'),row=document.createElement('div');row.className='msg-row';row.id='typingRow';row.innerHTML='<div class="msg-bubble msg-theirs"><span class="typing-dots">•••</span></div>';body.appendChild(row);body.scrollTop=body.scrollHeight;return row}
 function suggestions(items){
@@ -389,8 +395,9 @@ window.sendMsg=sendMsg;
 function withdrawalUnlockCard(){
  const body=$('chatBody');body?.querySelector('[data-unlock]')?.remove();
  if(!body||state.availableBalance<FIRST_WITHDRAWAL_MINIMUM||state.withdrawal)return;
- const card=document.createElement('div');card.dataset.unlock='1';card.style.cssText='margin:14px 0;padding:15px;border-radius:15px;background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.35)';
- card.innerHTML='<b style="color:#69F0AE">First Withdrawal Ready 🎉</b><p style="font-size:12px">You have reached your first earning limit. Complete your withdrawal setup to continue earning without this first-stage limit.</p><div style="display:flex;gap:8px"><button onclick="goScreen(\'earnings\')" style="flex:1;padding:10px;border:0;border-radius:10px;background:#00C853;font-weight:900">WITHDRAW MY EARNINGS</button><button onclick="document.getElementById(\'chatInput\')?.focus()" style="flex:1;padding:10px;border:1px solid #39413b;border-radius:10px;background:#1d221e;color:#fff;font-weight:900">VIEW MY BALANCE</button></div>';
+ const card=document.createElement('div');card.dataset.unlock='1';
+ card.style.cssText='margin:18px 0;padding:22px 18px;border-radius:18px;background:rgba(0,200,83,.10);border:1px solid rgba(0,200,83,.42);text-align:center';
+ card.innerHTML=`<div style="font-size:30px;margin-bottom:8px">🎉</div><b style="display:block;color:#00E676;font-size:21px">${money(state.availableBalance)} Earned!</b><p style="color:#b8c2bc;font-size:13px;margin:7px 0 14px">Withdrawal available! Withdraw now.</p><button onclick="goScreen('earnings')" style="padding:13px 28px;border:0;border-radius:12px;background:#00C853;color:#001b0b;font-size:15px;font-weight:900">Withdraw Now →</button>`;
  body.appendChild(card);
 }
 window.tryWithdraw=()=>state.availableBalance<FIRST_WITHDRAWAL_MINIMUM?toast(`${money(FIRST_WITHDRAWAL_MINIMUM-state.availableBalance)} remaining before withdrawal.`,true):showScreen('earnings');
@@ -426,7 +433,7 @@ function renderShare(){
  const main=$('btnShareWA');if(main){main.disabled=state.sharing.pending||shareCooldownRemaining()>0||state.sharing.count>=REQUIRED_SHARE_ACTIONS}
  let tools=$('shareTools');
  if(!tools){tools=document.createElement('div');tools.id='shareTools';document.querySelector('#sharewall .sw-body')?.appendChild(tools)}
- tools.innerHTML=`<div style="display:grid;gap:9px;margin-top:12px"><button onclick="copyInvitationLink()" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1e231f;color:#fff;font-weight:900">COPY INVITATION LINK</button>${state.sharing.count>=REQUIRED_SHARE_ACTIONS?'<div style="padding:16px;border:1px solid rgba(0,200,83,.38);background:rgba(0,200,83,.1);border-radius:14px;text-align:center"><b style="display:block;color:#69F0AE;font-size:17px">Sharing Stage Complete 🎉</b><p style="font-size:12px;margin-top:5px">Sharing complete. Opening your KYC page…</p></div>':''}</div>`;
+ tools.innerHTML=`<div style="display:grid;gap:9px;margin-top:12px"><button onclick="copyInvitationLink()" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1e231f;color:#fff;font-weight:900">COPY INVITATION LINK</button></div>`;
 }
 window.doShareWA=()=>{
  if(!state.withdrawal)return toast('Submit your bank details first.',true);
@@ -448,7 +455,7 @@ function handleReturn(){
   saveState();toast('Welcome back. Checking your sharing activity…');renderShare();
   clearTimeout(shareReturnTimer);
   if(state.sharing.count>=REQUIRED_SHARE_ACTIONS){
-   shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},700);
+   shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},500);
   }else{
    shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();renderShare()},SHARE_COOLDOWN_MS);
   }
@@ -535,7 +542,7 @@ window.trackClick=()=>true;
 
 function injectCSS(){
  const style=document.createElement('style');style.textContent=`#chat{height:100dvh;overflow:hidden}.chat-header{position:sticky;top:0;z-index:100;padding-top:env(safe-area-inset-top)}.chat-body{height:calc(100dvh - 145px - env(safe-area-inset-bottom));overflow-y:auto;padding:14px 12px 150px!important;scroll-behavior:smooth}.chat-input-wrap{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:auto;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#111511}.msg-row{display:flex;flex-direction:column;align-items:flex-start;margin:8px 0}.msg-row.mine{align-items:flex-end}.msg-bubble{max-width:82%;padding:10px 12px;border-radius:18px;line-height:1.45}.msg-theirs{background:#242824;border-bottom-left-radius:5px}.msg-mine{background:#075e54;border-bottom-right-radius:5px}.chat-day{text-align:center;font-size:10px;color:#7c8880;margin:10px 0}.quick-replies{bottom:78px}.quick-reply:disabled{opacity:.45}`;
- document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Human Chat Flow 2026.07.21 Final2';
+ document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Original Flow Test 2026.07.21';
 }
 function restoreJourney(){
  let nav={};try{nav=JSON.parse(localStorage.getItem(navKey())||'{}')}catch{}
