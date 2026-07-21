@@ -9,11 +9,11 @@ const FIRST_WITHDRAWAL_MINIMUM=30000;
 const FIRST_WITHDRAWAL_MAXIMUM=50000;
 const REQUIRED_SHARE_ACTIONS=5;
 const SHARE_COOLDOWN_MS=2000;
-const KYC_CONFIG={url:'https://example.com',active:true};
+const KYC_CONFIG={url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true};
 const AD_MANAGER={
  inlineChat:[
-  {id:'inline_chat_1',label:'Sponsored',title:'Featured Opportunity',description:'Explore today’s featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://example.com',active:true,minimumMessages:3,maximumShowsPerSession:4},
-  {id:'inline_chat_2',label:'Sponsored Reward',title:'Today’s Sponsored Offer',description:'See another featured opportunity selected for active users.',buttonText:'OPEN OFFER',url:'https://example.com',active:true,minimumMessages:3,maximumShowsPerSession:4}
+  {id:'inline_chat_1',label:'Sponsored',title:'Featured Opportunity',description:'Explore today’s featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true,minimumMessages:3,maximumShowsPerSession:4},
+  {id:'inline_chat_2',label:'Sponsored Reward',title:'Today’s Sponsored Offer',description:'See another featured opportunity selected for active users.',buttonText:'OPEN OFFER',url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true,minimumMessages:3,maximumShowsPerSession:4}
  ],
  partnerList:[{id:'partner_list_1',label:'Sponsored',title:'Featured Opportunity',description:'See today’s sponsored opportunity.',buttonText:'OPEN',url:'https://example.com',active:true}],
  inPage:[
