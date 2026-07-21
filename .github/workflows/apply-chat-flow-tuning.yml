@@ -1,0 +1,48 @@
+name: Apply ChatEarn Chat Flow Tuning
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_chat_flow_tuning.py
+      - .github/workflows/apply-chat-flow-tuning.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply targeted tuning
+        run: python scripts/apply_chat_flow_tuning.py
+
+      - name: Validate JavaScript
+        run: node --check assets/js/chatearn-app.js
+
+      - name: Verify required flow
+        run: |
+          grep -q "state.withdrawal?currentPartner.rate:5000" assets/js/chatearn-app.js
+          grep -q "showScreen('kyc')" assets/js/chatearn-app.js
+          grep -q "20260721-human2" index.html
+
+      - name: Commit tuned production files
+        run: |
+          git config user.name "ChatEarn Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html assets/js/chatearn-app.js
+          if git diff --cached --quiet; then
+            echo "No tuning changes"
+          else
+            git commit -m "Enhance ChatEarn sharing and human chat flow"
+            git push
+          fi
