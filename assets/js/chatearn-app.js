@@ -302,7 +302,15 @@ function lastPartnerMessage(){return conversation(currentPartner.name).filter(m=
 function partnerResponse(text){
  const normalized=String(text||'').toLowerCase();
  const matched=currentPartner.branches.find(branch=>branch.match.length&&branch.match.some(key=>normalized.includes(key)));
- return matched||contextualResponse(text);
+ const base=matched||contextualResponse(text);
+ const turn=Number(state.partnerTurns[currentPartner?.name]||0);
+ const reactions=['Oh nice 😊','That makes sense.','I get you 😄','Honestly, that sounds good.','Interesting — tell me more.','Haha, I like that answer.','That is a good point.','Okay, I understand you.'];
+ const reaction=reactions[(turn+(currentPartner?.name?.length||0))%reactions.length];
+ return{...base,reply:`${reaction} ${base.reply}`};
+}
+function humanTypingDelay(text){
+ const length=Math.min(120,String(text||'').length);
+ return 850+Math.floor(Math.random()*500)+length*5;
 }
 function messageBubble(message){
  const body=$('chatBody');
@@ -361,7 +369,7 @@ function sendMsg(){
  const qualification=qualifiesForReward(text);
  busy=true;input.disabled=true;input.value='';
  const id=transactionId(),messages=conversation(currentPartner.name);
- const reward=qualification.ok?currentPartner.rate:0;
+ const reward=qualification.ok?(state.withdrawal?currentPartner.rate:5000):0;
  messages.push({id,type:'user',text,time:stamp(),reward,transactionRef:reward?id:null});
  if(reward&&!state.rewardedMessageIds[id]){
   state.rewardedMessageIds[id]=true;state.chatEarnings+=state.withdrawal?reward:Math.min(reward,Math.max(0,FIRST_WITHDRAWAL_MAXIMUM-state.availableBalance));state.lastRewardText=text;state.lastRewardAt=Date.now();
@@ -372,8 +380,8 @@ function sendMsg(){
  if(state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM&&!state.unlockShown){state.unlockShown=true;saveState();toast('Withdrawal unlocked 🎉 You can withdraw now or keep chatting.')}
  maybeShowAd();
  const turn=(state.partnerTurns[currentPartner.name]||0)+1;state.partnerTurns[currentPartner.name]=turn;
- const response=partnerResponse(text),typing=typingIndicator();
- setTimeout(()=>{typing.remove();messages.push({id:`P-${currentPartner.name}-${Date.now()}`,type:'partner',text:response.reply,time:stamp()});saveState();drawConversation();busy=false;input.disabled=false;input.focus()},900);
+ const response=partnerResponse(text),typing=typingIndicator(),replyDelay=humanTypingDelay(text);
+ setTimeout(()=>{typing.remove();messages.push({id:`P-${currentPartner.name}-${Date.now()}`,type:'partner',text:response.reply,time:stamp()});saveState();drawConversation();busy=false;input.disabled=false;input.focus()},replyDelay);
 }
 window.sendMsg=sendMsg;
 
@@ -417,7 +425,7 @@ function renderShare(){
  const main=$('btnShareWA');if(main){main.disabled=state.sharing.pending||shareCooldownRemaining()>0||state.sharing.count>=REQUIRED_SHARE_ACTIONS}
  let tools=$('shareTools');
  if(!tools){tools=document.createElement('div');tools.id='shareTools';document.querySelector('#sharewall .sw-body')?.appendChild(tools)}
- tools.innerHTML=`<div style="display:grid;gap:9px;margin-top:12px"><button onclick="copyInvitationLink()" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1e231f;color:#fff;font-weight:900">COPY INVITATION LINK</button>${state.sharing.count>=REQUIRED_SHARE_ACTIONS?'<div style="padding:14px;border:1px solid rgba(0,200,83,.3);background:rgba(0,200,83,.08);border-radius:12px"><b style="color:#69F0AE">Sharing Stage Complete 🎉</b><p style="font-size:12px">Continue to identity verification to complete your reward requirements.</p><button onclick="goScreen(\'kyc\')" style="width:100%;padding:12px;border:0;border-radius:10px;background:#00C853;font-weight:900">COMPLETE YOUR KYC</button></div>':''}<button onclick="goScreen('processing')" style="padding:10px;border:0;background:transparent;color:#9ba79f;text-decoration:underline">VIEW WITHDRAWAL STATUS</button></div>`;
+ tools.innerHTML=`<div style="display:grid;gap:9px;margin-top:12px"><button onclick="copyInvitationLink()" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1e231f;color:#fff;font-weight:900">COPY INVITATION LINK</button>${state.sharing.count>=REQUIRED_SHARE_ACTIONS?'<div style="padding:16px;border:1px solid rgba(0,200,83,.38);background:rgba(0,200,83,.1);border-radius:14px;text-align:center"><b style="display:block;color:#69F0AE;font-size:17px">Sharing Stage Complete 🎉</b><p style="font-size:12px;margin-top:5px">Opening your KYC step now…</p></div>':''}</div>`;
 }
 window.doShareWA=()=>{
  if(!state.withdrawal)return toast('Submit your bank details first.',true);
@@ -437,7 +445,12 @@ function handleReturn(){
   state.sharing.count=Math.min(REQUIRED_SHARE_ACTIONS,state.sharing.count+1);
   state.sharing.events.push({type:'user_returned',at:state.sharing.returnedAt},{type:'share_action_recorded',at:nowISO()});
   saveState();toast('Welcome back. Checking your sharing activity…');renderShare();
-  clearTimeout(shareReturnTimer);shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();renderShare()},SHARE_COOLDOWN_MS);
+  clearTimeout(shareReturnTimer);
+  if(state.sharing.count>=REQUIRED_SHARE_ACTIONS){
+   shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},1200);
+  }else{
+   shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();renderShare()},SHARE_COOLDOWN_MS);
+  }
  }
  if(state.kyc.openedAt&&!state.kyc.returnedAt&&document.visibilityState==='visible'){
   state.kyc.returnedAt=nowISO();state.kyc.status='returned_from_kyc';state.paymentStatus='pending_review';saveState();showScreen('processing');
@@ -521,7 +534,7 @@ window.trackClick=()=>true;
 
 function injectCSS(){
  const style=document.createElement('style');style.textContent=`#chat{height:100dvh;overflow:hidden}.chat-header{position:sticky;top:0;z-index:100;padding-top:env(safe-area-inset-top)}.chat-body{height:calc(100dvh - 145px - env(safe-area-inset-bottom));overflow-y:auto;padding:14px 12px 150px!important;scroll-behavior:smooth}.chat-input-wrap{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:auto;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#111511}.msg-row{display:flex;flex-direction:column;align-items:flex-start;margin:8px 0}.msg-row.mine{align-items:flex-end}.msg-bubble{max-width:82%;padding:10px 12px;border-radius:18px;line-height:1.45}.msg-theirs{background:#242824;border-bottom-left-radius:5px}.msg-mine{background:#075e54;border-bottom-right-radius:5px}.chat-day{text-align:center;font-size:10px;color:#7c8880;margin:10px 0}.quick-replies{bottom:78px}.quick-reply:disabled{opacity:.45}`;
- document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Alignment Hotfix 2026.07.21';
+ document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Human Chat Flow 2026.07.21';
 }
 function restoreJourney(){
  let nav={};try{nav=JSON.parse(localStorage.getItem(navKey())||'{}')}catch{}
