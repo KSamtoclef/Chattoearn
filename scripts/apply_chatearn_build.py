@@ -6,106 +6,90 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
 CONTROLLER = ROOT / "assets" / "js" / "chatearn-app.js"
-
-
-def replace_if_present(text: str, old: str, new: str) -> str:
-    return text.replace(old, new, 1) if old in text else text
+CACHE_VERSION = "20260721-original-flow3"
 
 
 def patch_controller(source: str) -> str:
-    # Keep Chattoearn isolated from the older ChatEarn authentication session.
+    # Temporary KYC destination requested for end-to-end return testing.
     source = re.sub(
-        r"storageKey:'[^']+'",
-        "storageKey:'ce-auth-chattoearn-v2'",
+        r"const KYC_CONFIG=\{url:'[^']*',active:(?:true|false)\};",
+        "const KYC_CONFIG={url:'https://example.com',active:true};",
         source,
         count=1,
     )
 
-    # Four qualifying replies at ₦5,000 plus the ₦10,000 bonus reach ₦30,000.
-    source = replace_if_present(
-        source,
-        "const reward=qualification.ok?(state.withdrawal?currentPartner.rate:5000):0;",
-        "const reward=qualification.ok?(state.withdrawal?currentPartner.rate:5000):0;",
+    # Restore the original compact reward confirmation style shown in the reference.
+    source = source.replace(
+        "${message.reward?`<div style=\"font-size:10px;color:#69F0AE;margin-top:4px\">Reply accepted<br>+${money(message.reward)} added to your earnings</div>`:''}",
+        "${message.reward?`<div style=\"font-size:11px;color:#00E676;font-weight:800;margin-top:5px\">+${money(message.reward)} earned! 💰</div>`:''}",
     )
 
-    # Humanised, partner-aware acknowledgement without pretending the profiles are real people.
-    old_partner_response = """function partnerResponse(text){
-  const normalized=String(text||'').toLowerCase();
-  const matched=currentPartner.branches.find(branch=>branch.match.length&&branch.match.some(key=>normalized.includes(key)));
-  const base=matched||contextualResponse(text);
-  const turn=Number(state.partnerTurns[currentPartner?.name]||0);
-  const reactions=['Oh nice 😊','That makes sense.','I get you 😄','Honestly, that sounds good.','Interesting — tell me more.','Haha, I like that answer.','That is a good point.','Okay, I understand you.'];
-  const reaction=reactions[(turn+(currentPartner?.name?.length||0))%reactions.length];
-  return{...base,reply:`${reaction} ${base.reply}`};
-}"""
-    new_partner_response = """function partnerResponse(text){
-  const normalized=String(text||'').toLowerCase();
-  const matched=currentPartner.branches.find(branch=>branch.match.length&&branch.match.some(key=>normalized.includes(key)));
-  const base=matched||contextualResponse(text);
-  const turn=Number(state.partnerTurns[currentPartner?.name]||0);
-  const toneSets={
-   alexlab102:['Oh nice 😄','Yeah, I get you.','That is actually interesting.','Haha, fair enough.'],
-   EmiliaCute:['Aww, I understand 😊','That sounds lovely.','Oh really? 😄','I like that answer.'],
-   MattJohn:['Aye, that makes sense.','For real? 😄','That is cool.','Okay, I hear you.'],
-   Abi1990:['Honestly, I understand.','That is a good point 😊','Oh wow, really?','I can relate to that.'],
-   princess77:['That sounds nice 😊','Oh, I understand.','Interesting — tell me more.','I like how you explained that.'],
-   CamilaAnders:['Oh wow 😄','That sounds fun.','I get what you mean.','Nice, tell me more.']
-  };
-  const reactions=toneSets[currentPartner?.name]||['That makes sense 😊','Interesting — thanks for sharing.','Nice, I understand.','I like that answer.'];
-  const reaction=reactions[turn%reactions.length];
-  return{...base,reply:`${reaction} ${base.reply}`};
-}"""
-    source = replace_if_present(source, old_partner_response, new_partner_response)
+    # Add the small original-style floating reward notice once per credited reply.
+    if "function showRewardToast(" not in source:
+        marker = "function typingIndicator(){"
+        reward_toast = """function showRewardToast(amount){
+ const old=document.getElementById('rewardToast');if(old)old.remove();
+ const badge=document.createElement('div');badge.id='rewardToast';badge.textContent=`+${money(amount)} Earned! 💰`;
+ badge.style.cssText='position:fixed;right:14px;top:110px;z-index:5000;background:#00C853;color:#001b0b;padding:13px 18px;border-radius:16px;font-weight:900;box-shadow:0 10px 28px rgba(0,0,0,.35);animation:earnPop .28s ease';
+ document.body.appendChild(badge);setTimeout(()=>badge.remove(),1800);
+}
+"""
+        source = source.replace(marker, reward_toast + marker, 1)
 
-    old_delay = """function humanTypingDelay(text){
-  const length=Math.min(120,String(text||'').length);
-  return 850+Math.floor(Math.random()*500)+length*5;
-}"""
-    new_delay = """function humanTypingDelay(text){
-  const length=Math.min(160,String(text||'').length);
-  const readingPause=650+Math.floor(Math.random()*700);
-  const typingTime=Math.min(1900,450+length*11);
-  return readingPause+typingTime;
-}"""
-    source = replace_if_present(source, old_delay, new_delay)
-
-    # Show an honest live typing state while the automated partner prepares a reply.
-    old_response_block = """const response=partnerResponse(text),typing=typingIndicator(),replyDelay=humanTypingDelay(text);
-  setTimeout(()=>{typing.remove();messages.push({id:`P-${currentPartner.name}-${Date.now()}`,type:'partner',text:response.reply,time:stamp()});saveState();drawConversation();busy=false;input.disabled=false;input.focus()},replyDelay);"""
-    new_response_block = """const response=partnerResponse(text),typing=typingIndicator(),replyDelay=humanTypingDelay(text);
-  if($('chatStatus'))$('chatStatus').textContent=`typing… · ${currentPartner.flag} ${currentPartner.country}`;
-  setTimeout(()=>{
-   typing.remove();
-   messages.push({id:`P-${currentPartner.name}-${Date.now()}`,type:'partner',text:response.reply,time:stamp()});
-   if($('chatStatus'))$('chatStatus').textContent=`🟢 Automated chat partner · Available now · ${currentPartner.flag} ${currentPartner.country}`;
-   saveState();drawConversation();busy=false;input.disabled=false;input.focus();
-  },replyDelay);"""
-    source = replace_if_present(source, old_response_block, new_response_block)
-
-    # Make the opening message use the same natural typing delay.
-    source = replace_if_present(
-        source,
-        "setTimeout(()=>{row.remove();conversation(currentPartner.name).push({id:`OPEN-${currentPartner.name}`,type:'partner',text:currentPartner.opening,time:stamp()});saveState();drawConversation()},900);",
-        "setTimeout(()=>{row.remove();conversation(currentPartner.name).push({id:`OPEN-${currentPartner.name}`,type:'partner',text:currentPartner.opening,time:stamp()});saveState();drawConversation()},humanTypingDelay(currentPartner.opening));",
+    source = source.replace(
+        "state.ad.replyCounter+=1;\n  }\n  saveState();drawConversation();",
+        "state.ad.replyCounter+=1;\n  }\n  saveState();drawConversation();if(reward)showRewardToast(reward);",
+        1,
     )
 
-    # The fifth returned sharing activity moves straight to the existing KYC screen.
-    source = replace_if_present(
-        source,
-        "shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},1200);",
-        "shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},900);",
-    )
-
-    # Keep the sharing page focused; do not add a withdrawal-status action there.
+    # Restore the original single-action withdrawal card and remove View My Balance.
     source = re.sub(
-        r"<button onclick=\"goScreen\('processing'\)\"[^>]*>VIEW WITHDRAWAL STATUS</button>",
-        "",
+        r"function withdrawalUnlockCard\(\)\{.*?\n\}\nwindow\.tryWithdraw=",
+        """function withdrawalUnlockCard(){
+ const body=$('chatBody');body?.querySelector('[data-unlock]')?.remove();
+ if(!body||state.availableBalance<FIRST_WITHDRAWAL_MINIMUM||state.withdrawal)return;
+ const card=document.createElement('div');card.dataset.unlock='1';
+ card.style.cssText='margin:18px 0;padding:22px 18px;border-radius:18px;background:rgba(0,200,83,.10);border:1px solid rgba(0,200,83,.42);text-align:center';
+ card.innerHTML=`<div style="font-size:30px;margin-bottom:8px">🎉</div><b style="display:block;color:#00E676;font-size:21px">${money(state.availableBalance)} Earned!</b><p style="color:#b8c2bc;font-size:13px;margin:7px 0 14px">Withdrawal available! Withdraw now.</p><button onclick="goScreen('earnings')" style="padding:13px 28px;border:0;border-radius:12px;background:#00C853;color:#001b0b;font-size:15px;font-weight:900">Withdraw Now →</button>`;
+ body.appendChild(card);
+}
+window.tryWithdraw=""",
         source,
+        count=1,
+        flags=re.S,
+    )
+
+    # Keep the earnings page focused on the main withdrawal action only.
+    source = source.replace("  mountEarningsAd();\n", "")
+
+    # Remove the duplicate completion panel; the fifth returned share goes to KYC.
+    source = re.sub(
+        r"tools\.innerHTML=`<div style=\"display:grid;gap:9px;margin-top:12px\"><button onclick=\"copyInvitationLink\(\)\".*?</div>`;",
+        "tools.innerHTML=`<div style=\"display:grid;gap:9px;margin-top:12px\"><button onclick=\"copyInvitationLink()\" style=\"padding:12px;border:1px solid #39413b;border-radius:10px;background:#1e231f;color:#fff;font-weight:900\">COPY INVITATION LINK</button></div>`;",
+        source,
+        count=1,
+        flags=re.S,
+    )
+
+    # Move directly to the KYC screen after the fifth recorded return.
+    source = re.sub(
+        r"shareReturnTimer=setTimeout\(\(\)=>\{state\.sharing\.cooldownUntil=0;saveState\(\);showScreen\('kyc'\)\},\d+\);",
+        "shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},500);",
+        source,
+        count=1,
+    )
+
+    # The processing page must lead back to the existing chat.
+    source = re.sub(
+        r"actions\.innerHTML='[^']*VIEW WITHDRAWAL STATUS[^']*';",
+        "actions.innerHTML='<button onclick=\"returnToChat()\" style=\"width:100%;padding:15px;border:0;border-radius:12px;background:#00C853;font-weight:900\">RETURN TO CHAT & CONTINUE EARNING</button>';",
+        source,
+        count=1,
     )
 
     source = re.sub(
         r"document\.documentElement\.dataset\.build='[^']+'",
-        "document.documentElement.dataset.build='ChatEarn Human Chat Flow 2026.07.21 Final2'",
+        "document.documentElement.dataset.build='ChatEarn Original Flow Test 2026.07.21'",
         source,
         count=1,
     )
@@ -113,9 +97,54 @@ def patch_controller(source: str) -> str:
 
 
 def patch_index(html: str) -> str:
+    # Remove the unsupported public payout counter completely.
+    html = re.sub(
+        r"\s*<!-- LIVE PAYOUT COUNTER -->\s*<div class=\"live-counter\">.*?</div>\s*</div>\s*",
+        "\n",
+        html,
+        count=1,
+        flags=re.S,
+    )
+
+    # Earnings page: retain only the main Withdraw My Earnings button.
+    html = re.sub(
+        r"\s*<a[^>]*>📊 View Full Earnings Report →</a>",
+        "",
+        html,
+        flags=re.S,
+    )
+    html = re.sub(
+        r"\s*<a[^>]*>🎁 Unlock Extra Bonus — Tap Here →</a>",
+        "",
+        html,
+        flags=re.S,
+    )
+    html = re.sub(
+        r"\s*<a[^>]*>💰 Verify Account for Faster Payout →</a>",
+        "",
+        html,
+        flags=re.S,
+    )
+
+    # Remove every static sharing-page withdrawal-status link/button.
+    html = re.sub(
+        r"\s*<(?:a|button)[^>]*>\s*VIEW WITHDRAWAL STATUS\s*</(?:a|button)>",
+        "",
+        html,
+        flags=re.I | re.S,
+    )
+
+    # Remove any old static sharing-complete card; JavaScript moves to KYC directly.
+    html = re.sub(
+        r"\s*<div[^>]*>\s*<[^>]+>Sharing Stage Complete[^<]*</[^>]+>.*?COMPLETE YOUR KYC.*?</div>\s*</div>",
+        "",
+        html,
+        flags=re.I | re.S,
+    )
+
     html = re.sub(
         r'<script src="\./assets/js/chatearn-app\.js\?v=[^"]+"></script>',
-        '<script src="./assets/js/chatearn-app.js?v=20260721-human2"></script>',
+        f'<script src="./assets/js/chatearn-app.js?v={CACHE_VERSION}"></script>',
         html,
         count=1,
     )
