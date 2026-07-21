@@ -10,6 +10,8 @@ ASSETS = ROOT / "assets" / "js"
 ASSETS.mkdir(parents=True, exist_ok=True)
 
 SOURCE_BASE = "https://raw.githubusercontent.com/KSamtoclef/new-earn/main/assets/js/"
+CHATTOEARN_SUPABASE_URL = "https://dtjxcgzpwemdgdeinkcl.supabase.co"
+CHATTOEARN_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM"
 
 
 def fetch(name: str) -> str:
@@ -24,6 +26,20 @@ def replace_once(text: str, old: str, new: str) -> str:
 
 
 def patch_controller(source: str) -> str:
+    source = re.sub(
+        r"const SUPABASE_URL='[^']+';",
+        f"const SUPABASE_URL='{CHATTOEARN_SUPABASE_URL}';",
+        source,
+        count=1,
+    )
+    source = re.sub(
+        r"const SUPABASE_ANON_KEY='[^']+';",
+        f"const SUPABASE_ANON_KEY='{CHATTOEARN_SUPABASE_ANON_KEY}';",
+        source,
+        count=1,
+    )
+    source = source.replace("storageKey:'ce-auth-v6'", "storageKey:'ce-auth-chattoearn-v1'")
+
     source = source.replace(
         "const FIRST_WITHDRAWAL_THRESHOLD=60000;",
         "const FIRST_WITHDRAWAL_MINIMUM=30000;\nconst FIRST_WITHDRAWAL_MAXIMUM=50000;",
@@ -120,11 +136,69 @@ def patch_controller(source: str) -> str:
     )
     source = source.replace("VIEW MY EARNINGS", "WITHDRAW MY EARNINGS")
     source = source.replace("KEEP CHATTING", "VIEW MY BALANCE")
+
+    old_catch = "}catch(error){toast(error.message||'Registration failed.',true)}"
+    new_catch = """}catch(error){
+   const message=String(error?.message||'Registration failed.');
+   if(/already|registered|exists/i.test(message)){
+    if($('loginEmail'))$('loginEmail').value=email;
+    openLogin();toast('This email already has an account. Log in to continue.',true);
+   }else toast(message,true)
+  }"""
+    source = source.replace(old_catch, new_catch)
+
     source = source.replace(
         "document.documentElement.dataset.build='ChatEarn Complete Directive 2026.07.21'",
-        "document.documentElement.dataset.build='ChatEarn Production 2026.07.21 Chattoearn'",
+        "document.documentElement.dataset.build='ChatEarn Production 2026.07.21 Chattoearn Auth1'",
     )
     return source
+
+
+def ensure_login_ui(html: str) -> str:
+    phone_block = '''    <div class="form-group">
+      <label class="form-label">Phone Number (WhatsApp)</label>
+      <input class="form-input" id="regPhone" type="tel" placeholder="e.g. 08012345678" maxlength="14">
+    </div>
+'''
+    html = html.replace(phone_block, "")
+    html = html.replace(
+        '<button class="btn-register" onclick="doRegister()">Create Account & Get ₦10,000 →</button>',
+        '<button class="btn-register" id="regSubmitBtn" onclick="doRegister()">Create Account & Get ₦10,000 →</button>',
+    )
+    html = html.replace(
+        '<div class="reg-login">Already have an account? <span>Log In</span></div>',
+        '<div class="reg-login">Already have an account? <span onclick="openLogin()" role="button" tabindex="0">Log In</span></div>',
+    )
+
+    modal_css = '''
+.login-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.78);display:none;align-items:flex-end;justify-content:center;padding:16px;backdrop-filter:blur(5px)}
+.login-modal.show{display:flex}
+.login-sheet{width:min(100%,420px);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;position:relative;animation:slideUp .25s ease}
+.login-close{position:absolute;right:14px;top:10px;border:0;background:transparent;color:var(--w);font-size:28px;cursor:pointer}
+.login-title{font-size:22px;font-weight:900;margin-bottom:5px}
+.login-sub{font-size:13px;color:var(--text);margin-bottom:20px}
+.login-error{display:none;color:var(--red);font-size:12px;margin-bottom:10px}
+.reg-login span{cursor:pointer}
+'''
+    if ".login-modal{" not in html:
+        html = html.replace("</style>", modal_css + "\n</style>", 1)
+
+    modal_html = '''
+<div class="login-modal" id="loginModal" aria-hidden="true">
+  <div class="login-sheet">
+    <button type="button" class="login-close" onclick="closeLogin()" aria-label="Close login">×</button>
+    <div class="login-title">Welcome Back</div>
+    <div class="login-sub">Log in and continue your chats and earnings.</div>
+    <div class="login-error" id="loginError"></div>
+    <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" id="loginEmail" type="email" autocomplete="email" placeholder="Enter your email"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPass" type="password" autocomplete="current-password" placeholder="Enter your password"></div>
+    <button class="btn-register" id="loginBtn" onclick="doLogin()">Log In & Continue →</button>
+  </div>
+</div>
+'''
+    if 'id="loginModal"' not in html:
+        html = html.replace('<div class="page-wrap">', modal_html + '\n<div class="page-wrap">', 1)
+    return html
 
 
 def patch_index(html: str) -> str:
@@ -132,19 +206,25 @@ def patch_index(html: str) -> str:
     if start < 0:
         start = html.find("<script>\r\n// Supabase client for collecting registrations & withdrawals")
     end = html.rfind("</script>")
-    if start < 0 or end < start:
-        raise RuntimeError("Could not locate legacy inline runtime")
 
     replacement = (
         '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n'
-        '<script src="./assets/js/chatearn-app.js?v=20260721-chattoearn2"></script>'
+        '<script src="./assets/js/chatearn-app.js?v=20260721-chattoearn-auth1"></script>'
     )
-    html = html[:start] + replacement + html[end + len("</script>"):]
-    html = html.replace(
-        '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n',
-        "",
-        1,
-    )
+    if start >= 0 and end > start:
+        html = html[:start] + replacement + html[end + len("</script>"):]
+        html = html.replace(
+            '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n',
+            "",
+            1,
+        )
+    else:
+        html = re.sub(
+            r'<script src="\./assets/js/chatearn-app\.js\?v=[^"]+"></script>',
+            '<script src="./assets/js/chatearn-app.js?v=20260721-chattoearn-auth1"></script>',
+            html,
+            count=1,
+        )
 
     visible_rate_changes = {
         "₦15,000/reply": "₦5,000/reply",
@@ -161,7 +241,7 @@ def patch_index(html: str) -> str:
     for old, new in visible_rate_changes.items():
         html = html.replace(old, new)
 
-    return html
+    return ensure_login_ui(html)
 
 
 def main() -> None:
