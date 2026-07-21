@@ -1,0 +1,64 @@
+name: Apply ChatEarn Production Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_chatearn_build.py
+      - .github/workflows/apply-chatearn-build.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply production migration
+        run: python scripts/apply_chatearn_build.py
+
+      - name: Validate JavaScript syntax
+        run: node --check assets/js/chatearn-app.js
+
+      - name: Validate HTML structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import re
+
+          text = Path('index.html').read_text(encoding='utf-8')
+          class Parser(HTMLParser):
+              pass
+          Parser().feed(text)
+          ids = re.findall(r'\bid=["\']([^"\']+)["\']', text)
+          duplicates = sorted({value for value in ids if ids.count(value) > 1})
+          if duplicates:
+              raise SystemExit(f'Duplicate HTML IDs: {duplicates}')
+          required = ['landing','register','loading','dashboard','chat','earnings','withdraw','sharewall','kyc','processing']
+          missing = [value for value in required if f'id="{value}"' not in text and f"id='{value}'" not in text]
+          if missing:
+              raise SystemExit(f'Missing required screens: {missing}')
+          print('HTML validation passed')
+          PY
+
+      - name: Commit generated production files
+        run: |
+          git config user.name "ChatEarn Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html assets/js/chatearn-app.js vercel.json
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+          else
+            git commit -m "Apply complete ChatEarn production build"
+            git push
+          fi
