@@ -900,7 +900,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
 <div id="processing" class="screen" style="display:none;">
   <div class="pp-spinner"></div>
   <div class="pp-title">Payment Processing 💰</div>
-  <p class="pp-sub">Your <strong id="ppAmount">₦40,000</strong> withdrawal has been submitted. Payment will arrive in your <strong id="ppBank">OPay</strong> account within 24 hours.</p>
+  <div id=\"processingActions\"></div><p class="pp-sub">Your <strong id="ppAmount">₦40,000</strong> withdrawal has been submitted. Payment will arrive in your <strong id="ppBank">OPay</strong> account within 24 hours.</p>
   <div class="pp-ref">REF: <span id="ppRef">——</span></div>
   <p style="font-size:12px;color:var(--muted);margin-bottom:20px;" id="ppBankNote">Your account will receive payment within 24 hours.</p>
 
@@ -928,17 +928,12 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
     </div>
   </div>
 
-  <p class="pp-note">Share ChatEarn with more friends to earn more while you wait!</p>
-
-  <div style="margin-top:20px;width:100%;padding:0 20px;">
-    <button style="width:100%;padding:16px;background:var(--wa);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;" onclick="shareAgain()">📲 Share & Earn More While Waiting</button>
-  </div>
 </div>
 
 </div><!-- page-wrap -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./assets/js/chatearn-app.js?v=20260721-postkyc-ads1"></script>
+<script src="./assets/js/chatearn-app.js?v=20260721-postkyc-cta2"></script>
 </div>
 
 </body>

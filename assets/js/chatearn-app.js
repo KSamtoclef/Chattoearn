@@ -509,8 +509,8 @@ function renderProcessing(){
  if(timeline[2])timeline[2].textContent='Payment Pending Approval';
  let actions=$('processingActions');
  if(!actions){actions=document.createElement('div');actions.id='processingActions';const title=document.querySelector('#processing .pp-title');title?.after(actions)}
- actions.style.cssText='width:calc(100% - 32px);max-width:440px;margin:18px auto 24px;padding:18px;border:2px solid rgba(0,230,118,.55);border-radius:18px;background:rgba(0,200,83,.12);display:grid;gap:10px;order:-1';
- actions.innerHTML='<div style="text-align:center;font-size:15px;font-weight:900;color:#69F0AE">Continue chatting and keep earning</div><button onclick="returnToChat()" style="width:100%;padding:19px 14px;border:0;border-radius:14px;background:#00C853;color:#001b0b;font-size:17px;font-weight:950;box-shadow:0 8px 24px rgba(0,200,83,.28)">RETURN TO CHAT & CONTINUE EARNING</button>';
+ actions.style.cssText='width:calc(100% - 28px);max-width:440px;margin:18px auto 22px;padding:20px 16px;border:2px solid rgba(0,230,118,.72);border-radius:20px;background:rgba(0,200,83,.16);display:grid;gap:12px;box-shadow:0 10px 34px rgba(0,200,83,.20)';
+ actions.innerHTML='<div style="text-align:center;font-size:17px;font-weight:950;color:#69F0AE">Continue chatting and keep earning</div><button onclick="returnToChat()" style="width:100%;min-height:64px;padding:18px 14px;border:0;border-radius:15px;background:#00C853;color:#001b0b;font-size:18px;font-weight:950;line-height:1.25;box-shadow:0 10px 28px rgba(0,200,83,.35)">RETURN TO CHAT & CONTINUE EARNING</button>';
 }
 window.returnToChat=()=>{state.adsUnlocked=true;state.ad.replyCounter=0;state.ad.nextInterval=randomInterval();saveState();continueLastChat();toast('Your withdrawal request is awaiting review. Continue chatting and earning while you wait.')} ;
 window.continueLastChat=()=>{const index=PARTNERS.findIndex(p=>p.name===state.lastPartner);index>=0?openChat(index):showScreen('dashboard')};
@@ -558,7 +558,7 @@ window.trackClick=()=>true;
 
 function injectCSS(){
  const style=document.createElement('style');style.textContent=`#chat{height:100dvh;overflow:hidden}.chat-header{position:sticky;top:0;z-index:100;padding-top:env(safe-area-inset-top)}.chat-body{height:calc(100dvh - 145px - env(safe-area-inset-bottom));overflow-y:auto;padding:14px 12px 150px!important;scroll-behavior:smooth}.chat-input-wrap{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:auto;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#111511}.msg-row{display:flex;flex-direction:column;align-items:flex-start;margin:8px 0}.msg-row.mine{align-items:flex-end}.msg-bubble{max-width:82%;padding:10px 12px;border-radius:18px;line-height:1.45}.msg-theirs{background:#242824;border-bottom-left-radius:5px}.msg-mine{background:#075e54;border-bottom-right-radius:5px}.chat-day{text-align:center;font-size:10px;color:#7c8880;margin:10px 0}.quick-replies{bottom:78px}.quick-reply:disabled{opacity:.45}`;
- document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Post-KYC Ads 2026.07.21';
+ document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Visible Continue CTA 2026.07.21';
 }
 function restoreJourney(){
  let nav={};try{nav=JSON.parse(localStorage.getItem(navKey())||'{}')}catch{}
