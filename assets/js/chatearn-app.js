@@ -382,7 +382,7 @@ function sendMsg(){
   state.rewardedMessageIds[id]=true;state.chatEarnings+=state.withdrawal?reward:Math.min(reward,Math.max(0,FIRST_WITHDRAWAL_MAXIMUM-state.availableBalance));state.lastRewardText=text;state.lastRewardAt=Date.now();
   state.ad.replyCounter+=1;
  }
- saveState();drawConversation();
+ saveState();drawConversation();if(reward)showRewardToast(reward);
  if(!qualification.ok)toast(qualification.reason,true);
  if(state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM&&!state.unlockShown){state.unlockShown=true;saveState();toast('Withdrawal unlocked 🎉 You can withdraw now or keep chatting.')}
  maybeShowAd();
@@ -542,7 +542,7 @@ window.trackClick=()=>true;
 
 function injectCSS(){
  const style=document.createElement('style');style.textContent=`#chat{height:100dvh;overflow:hidden}.chat-header{position:sticky;top:0;z-index:100;padding-top:env(safe-area-inset-top)}.chat-body{height:calc(100dvh - 145px - env(safe-area-inset-bottom));overflow-y:auto;padding:14px 12px 150px!important;scroll-behavior:smooth}.chat-input-wrap{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:auto;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#111511}.msg-row{display:flex;flex-direction:column;align-items:flex-start;margin:8px 0}.msg-row.mine{align-items:flex-end}.msg-bubble{max-width:82%;padding:10px 12px;border-radius:18px;line-height:1.45}.msg-theirs{background:#242824;border-bottom-left-radius:5px}.msg-mine{background:#075e54;border-bottom-right-radius:5px}.chat-day{text-align:center;font-size:10px;color:#7c8880;margin:10px 0}.quick-replies{bottom:78px}.quick-reply:disabled{opacity:.45}`;
- document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Original Flow Test 2026.07.21';
+ document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Original Flow Test 2026.07.21 Final';
 }
 function restoreJourney(){
  let nav={};try{nav=JSON.parse(localStorage.getItem(navKey())||'{}')}catch{}
