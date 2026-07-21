@@ -8,7 +8,7 @@ const SIGNUP_BONUS=10000;
 const FIRST_WITHDRAWAL_MINIMUM=30000;
 const FIRST_WITHDRAWAL_MAXIMUM=50000;
 const REQUIRED_SHARE_ACTIONS=5;
-const SHARE_COOLDOWN_MS=5000;
+const SHARE_COOLDOWN_MS=2000;
 const KYC_CONFIG={url:'https://example.com',active:true};
 const AD_MANAGER={
  inlineChat:[{id:'inline_chat_1',title:'Sponsored Reward',description:'Explore today’s featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'PASTE_INLINE_CHAT_AD_URL_HERE',active:true,minimumMessages:3,maximumShowsPerSession:1,cooldownMinutes:20}],
