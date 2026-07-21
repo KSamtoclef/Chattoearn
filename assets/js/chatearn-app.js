@@ -15,18 +15,18 @@ const AD_MANAGER={
   {id:'inline_chat_1',label:'Sponsored',title:'Featured Opportunity',description:'Explore today’s featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true,minimumMessages:3,maximumShowsPerSession:4},
   {id:'inline_chat_2',label:'Sponsored Reward',title:'Today’s Sponsored Offer',description:'See another featured opportunity selected for active users.',buttonText:'OPEN OFFER',url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true,minimumMessages:3,maximumShowsPerSession:4}
  ],
- partnerList:[{id:'partner_list_1',label:'Sponsored',title:'Featured Opportunity',description:'See today’s sponsored opportunity.',buttonText:'OPEN',url:'https://example.com',active:true}],
+ partnerList:[{id:'partner_list_1',label:'Sponsored',title:'Featured Opportunity',description:'See today’s sponsored opportunity.',buttonText:'OPEN',url:'https://omg10.com/4/11279843',active:true}],
  inPage:[
-  {id:'inpage_1',label:'Sponsored',title:'Featured In-Page Offer',description:'Explore this sponsored opportunity while you continue chatting.',buttonText:'VIEW OFFER',url:'https://example.com',active:true},
-  {id:'inpage_2',label:'Sponsored Reward',title:'Active User Opportunity',description:'A featured sponsored opportunity for active ChatEarn users.',buttonText:'OPEN NOW',url:'https://example.com',active:true}
+  {id:'inpage_1',label:'Sponsored',title:'Featured In-Page Offer',description:'Explore this sponsored opportunity while you continue chatting.',buttonText:'VIEW OFFER',url:'https://omg10.com/4/11279843',active:true},
+  {id:'inpage_2',label:'Sponsored Reward',title:'Active User Opportunity',description:'A featured sponsored opportunity for active ChatEarn users.',buttonText:'OPEN NOW',url:'https://omg10.com/4/11279843',active:true}
  ],
  buttonAds:[
-  {id:'button_ad_1',label:'Sponsored',title:'Sponsored Opportunity',description:'Open this featured sponsored offer.',buttonText:'VIEW SPONSORED OFFER',url:'https://example.com',active:true},
-  {id:'button_ad_2',label:'Sponsored Reward',title:'Featured Reward Opportunity',description:'Explore another sponsored opportunity.',buttonText:'OPEN OPPORTUNITY',url:'https://example.com',active:true}
+  {id:'button_ad_1',label:'Sponsored',title:'Sponsored Opportunity',description:'Open this featured sponsored offer.',buttonText:'VIEW SPONSORED OFFER',url:'https://omg10.com/4/11279843',active:true},
+  {id:'button_ad_2',label:'Sponsored Reward',title:'Featured Reward Opportunity',description:'Explore another sponsored opportunity.',buttonText:'OPEN OPPORTUNITY',url:'https://omg10.com/4/11279843',active:true}
  ],
- halfScreen:[{id:'half_screen_1',label:'Sponsored',title:'Featured Sponsored Opportunity',description:'Explore this featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://example.com',active:true,maximumShowsPerSession:1}],
- popup:[{id:'popup_1',label:'Sponsored',title:'Sponsored Reward',description:'See today’s sponsored opportunity.',buttonText:'OPEN OPPORTUNITY',url:'https://example.com',active:true,maximumShowsPerSession:1}],
- earnings:[{id:'earnings_ad_1',label:'Sponsored',title:'Earnings Opportunity',description:'Explore today’s sponsored reward.',buttonText:'OPEN OPPORTUNITY',url:'https://example.com',active:true}]
+ halfScreen:[{id:'half_screen_1',label:'Sponsored',title:'Featured Sponsored Opportunity',description:'Explore this featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://omg10.com/4/11279843',active:true,maximumShowsPerSession:1}],
+ popup:[{id:'popup_1',label:'Sponsored',title:'Sponsored Reward',description:'See today’s sponsored opportunity.',buttonText:'OPEN OPPORTUNITY',url:'https://omg10.com/4/11279843',active:true,maximumShowsPerSession:1}],
+ earnings:[{id:'earnings_ad_1',label:'Sponsored',title:'Earnings Opportunity',description:'Explore today’s sponsored reward.',buttonText:'OPEN OPPORTUNITY',url:'https://omg10.com/4/11279843',active:true}]
 };
 window.CHATEARN_CONFIG=Object.freeze({FIRST_WITHDRAWAL_MINIMUM,REQUIRED_SHARE_ACTIONS,KYC_CONFIG,AD_MANAGER,contextualCombinations:512});
 
