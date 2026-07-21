@@ -6,11 +6,10 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
 CONTROLLER = ROOT / "assets" / "js" / "chatearn-app.js"
-CACHE_VERSION = "20260721-original-flow3"
+CACHE_VERSION = "20260721-original-flow4"
 
 
 def patch_controller(source: str) -> str:
-    # Temporary KYC destination requested for end-to-end return testing.
     source = re.sub(
         r"const KYC_CONFIG=\{url:'[^']*',active:(?:true|false)\};",
         "const KYC_CONFIG={url:'https://example.com',active:true};",
@@ -18,13 +17,11 @@ def patch_controller(source: str) -> str:
         count=1,
     )
 
-    # Restore the original compact reward confirmation style shown in the reference.
     source = source.replace(
         "${message.reward?`<div style=\"font-size:10px;color:#69F0AE;margin-top:4px\">Reply accepted<br>+${money(message.reward)} added to your earnings</div>`:''}",
         "${message.reward?`<div style=\"font-size:11px;color:#00E676;font-weight:800;margin-top:5px\">+${money(message.reward)} earned! 💰</div>`:''}",
     )
 
-    # Add the small original-style floating reward notice once per credited reply.
     if "function showRewardToast(" not in source:
         marker = "function typingIndicator(){"
         reward_toast = """function showRewardToast(amount){
@@ -36,13 +33,14 @@ def patch_controller(source: str) -> str:
 """
         source = source.replace(marker, reward_toast + marker, 1)
 
-    source = source.replace(
-        "state.ad.replyCounter+=1;\n  }\n  saveState();drawConversation();",
-        "state.ad.replyCounter+=1;\n  }\n  saveState();drawConversation();if(reward)showRewardToast(reward);",
-        1,
+    # Ensure the floating reward notice is called after a successful credit.
+    source = re.sub(
+        r"(state\.ad\.replyCounter\+=1;\s*\}\s*saveState\(\);drawConversation\(\);)(?!if\(reward\)showRewardToast)",
+        r"\1if(reward)showRewardToast(reward);",
+        source,
+        count=1,
     )
 
-    # Restore the original single-action withdrawal card and remove View My Balance.
     source = re.sub(
         r"function withdrawalUnlockCard\(\)\{.*?\n\}\nwindow\.tryWithdraw=",
         """function withdrawalUnlockCard(){
@@ -59,10 +57,8 @@ window.tryWithdraw=""",
         flags=re.S,
     )
 
-    # Keep the earnings page focused on the main withdrawal action only.
     source = source.replace("  mountEarningsAd();\n", "")
 
-    # Remove the duplicate completion panel; the fifth returned share goes to KYC.
     source = re.sub(
         r"tools\.innerHTML=`<div style=\"display:grid;gap:9px;margin-top:12px\"><button onclick=\"copyInvitationLink\(\)\".*?</div>`;",
         "tools.innerHTML=`<div style=\"display:grid;gap:9px;margin-top:12px\"><button onclick=\"copyInvitationLink()\" style=\"padding:12px;border:1px solid #39413b;border-radius:10px;background:#1e231f;color:#fff;font-weight:900\">COPY INVITATION LINK</button></div>`;",
@@ -71,7 +67,6 @@ window.tryWithdraw=""",
         flags=re.S,
     )
 
-    # Move directly to the KYC screen after the fifth recorded return.
     source = re.sub(
         r"shareReturnTimer=setTimeout\(\(\)=>\{state\.sharing\.cooldownUntil=0;saveState\(\);showScreen\('kyc'\)\},\d+\);",
         "shareReturnTimer=setTimeout(()=>{state.sharing.cooldownUntil=0;saveState();showScreen('kyc')},500);",
@@ -79,7 +74,6 @@ window.tryWithdraw=""",
         count=1,
     )
 
-    # The processing page must lead back to the existing chat.
     source = re.sub(
         r"actions\.innerHTML='[^']*VIEW WITHDRAWAL STATUS[^']*';",
         "actions.innerHTML='<button onclick=\"returnToChat()\" style=\"width:100%;padding:15px;border:0;border-radius:12px;background:#00C853;font-weight:900\">RETURN TO CHAT & CONTINUE EARNING</button>';",
@@ -89,7 +83,7 @@ window.tryWithdraw=""",
 
     source = re.sub(
         r"document\.documentElement\.dataset\.build='[^']+'",
-        "document.documentElement.dataset.build='ChatEarn Original Flow Test 2026.07.21'",
+        "document.documentElement.dataset.build='ChatEarn Original Flow Test 2026.07.21 Final'",
         source,
         count=1,
     )
@@ -97,36 +91,26 @@ window.tryWithdraw=""",
 
 
 def patch_index(html: str) -> str:
-    # Remove the unsupported public payout counter completely.
+    # Remove the whole payout counter and any residue left by an earlier partial cleanup.
     html = re.sub(
-        r"\s*<!-- LIVE PAYOUT COUNTER -->\s*<div class=\"live-counter\">.*?</div>\s*</div>\s*",
+        r"\s*<!-- LIVE PAYOUT COUNTER -->\s*<div class=\"live-counter\">.*?<div class=\"lc-amount\" id=\"liveCounter\">.*?</div>\s*</div>\s*",
+        "\n",
+        html,
+        count=1,
+        flags=re.S,
+    )
+    html = re.sub(
+        r"\s*<div class=\"lc-amount\" id=\"liveCounter\">.*?</div>\s*</div>\s*",
         "\n",
         html,
         count=1,
         flags=re.S,
     )
 
-    # Earnings page: retain only the main Withdraw My Earnings button.
-    html = re.sub(
-        r"\s*<a[^>]*>📊 View Full Earnings Report →</a>",
-        "",
-        html,
-        flags=re.S,
-    )
-    html = re.sub(
-        r"\s*<a[^>]*>🎁 Unlock Extra Bonus — Tap Here →</a>",
-        "",
-        html,
-        flags=re.S,
-    )
-    html = re.sub(
-        r"\s*<a[^>]*>💰 Verify Account for Faster Payout →</a>",
-        "",
-        html,
-        flags=re.S,
-    )
+    html = re.sub(r"\s*<a[^>]*>📊 View Full Earnings Report →</a>", "", html, flags=re.S)
+    html = re.sub(r"\s*<a[^>]*>🎁 Unlock Extra Bonus — Tap Here →</a>", "", html, flags=re.S)
+    html = re.sub(r"\s*<a[^>]*>💰 Verify Account for Faster Payout →</a>", "", html, flags=re.S)
 
-    # Remove every static sharing-page withdrawal-status link/button.
     html = re.sub(
         r"\s*<(?:a|button)[^>]*>\s*VIEW WITHDRAWAL STATUS\s*</(?:a|button)>",
         "",
@@ -134,7 +118,6 @@ def patch_index(html: str) -> str:
         flags=re.I | re.S,
     )
 
-    # Remove any old static sharing-complete card; JavaScript moves to KYC directly.
     html = re.sub(
         r"\s*<div[^>]*>\s*<[^>]+>Sharing Stage Complete[^<]*</[^>]+>.*?COMPLETE YOUR KYC.*?</div>\s*</div>",
         "",
