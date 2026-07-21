@@ -6,7 +6,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
 CONTROLLER = ROOT / "assets" / "js" / "chatearn-app.js"
-CACHE_VERSION = "20260721-postkyc-cta3"
+CACHE_VERSION = "20260721-persistent-chat-ads1"
 
 
 def patch_controller(source: str) -> str:
@@ -16,6 +16,14 @@ def patch_controller(source: str) -> str:
         source,
         count=1,
     )
+
+    # Persist inline, in-page and button sponsored cards as conversation items.
+    source = source.replace(
+        "}else if(placement==='inPage'||placement==='buttonAds')showFeedAd(ad,placement);",
+        "}else if(placement==='inPage'||placement==='buttonAds'){conversation(currentPartner.name).push({id:`AD-${ad.id}-${Date.now()}`,type:'ad',adId:ad.id,placement,time:stamp()});saveState();drawConversation();}",
+        1,
+    )
+
     source = re.sub(
         r"let actions=\$\('processingActions'\);.*?actions\.innerHTML='.*?';",
         """let actions=$('processingActions');
@@ -28,7 +36,7 @@ def patch_controller(source: str) -> str:
     )
     source = re.sub(
         r"document\.documentElement\.dataset\.build='[^']+'",
-        "document.documentElement.dataset.build='ChatEarn Visible Continue CTA 2026.07.21 Final'",
+        "document.documentElement.dataset.build='ChatEarn Persistent Chat Ads 2026.07.21'",
         source,
         count=1,
     )
