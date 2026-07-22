@@ -12,21 +12,21 @@ const SHARE_COOLDOWN_MS=2000;
 const KYC_CONFIG={url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true};
 const AD_MANAGER={
  inlineChat:[
-  {id:'inline_chat_1',label:'Sponsored',title:'Featured Opportunity',description:'Explore today’s featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://oatstuckalfred.com/s16jgyby6?key=c00293cc40e08e6d40264506f115e024',active:true,minimumMessages:3,maximumShowsPerSession:4},
-  {id:'inline_chat_2',label:'Sponsored Reward',title:'Today’s Sponsored Offer',description:'See another featured opportunity selected for active users.',buttonText:'OPEN OFFER',url:'httpsr://omg10.com/4/11279843',active:true,minimumMessages:3,maximumShowsPerSession:4}
+  {id:'inline_chat_1',label:'Quick Task',title:'Complete Today’s 60-Second Challenge',description:'Open this quick activity and collect 10 Activity Points for participating.',buttonText:'START QUICK TASK →',url:'https://oatstuckalfred.com/s16jgyby6?key=c00293cc40e08e6d40264506f115e024',active:true,theme:'emerald',icon:'⚡',minimumMessages:3,maximumShowsPerSession:4},
+  {id:'inline_chat_2',label:'Daily Discovery',title:'A New Opportunity Just Unlocked',description:'Take a look at today’s featured activity before it rotates out of your chat.',buttonText:'SEE WHAT UNLOCKED →',url:'https://omg10.com/4/11279843',active:true,theme:'violet',icon:'✨',minimumMessages:3,maximumShowsPerSession:4}
  ],
- partnerList:[{id:'partner_list_1',label:'Sponsored',title:'Featured Opportunity',description:'See today’s sponsored opportunity.',buttonText:'OPEN',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true}],
+ partnerList:[{id:'partner_list_1',label:'Community Pick',title:'Popular With Active Members Today',description:'Explore the opportunity other ChatEarn members are opening right now.',buttonText:'EXPLORE COMMUNITY PICK →',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true,theme:'blue',icon:'🔥'}],
  inPage:[
-  {id:'inpage_1',label:'Sponsored',title:'Featured In-Page Offer',description:'Explore this sponsored opportunity while you continue chatting.',buttonText:'VIEW OFFER',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true},
-  {id:'inpage_2',label:'Sponsored Reward',title:'Active User Opportunity',description:'A featured sponsored opportunity for active ChatEarn users.',buttonText:'OPEN NOW',url:'https://omg10.com/4/11279843',active:true}
+  {id:'inpage_1',label:'Point Mission',title:'Complete This Optional Activity',description:'Open the task, check what is available, and receive 10 Activity Points.',buttonText:'COMPLETE THE MISSION →',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true,theme:'gold',icon:'🎯'},
+  {id:'inpage_2',label:'Surprise Unlock',title:'Your Next Discovery Is Ready',description:'A fresh activity has been selected for your current chat session.',buttonText:'REVEAL THE SURPRISE →',url:'https://omg10.com/4/11279843',active:true,theme:'rose',icon:'🎁'}
  ],
  buttonAds:[
-  {id:'button_ad_1',label:'Sponsored',title:'Sponsored Opportunity',description:'Open this featured sponsored offer.',buttonText:'VIEW SPONSORED OFFER',url:'https://omg10.com/4/11279843',active:true},
-  {id:'button_ad_2',label:'Sponsored Reward',title:'Featured Reward Opportunity',description:'Explore another sponsored opportunity.',buttonText:'OPEN OPPORTUNITY',url:'https://oatstuckalfred.com/s16jgyby6?key=c00293cc40e08e6d40264506f115e024',active:true}
+  {id:'button_ad_1',label:'Fast Action',title:'One Tap Away From Your Next Task',description:'Open this short activity without losing your conversation progress.',buttonText:'OPEN THE TASK →',url:'https://omg10.com/4/11279843',active:true,theme:'orange',icon:'🚀'},
+  {id:'button_ad_2',label:'Member Access',title:'An Extra Opportunity Is Available',description:'Available to members who completed their first withdrawal journey.',buttonText:'ACCESS OPPORTUNITY →',url:'https://oatstuckalfred.com/s16jgyby6?key=c00293cc40e08e6d40264506f115e024',active:true,theme:'cyan',icon:'🔓'}
  ],
- halfScreen:[{id:'half_screen_1',label:'Sponsored',title:'Featured Sponsored Opportunity',description:'Explore this featured opportunity.',buttonText:'VIEW OPPORTUNITY',url:'https://omg10.com/4/11279843',active:true,maximumShowsPerSession:1}],
- popup:[{id:'popup_1',label:'Sponsored',title:'Sponsored Reward',description:'See today’s sponsored opportunity.',buttonText:'OPEN OPPORTUNITY',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true,maximumShowsPerSession:1}],
- earnings:[{id:'earnings_ad_1',label:'Sponsored',title:'Earnings Opportunity',description:'Explore today’s sponsored reward.',buttonText:'OPEN OPPORTUNITY',url:'httpsr://omg10.com/4/11279843',active:true}]
+ halfScreen:[{id:'half_screen_1',label:'Featured Challenge',title:'Ready for a Different Kind of Task?',description:'Pause for a moment, explore this featured activity, then continue your chat.',buttonText:'VIEW FEATURED CHALLENGE →',url:'https://omg10.com/4/11279843',active:true,theme:'indigo',icon:'🏆',maximumShowsPerSession:1}],
+ popup:[{id:'popup_1',label:'Limited Discovery',title:'This Opportunity May Rotate Soon',description:'Check the current activity while it is still available in this session.',buttonText:'CHECK IT NOW →',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true,theme:'magenta',icon:'⏳',maximumShowsPerSession:1}],
+ earnings:[{id:'earnings_ad_1',label:'Activity Centre',title:'Build Your Activity Point Balance',description:'Explore the current task and collect 10 Activity Points when you open it.',buttonText:'OPEN ACTIVITY →',url:'https://omg10.com/4/11279843',active:true,theme:'teal',icon:'💎'}]
 };
 window.CHATEARN_CONFIG=Object.freeze({FIRST_WITHDRAWAL_MINIMUM,REQUIRED_SHARE_ACTIONS,KYC_CONFIG,AD_MANAGER,contextualCombinations:512});
 
@@ -123,36 +123,66 @@ const PARTNERS=[
 ]}
 ];
 
-const PERSONALITY_OPENERS=[
- 'That makes sense 😊','Interesting — thanks for sharing.','Nice, I understand.','That sounds good.','I like that answer.','Good point.','Thanks for explaining.','I can relate to that.'
+const PERSONALITY_STYLES=[
+ {openers:['That makes sense.','I get what you mean 😊','That is interesting.','Honestly, I like that answer.'],quirks:['I tend to notice small details.','I enjoy hearing how other people see things.']},
+ {openers:['Haha, fair answer 😄','Okay, that made me smile.','You know what? I like that.','Wait, that is a good point.'],quirks:['I ask too many questions sometimes 😂','My curiosity usually wins.']},
+ {openers:['I have been thinking about that.','That is a thoughtful answer.','There is more to that than people realize.','I understand your point.'],quirks:['I enjoy conversations that go beyond small talk.','Different opinions make chats interesting.']},
+ {openers:['Fair enough.','I understand.','Good answer.','That is clear.'],quirks:['I usually say exactly what I think.','I prefer honest answers over perfect ones.']},
+ {openers:['Now I am curious.','That caught my attention.','Tell me something—','Interesting. Let me ask you this:'],quirks:['I can turn almost anything into a question.','Learning about people is genuinely interesting.']}
+];
+const CHAT_STAGES=[
+ {name:'daily life',questions:['What has taken most of your attention today?','What part of your day has been unexpectedly good?','What usually helps you start a difficult day?','Are your days normally planned or spontaneous?','What is one small thing that improved your mood recently?','What do you normally do immediately after waking up?','Which part of the day feels most productive to you?','What has been keeping you busy this week?']},
+ {name:'personality',questions:['What is something people usually misunderstand about you?','Are you naturally quiet or more talkative around people you trust?','What quality do you value most in yourself?','What kind of situation brings out your confidence?','Do you make decisions quickly or think for a long time?','What is one habit you are trying to improve?','What type of person do you find easiest to talk to?','Would your friends describe you as serious or playful?']},
+ {name:'interests',questions:['What topic can keep you talking for a long time?','What hobby would you try if time and money were not a problem?','What have you learned recently just because you were curious?','What kind of content do you enjoy watching online?','Is there a skill you wish came naturally to you?','What activity makes time pass quickly for you?','What interest have you had since childhood?','What is something popular that you personally do not enjoy?']},
+ {name:'entertainment',questions:['Which song can instantly improve your mood?','Do you enjoy discovering new artists or replaying favourites?','What movie or series stayed in your mind after you finished it?','Which artist would you like to see perform live?','Do you prefer comedy, action, drama, or documentaries?','What kind of video always makes you stop scrolling?','Would you rather attend a concert or watch a major football match?','What fictional character do you find memorable?']},
+ {name:'food and culture',questions:['Which meal feels like comfort food to you?','What Nigerian food should every visitor try?','Do you enjoy cooking or prefer someone else handling it?','What food combination do you love that other people might question?','Is there a meal connected to a good memory for you?','What local tradition do you appreciate most?','Which city has the best food in your opinion?','What dish would you confidently serve to a foreign visitor?']},
+ {name:'friends',questions:['What makes someone a genuinely good friend?','Do you prefer a small close circle or many friends?','What is the nicest thing a friend has done for you?','How do you handle disagreements with people you care about?','What makes you trust someone?','Are you usually the adviser in your friend group?','What kind of support matters most when life gets stressful?','What does loyalty mean to you?']},
+ {name:'goals',questions:['What goal matters most to you this year?','What skill could change your future if you mastered it?','What keeps you going when progress feels slow?','Where would you like to be two years from now?','What small action can you take toward your goal this week?','Would you rather build a business or grow in a career?','What achievement would make you proud of yourself?','Who inspires the way you think about success?']},
+ {name:'travel',questions:['Which country would you visit first if travel was free?','Do you prefer busy cities or peaceful natural places?','What place in Nigeria would you recommend to a first-time visitor?','Would you rather travel alone or with people close to you?','What would you want to experience on your dream trip?','Which city looks interesting even though you have never been there?','Would you live abroad permanently or eventually return home?','What is the longest journey you have taken?']},
+ {name:'opinions',questions:['Would you choose more free time or more money?','Do you think talent or consistency matters more?','Is it better to plan carefully or learn while doing?','Would you rather be respected or widely liked?','Do social platforms connect people or distract them more?','What is one opinion you have changed recently?','Would you choose stability or a risky opportunity with more potential?','What everyday rule do you think makes little sense?']},
+ {name:'stories',questions:['What is one funny thing that happened to you recently?','What childhood memory still makes you smile?','If you could repeat one day from your life, which would it be?','What would you do first with one million naira?','If you could instantly master one skill, what would you choose?','What is the most unexpected compliment you have received?','If your life this month had a title, what would it be?','What harmless mistake can you laugh about now?']},
+ {name:'future',questions:['What would a genuinely good life look like to you?','What do you hope never changes about your personality?','What do you want people to remember about you?','Which future technology are you most curious about?','What do you hope to understand better as you grow older?','What kind of environment would make you happiest?','What experience do you definitely want to have someday?','What does success mean to you personally?']}
 ];
 const CONTEXT_LIBRARY=[
- {keys:['school','student','university','course','study'],questions:['What part of your studies interests you most?','What subject has challenged you recently?','What skill are you building through school?','What would make this school year successful for you?'],suggestions:['I enjoy practical projects','Some courses are challenging','I want to improve my skills','Finishing well is my goal']},
- {keys:['work','job','business','online'],questions:['What part of your work do you enjoy most?','What are you currently trying to improve?','What kind of opportunity are you looking for?','What keeps you motivated when work gets difficult?'],suggestions:['I enjoy solving problems','I’m building something new','I want more opportunities','Progress keeps me motivated']},
- {keys:['music','song','artist','afrobeats'],questions:['Which artist have you played most lately?','What kind of song improves your mood?','Do you prefer calm music or energetic music?','What Nigerian song would you recommend?'],suggestions:['I listen to Afrobeats','Gospel lifts my mood','I enjoy energetic songs','I have several favourites']},
- {keys:['food','meal','rice','suya','jollof','amala','egusi'],questions:['What meal could you eat every week?','Do you prefer cooking or buying food?','What Nigerian meal should a visitor try first?','Is there a food you are learning to prepare?'],suggestions:['Jollof rice is a favourite','I enjoy local meals','Suya is a good choice','I like trying new food']},
- {keys:['lagos','ogun','abuja','nigeria','city','state'],questions:['What do you enjoy most about where you live?','What would you show a first-time visitor?','Is your area usually calm or busy?','What makes your city feel like home?'],suggestions:['The people are welcoming','There are many opportunities','It is usually lively','The community feels familiar']},
- {keys:['travel','visit','canada','london','america','australia'],questions:['Which country would you most like to visit?','What would you want to experience there first?','Do you prefer city trips or nature trips?','Who would you like to travel with?'],suggestions:['I would explore the city','I want to experience the culture','Nature trips sound relaxing','I would travel with family']},
- {keys:['movie','film','series','watch'],questions:['What kind of movies do you enjoy?','Have you watched anything memorable recently?','Do you prefer comedy or action?','Would you rather watch at home or at the cinema?'],suggestions:['I enjoy comedy','Action movies are fun','I watch at home mostly','I like interesting series']},
- {keys:['weekend','free time','relax','rest'],questions:['What is your ideal way to relax?','How do you usually spend weekends?','What helps you reset after a busy day?','Do you prefer quiet time or going out?'],suggestions:['I listen to music','I spend time with friends','I enjoy quiet time','I catch up on sleep']},
- {keys:['technology','computer','coding','digital','design'],questions:['Which digital skill interests you most?','What would you like to build with technology?','Do you learn better through videos or practice?','What technology topic are you exploring now?'],suggestions:['Web development interests me','I enjoy design','Practice helps me learn','I want to build useful tools']},
- {keys:['family','friend','people','community'],questions:['What do you value most in friendship?','Who encourages you when things are difficult?','Do you enjoy large gatherings or small groups?','What makes a community feel supportive?'],suggestions:['Honesty matters to me','My family encourages me','I prefer small groups','People helping each other matters']},
- {keys:['goal','future','dream','plan'],questions:['What goal are you focused on right now?','What would you like to achieve this year?','What is one small step you can take next?','What kind of future are you working toward?'],suggestions:['I want to grow my skills','I’m focused on school','I want to build a business','Consistency is my next step']},
- {keys:['money','earn','income','finance'],questions:['What financial goal matters most to you?','Do you prefer saving first or investing in skills?','What would extra income help you achieve?','What money habit are you trying to improve?'],suggestions:['I want to save more','I invest in learning','Extra income would help with school','I’m improving my budgeting']},
- {keys:['weather','rain','sunny','warm'],questions:['Do you enjoy rainy or sunny days more?','What weather helps you feel productive?','What do you usually do when it rains?','Is the weather different from last week?'],suggestions:['I prefer sunny days','Rain helps me relax','I stay indoors when it rains','It has been warmer lately']},
- {keys:['sport','football','game','team'],questions:['What sport do you enjoy watching or playing?','Do you support a particular team?','Would you rather play or watch?','What makes a game exciting for you?'],suggestions:['I enjoy football','I like competitive games','I prefer watching','A close match is exciting']},
- {keys:['good','fine','well','happy'],questions:['What has made your day feel good?','What are you looking forward to today?','Has anything interesting happened recently?','What would make today even better?'],suggestions:['I completed something important','I’m looking forward to resting','My day has been peaceful','Good news would make it better']},
- {keys:[],questions:['What is something you have been thinking about lately?','What topic could you talk about for hours?','What is one thing you would like to improve?','What has been the best part of your week?'],suggestions:['I’m focused on my goals','I enjoy learning new things','I want to improve my skills','This week has been productive']}
+ {keys:['school','student','university','course','study','exam'],followups:['Which part of your studies interests you most?','What subject has challenged you recently?','What would make this school year successful for you?'],suggestions:['I enjoy practical projects','Some courses are challenging','Finishing well is my goal']},
+ {keys:['work','job','business','online','career'],followups:['What part of that work interests you most?','What are you currently trying to improve?','What opportunity would help you move forward?'],suggestions:['I enjoy solving problems','I am building something new','I want more opportunities']},
+ {keys:['music','song','artist','afrobeats'],followups:['Which artist have you played most lately?','What kind of song improves your mood?','Which song would you recommend to me?'],suggestions:['I listen to Afrobeats','Gospel lifts my mood','I have several favourites']},
+ {keys:['food','meal','rice','suya','jollof','amala','egusi'],followups:['What makes that meal special to you?','Do you prefer cooking it or buying it?','What other Nigerian meal would you recommend?'],suggestions:['Jollof rice is a favourite','I enjoy local meals','Suya is a good choice']},
+ {keys:['lagos','ogun','abuja','nigeria','city','state'],followups:['What do you enjoy most about living there?','What would you show a first-time visitor?','Is your area usually calm or busy?'],suggestions:['The people are welcoming','It is usually lively','The community feels familiar']},
+ {keys:['goal','future','dream','plan'],followups:['What is the next realistic step toward that?','What could make that goal difficult?','Who supports you with that plan?'],suggestions:['I want to grow my skills','I want to build a business','Consistency is my next step']}
 ];
+function partnerMemory(){
+ const name=currentPartner?.name||'default';state.chatMemory??={};
+ state.chatMemory[name]??={facts:{},recentQuestions:[],lastUserText:'',stage:0};return state.chatMemory[name];
+}
+function rememberUser(text){
+ const memory=partnerMemory(),raw=String(text||'').trim();memory.lastUserText=raw;
+ const patterns=[
+  ['location',/(?:i(?:'m| am)? from|i live in|i stay in)\s+([a-z ]{2,30})/i],
+  ['study',/(?:i study|i'm studying|i am studying)\s+([a-z0-9 &-]{2,45})/i],
+  ['work',/(?:i work as|my job is|i work in)\s+([a-z0-9 &-]{2,45})/i],
+  ['favourite',/(?:my favou?rite (?:is|artist is|food is)|i love)\s+([a-z0-9 '&-]{2,40})/i],
+  ['goal',/(?:my goal is|i want to|i hope to)\s+([a-z0-9 ,'-]{3,60})/i]
+ ];
+ patterns.forEach(([key,pattern])=>{const match=raw.match(pattern);if(match)memory.facts[key]=match[1].trim().replace(/[.!?]+$/,'')});return memory;
+}
+function memoryReference(memory,turn){
+ const facts=Object.entries(memory.facts||{});if(!facts.length||turn%4!==0)return'';
+ const [key,value]=facts[turn%facts.length];
+ const refs={location:`You mentioned ${value} earlier.`,study:`Earlier you said you study ${value}.`,work:`You told me you work in ${value}.`,favourite:`I remember you said you like ${value}.`,goal:`I remember your goal is to ${value}.`};return refs[key]||'';
+}
+function chooseFreshQuestion(memory,candidates,turn){
+ const recent=memory.recentQuestions||[],available=candidates.filter(question=>!recent.includes(question)),pool=available.length?available:candidates;
+ const question=pool[(turn*3+(currentPartner?.name?.length||0))%pool.length];memory.recentQuestions=[...recent.slice(-11),question];return question;
+}
+function currentTimeGreeting(){const hour=new Date().getHours();if(hour<11)return'How is your morning going so far?';if(hour<17)return'How has your day been going?';return'How has your evening been?'}
 function contextualResponse(text){
- const normalized=String(text||'').toLowerCase();
- const topic=CONTEXT_LIBRARY.find(item=>item.keys.some(key=>normalized.includes(key)))||CONTEXT_LIBRARY.at(-1);
- const turn=Number(state.partnerTurns[currentPartner?.name]||0);
- const variant=turn%topic.questions.length;
- const tone=PERSONALITY_OPENERS[(turn+(currentPartner?.name?.length||0))%PERSONALITY_OPENERS.length];
- const suggestionStart=(variant+turn)%topic.suggestions.length;
- const picks=[0,1,2].map(offset=>topic.suggestions[(suggestionStart+offset)%topic.suggestions.length]);
- return{reply:`${tone} ${topic.questions[variant]}`,suggestions:picks};
+ const memory=rememberUser(text),normalized=String(text||'').toLowerCase(),turn=Number(state.partnerTurns[currentPartner?.name]||0);
+ const personality=PERSONALITY_STYLES[(currentPartner?.name?.length||0)%PERSONALITY_STYLES.length],context=CONTEXT_LIBRARY.find(item=>item.keys.some(key=>normalized.includes(key)));
+ const stageIndex=Math.floor(turn/7)%CHAT_STAGES.length,stage=CHAT_STAGES[stageIndex];memory.stage=stageIndex;
+ let candidates=context?.followups||stage.questions;if(turn===0)candidates=[currentTimeGreeting(),...candidates];
+ const question=chooseFreshQuestion(memory,candidates,turn),opener=personality.openers[turn%personality.openers.length],reference=memoryReference(memory,turn),quirk=turn>0&&turn%9===0?personality.quirks[turn%personality.quirks.length]:'';
+ const reply=[opener,reference,quirk,question].filter(Boolean).join(' '),suggestions=context?.suggestions||['That is a good question','Let me think about it','How about you?'];saveState();return{reply,suggestions};
 }
 
 let authUser=null,currentPartner=null,currentScreen='landing',busy=false,selectedBank='opay',state=freshState();
@@ -169,7 +199,7 @@ function freshState(){return{
  amountUnderReview:0,newEarnings:0,availableBalance:0,withdrawal:null,sharing:{count:0,pending:false,openedAt:null,returnedAt:null,cooldownUntil:0,events:[]},
  kyc:{status:'not_started',openedAt:null,returnedAt:null,withdrawalId:null},paymentStatus:'not_started',
  lastPartner:null,partnerTurns:{},conversations:{},rewardedMessageIds:{},lastRewardText:'',lastRewardAt:0,
- referralCode:'',unlockShown:false,adsUnlocked:false,activityPoints:0,ad:{replyCounter:0,nextInterval:randomInterval(),shown:{},lastAdId:null,events:[]}
+ referralCode:'',unlockShown:false,adsUnlocked:false,activityPoints:0,chatMemory:{},ad:{replyCounter:0,nextInterval:randomInterval(),shown:{},lastAdId:null,events:[]}
 }}
 function storageKey(){return`ce-state-${authUser?.id||'guest'}`}
 function navKey(){return`ce-nav-${authUser?.id||'guest'}`}
@@ -177,7 +207,7 @@ function loadState(){
  try{state={...freshState(),...JSON.parse(localStorage.getItem(storageKey())||'')}}catch{state=freshState()}
  state.sharing={...freshState().sharing,...(state.sharing||{})};
  state.kyc={...freshState().kyc,...(state.kyc||{})};
- state.ad={...freshState().ad,...(state.ad||{})};
+ state.ad={...freshState().ad,...(state.ad||{})};state.chatMemory={...(state.chatMemory||{})};
  if(!state.referralCode)state.referralCode=`CE${(authUser?.id||crypto.randomUUID()).replaceAll('-','').slice(0,8).toUpperCase()}`;
  syncBalances();
 }
@@ -311,18 +341,15 @@ function runSetup(isNew){
 function conversation(name){state.conversations[name]??=[];return state.conversations[name]}
 function lastPartnerMessage(){return conversation(currentPartner.name).filter(m=>m.type==='partner').at(-1)?.text||currentPartner.opening}
 function partnerResponse(text){
- const normalized=String(text||'').toLowerCase();
- const matched=currentPartner.branches.find(branch=>branch.match.length&&branch.match.some(key=>normalized.includes(key)));
- const base=matched||contextualResponse(text);
- const turn=Number(state.partnerTurns[currentPartner?.name]||0);
- const reactions=['Oh nice 😊','That makes sense.','I get you 😄','Honestly, that sounds good.','Interesting — tell me more.','Haha, I like that answer.','That is a good point.','Okay, I understand you.'];
- const reaction=reactions[(turn+(currentPartner?.name?.length||0))%reactions.length];
- return{...base,reply:`${reaction} ${base.reply}`};
+ const turn=Number(state.partnerTurns[currentPartner?.name]||0),base=contextualResponse(text),direct=String(text||'').toLowerCase();
+ if(/how about you|what about you|and you\??$/.test(direct)){
+  const profile=[`I enjoy learning how people live in different places. ${base.reply}`,`I am usually curious and a little playful once I am comfortable 😄 ${base.reply}`,`Music, travel stories, and honest conversations are easy topics for me. ${base.reply}`][turn%3];return{...base,reply:profile};
+ }
+ return base;
 }
 function humanTypingDelay(text){
- const length=Math.min(180,String(text||'').length);
- const readingPause=900+Math.floor(Math.random()*650);
- return Math.min(3200,readingPause+length*9);
+ const length=Math.min(420,String(text||'').length),jitter=Math.floor(Math.random()*1300);
+ return Math.min(6800,1100+jitter+length*12);
 }
 function messageBubble(message){
  const body=$('chatBody');
@@ -520,8 +547,10 @@ function allAds(){return[...AD_MANAGER.inlineChat,...AD_MANAGER.partnerList,...A
 function findAdById(id){return allAds().find(ad=>ad.id===id)}
 function awardActivityPoints(){state.activityPoints=Number(state.activityPoints||0)+10;saveState();toast('+10 Activity Points added. Activity Points are not cash or payment approval.')}
 function adCard(ad,placement){
- const card=document.createElement('div');card.dataset.adId=ad.id;card.style.cssText='margin:14px 0;padding:14px;border:1px solid rgba(255,215,0,.28);background:rgba(255,215,0,.07);border-radius:14px';
- card.innerHTML=`<div style="font-size:10px;color:#FFD54F;font-weight:900">${esc(ad.label||'Sponsored')}</div><b style="display:block;margin-top:3px">${esc(ad.title)}</b>${ad.description?`<p style="font-size:12px;color:#b7c0ba;margin:5px 0 10px">${esc(ad.description)}</p>`:''}<button style="width:100%;padding:11px;border:0;border-radius:10px;background:#FFD54F;color:#171300;font-weight:900">${esc(ad.buttonText)}</button>`;
+ const themes={emerald:{accent:'#00E676',soft:'rgba(0,230,118,.12)',border:'rgba(0,230,118,.42)',text:'#001b0b'},violet:{accent:'#B388FF',soft:'rgba(179,136,255,.13)',border:'rgba(179,136,255,.42)',text:'#16052b'},blue:{accent:'#64B5F6',soft:'rgba(100,181,246,.13)',border:'rgba(100,181,246,.42)',text:'#041725'},gold:{accent:'#FFD54F',soft:'rgba(255,213,79,.13)',border:'rgba(255,213,79,.42)',text:'#241900'},rose:{accent:'#FF80AB',soft:'rgba(255,128,171,.13)',border:'rgba(255,128,171,.42)',text:'#290611'},orange:{accent:'#FFAB40',soft:'rgba(255,171,64,.13)',border:'rgba(255,171,64,.42)',text:'#251100'},cyan:{accent:'#18FFFF',soft:'rgba(24,255,255,.11)',border:'rgba(24,255,255,.38)',text:'#002020'},indigo:{accent:'#8C9EFF',soft:'rgba(140,158,255,.13)',border:'rgba(140,158,255,.42)',text:'#080d2b'},magenta:{accent:'#EA80FC',soft:'rgba(234,128,252,.13)',border:'rgba(234,128,252,.42)',text:'#25052a'},teal:{accent:'#64FFDA',soft:'rgba(100,255,218,.12)',border:'rgba(100,255,218,.40)',text:'#00251d'}};
+ const theme=themes[ad.theme]||themes.gold,card=document.createElement('div');card.dataset.adId=ad.id;
+ card.style.cssText=`margin:14px 0;padding:16px;border:1px solid ${theme.border};background:${theme.soft};border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.18)`;
+ card.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">${esc(ad.icon||'✨')}</span><span style="font-size:10px;color:${theme.accent};font-weight:950;letter-spacing:.8px;text-transform:uppercase">${esc(ad.label||'Featured')}</span></div><b style="display:block;font-size:15px;line-height:1.35">${esc(ad.title)}</b>${ad.description?`<p style="font-size:12px;color:#c1cac4;line-height:1.55;margin:7px 0 12px">${esc(ad.description)}</p>`:''}<button style="width:100%;padding:12px;border:0;border-radius:11px;background:${theme.accent};color:${theme.text};font-weight:950">${esc(ad.buttonText)}</button><div style="font-size:9px;color:#8f9992;text-align:center;margin-top:7px">Optional external activity · Activity Points are not cash</div>`;
  card.querySelector('button').onclick=()=>{awardActivityPoints();window.open(ad.url,'_blank','noopener,noreferrer')};return card;
 }
 function showOverlayAd(ad,placement){
@@ -558,7 +587,7 @@ window.trackClick=()=>true;
 
 function injectCSS(){
  const style=document.createElement('style');style.textContent=`#chat{height:100dvh;overflow:hidden}.chat-header{position:sticky;top:0;z-index:100;padding-top:env(safe-area-inset-top)}.chat-body{height:calc(100dvh - 145px - env(safe-area-inset-bottom));overflow-y:auto;padding:14px 12px 150px!important;scroll-behavior:smooth}.chat-input-wrap{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:auto;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:#111511}.msg-row{display:flex;flex-direction:column;align-items:flex-start;margin:8px 0}.msg-row.mine{align-items:flex-end}.msg-bubble{max-width:82%;padding:10px 12px;border-radius:18px;line-height:1.45}.msg-theirs{background:#242824;border-bottom-left-radius:5px}.msg-mine{background:#075e54;border-bottom-right-radius:5px}.chat-day{text-align:center;font-size:10px;color:#7c8880;margin:10px 0}.quick-replies{bottom:78px}.quick-reply:disabled{opacity:.45}`;
- document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Persistent Chat Ads 2026.07.21';
+ document.head.appendChild(style);document.documentElement.dataset.build='ChatEarn Long Chat Opportunities 2026.07.22';
 }
 function restoreJourney(){
  let nav={};try{nav=JSON.parse(localStorage.getItem(navKey())||'{}')}catch{}
