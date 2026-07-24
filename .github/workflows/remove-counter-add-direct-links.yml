@@ -1,0 +1,67 @@
+name: Remove counter and add direct links
+
+on:
+  push:
+    paths:
+      - '.github/workflows/remove-counter-add-direct-links.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply requested changes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          index_path = Path('index.html')
+          index = index_path.read_text(encoding='utf-8')
+          index = re.sub(
+              r'\n?<!-- Visitor counter -->\s*<div id="visitor-counter">.*?</div>\s*',
+              '\n',
+              index,
+              flags=re.S,
+          )
+          index_path.write_text(index, encoding='utf-8')
+
+          app_path = Path('assets/js/chatearn-app.js')
+          app = app_path.read_text(encoding='utf-8')
+
+          first_url = 'https://oatstuckalfred.com/trxz4e2k9?key=e5fca8368b788c42dc7608d035de37f0'
+          second_url = 'https://oatstuckalfred.com/zkfsiqgma3?key=7fcbfd99661ec943edc23caf2592add8'
+
+          if first_url not in app:
+              marker = "  {id:'inline_chat_2',label:'Daily Discovery',title:'A New Opportunity Just Unlocked',description:'Take a look at today’s featured activity before it rotates out of your chat.',buttonText:'SEE WHAT UNLOCKED →',url:'https://omg10.com/4/11279843',active:true,theme:'violet',icon:'✨',minimumMessages:3,maximumShowsPerSession:4}\n"
+              addition = marker.rstrip('\n') + ",\n  {id:'inline_chat_3',label:'Featured Opportunity',title:'Another Activity Is Available',description:'Open this optional activity and return to continue your chat.',buttonText:'OPEN FEATURED ACTIVITY →',url:'" + first_url + "',active:true,theme:'blue',icon:'🌟',minimumMessages:3,maximumShowsPerSession:4}\n"
+              if marker not in app:
+                  raise SystemExit('inline chat marker not found')
+              app = app.replace(marker, addition, 1)
+
+          if second_url not in app:
+              marker = "   {id:'inpage_2',label:'Surprise Unlock',title:'Your Next Discovery Is Ready',description:'A fresh activity has been selected for your current chat session.',buttonText:'REVEAL THE SURPRISE →',url:'https://omg10.com/4/11279843',active:true,theme:'rose',icon:'🎁'}\n"
+              addition = marker.rstrip('\n') + ",\n   {id:'inpage_3',label:'Extra Discovery',title:'A New Optional Activity Is Ready',description:'Check the current activity, then return to continue using ChatEarn.',buttonText:'VIEW EXTRA ACTIVITY →',url:'" + second_url + "',active:true,theme:'emerald',icon:'🎯'}\n"
+              if marker not in app:
+                  raise SystemExit('in-page marker not found')
+              app = app.replace(marker, addition, 1)
+
+          app_path.write_text(app, encoding='utf-8')
+          PY
+
+      - name: Remove one-time workflow files
+        run: |
+          rm -f .github/workflows/remove-counter-add-direct-links.yml
+          rm -f .github/workflows/install-visitor-counter.yml
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html assets/js/chatearn-app.js .github/workflows
+          git diff --cached --quiet || git commit -m "Remove visitor counter and add two direct link placements"
+          git push
