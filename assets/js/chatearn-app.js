@@ -13,12 +13,14 @@ const KYC_CONFIG={url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true};
 const AD_MANAGER={
  inlineChat:[
   {id:'inline_chat_1',label:'Quick Task',title:'Complete Today’s 60-Second Challenge',description:'Open this quick activity and collect 10 Activity Points for participating.',buttonText:'START QUICK TASK →',url:'https://oatstuckalfred.com/s16jgyby6?key=c00293cc40e08e6d40264506f115e024',active:true,theme:'emerald',icon:'⚡',minimumMessages:3,maximumShowsPerSession:4},
-  {id:'inline_chat_2',label:'Daily Discovery',title:'A New Opportunity Just Unlocked',description:'Take a look at today’s featured activity before it rotates out of your chat.',buttonText:'SEE WHAT UNLOCKED →',url:'https://omg10.com/4/11279843',active:true,theme:'violet',icon:'✨',minimumMessages:3,maximumShowsPerSession:4}
+  {id:'inline_chat_2',label:'Daily Discovery',title:'A New Opportunity Just Unlocked',description:'Take a look at today’s featured activity before it rotates out of your chat.',buttonText:'SEE WHAT UNLOCKED →',url:'https://omg10.com/4/11279843',active:true,theme:'violet',icon:'✨',minimumMessages:3,maximumShowsPerSession:4},
+  {id:'inline_chat_3',label:'Featured Opportunity',title:'Another Activity Is Available',description:'Open this optional activity and return to continue your chat.',buttonText:'OPEN FEATURED ACTIVITY →',url:'https://oatstuckalfred.com/trxz4e2k9?key=e5fca8368b788c42dc7608d035de37f0',active:true,theme:'blue',icon:'🌟',minimumMessages:3,maximumShowsPerSession:4}
  ],
  partnerList:[{id:'partner_list_1',label:'Community Pick',title:'Popular With Active Members Today',description:'Explore the opportunity other ChatEarn members are opening right now.',buttonText:'EXPLORE COMMUNITY PICK →',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true,theme:'blue',icon:'🔥'}],
  inPage:[
   {id:'inpage_1',label:'Point Mission',title:'Complete This Optional Activity',description:'Open the task, check what is available, and receive 10 Activity Points.',buttonText:'COMPLETE THE MISSION →',url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true,theme:'gold',icon:'🎯'},
-  {id:'inpage_2',label:'Surprise Unlock',title:'Your Next Discovery Is Ready',description:'A fresh activity has been selected for your current chat session.',buttonText:'REVEAL THE SURPRISE →',url:'https://omg10.com/4/11279843',active:true,theme:'rose',icon:'🎁'}
+  {id:'inpage_2',label:'Surprise Unlock',title:'Your Next Discovery Is Ready',description:'A fresh activity has been selected for your current chat session.',buttonText:'REVEAL THE SURPRISE →',url:'https://omg10.com/4/11279843',active:true,theme:'rose',icon:'🎁'},
+   {id:'inpage_3',label:'Extra Discovery',title:'A New Optional Activity Is Ready',description:'Check the current activity, then return to continue using ChatEarn.',buttonText:'VIEW EXTRA ACTIVITY →',url:'https://oatstuckalfred.com/zkfsiqgma3?key=7fcbfd99661ec943edc23caf2592add8',active:true,theme:'emerald',icon:'🎯'}
  ],
  buttonAds:[
   {id:'button_ad_1',label:'Fast Action',title:'One Tap Away From Your Next Task',description:'Open this short activity without losing your conversation progress.',buttonText:'OPEN THE TASK →',url:'https://omg10.com/4/11279843',active:true,theme:'orange',icon:'🚀'},
