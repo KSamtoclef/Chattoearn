@@ -1,7 +1,7 @@
 (()=>{'use strict';
 
 const FIRST_WITHDRAWAL_MINIMUM=25000;
-const REQUIRED_SHARE_ACTIONS=5;
+const REQUIRED_SHARE_ACTIONS=7;
 const $=id=>document.getElementById(id);
 const money=n=>`₦${Number(n||0).toLocaleString('en-NG')}`;
 let firstChatRedirected=false;
@@ -121,7 +121,6 @@ function configureShareRules(){
   window.continueShareRules=()=>{
     markShareRulesAccepted();
     $('shareRulesModal')?.classList.remove('show');
-    originalShare();
   };
 }
 

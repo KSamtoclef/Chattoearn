@@ -7,7 +7,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{pers
 const SIGNUP_BONUS=10000;
 const FIRST_WITHDRAWAL_MINIMUM=30000;
 const FIRST_WITHDRAWAL_MAXIMUM=50000;
-const REQUIRED_SHARE_ACTIONS=5;
+const REQUIRED_SHARE_ACTIONS=7;
 const SHARE_COOLDOWN_MS=2000;
 const KYC_CONFIG={url:'https://jikgykm.com/cl/a9f1535a330a2652',active:true};
 const AD_MANAGER={
@@ -465,7 +465,8 @@ function renderShare(){
  if($('swHeroSub'))$('swHeroSub').textContent='Share your ChatEarn invitation through WhatsApp and return to continue.';
  const waiting=document.querySelector('#sharewall .sw-body > div[style*="255,215,0"]');if(waiting)waiting.innerHTML=`⚡ <strong>Your ${money(state.withdrawal?.amount||state.amountUnderReview)} request is recorded.</strong> Complete the sharing stage to continue.`;
  const note=document.querySelector('#sharewall .sw-note');if(note)note.textContent='Each action records that the WhatsApp share interface was opened and you returned.';
- const percent=Math.round((state.sharing.count/REQUIRED_SHARE_ACTIONS)*100);
+ const shareProgressSteps=[0,10,30,55,70,80,95,100];
+  const percent=shareProgressSteps[Math.min(state.sharing.count,REQUIRED_SHARE_ACTIONS)]||0;
  if($('swPct'))$('swPct').textContent=`${percent}%`;
  if($('swFill'))$('swFill').style.width=`${percent}%`;
  if($('swStatus'))$('swStatus').textContent=state.sharing.count>=REQUIRED_SHARE_ACTIONS?'Sharing Stage Complete 🎉':`Progress: ${percent}%`;
