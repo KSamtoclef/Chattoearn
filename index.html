@@ -371,6 +371,19 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--w);min-heig
 .login-error{display:none;color:var(--red);font-size:12px;margin-bottom:10px}
 .reg-login span{cursor:pointer}
 
+
+/* WHATSAPP SHARE RULES POPUP — DEMO */
+.share-rules-modal{position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
+.share-rules-modal.show{display:flex}
+.share-rules-card{width:100%;max-width:390px;background:var(--card2);border:2px solid var(--gold);border-radius:20px;padding:24px 20px;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.55)}
+.share-rules-icon{font-size:48px;margin-bottom:10px}
+.share-rules-title{font-size:21px;font-weight:900;color:var(--gold);margin-bottom:12px}
+.share-rules-copy{font-size:14px;color:var(--text);line-height:1.75;text-align:left;background:rgba(255,214,0,.07);border:1px solid rgba(255,214,0,.22);border-radius:12px;padding:14px;margin-bottom:12px}
+.share-rules-copy strong{color:var(--w)}
+.share-rules-note{font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+.share-rules-continue{width:100%;padding:15px;background:var(--wa);color:#fff;border:0;border-radius:13px;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:9px}
+.share-rules-back{width:100%;padding:11px;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:11px;font-size:13px;font-weight:700;cursor:pointer}
+
 </style>
 <!-- start webpushr tracking code --> 
 <script>(function(w,d, s, id) {if(typeof(w.webpushr)!=='undefined') return;w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};var js, fjs = d.getElementsByTagName(s)[0];js = d.createElement(s); js.id = id;js.async=1;js.src = "https://cdn.webpushr.com/app.min.js";
@@ -428,6 +441,19 @@ src="https://www.facebook.com/tr?id=277386131662358&ev=PageView&noscript=1"
   </div>
 </div>
 
+
+
+<!-- WHATSAPP SHARE RULES POPUP — DEMO -->
+<div class="share-rules-modal" id="shareRulesModal" role="dialog" aria-modal="true" aria-labelledby="shareRulesTitle">
+  <div class="share-rules-card">
+    <div class="share-rules-icon">⚠️</div>
+    <div class="share-rules-title" id="shareRulesTitle">Important Share Rules</div>
+    <div class="share-rules-copy"><strong>Important:</strong> To continue your withdrawal request, share ChatEarn to a WhatsApp contact or group. After you return, your progress will continue. Until the required share steps are completed, your earnings will remain <strong>Pending</strong>.</div>
+    <div class="share-rules-note">Demo note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.</div>
+    <button class="share-rules-continue" type="button" onclick="continueShareRules()">I Understand — Continue to WhatsApp</button>
+    <button class="share-rules-back" type="button" onclick="closeShareRules()">Go Back</button>
+  </div>
+</div>
 
 <div class="earn-toast" id="earnToast">+₦4,000 Earned! 💰</div>
 <div class="toast" id="toast"></div>
@@ -941,6 +967,29 @@ src="https://www.facebook.com/tr?id=277386131662358&ev=PageView&noscript=1"
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./assets/js/chatearn-app.js?v=20260722-long-chat-opportunities2"></script>
 </div>
+
+
+<script>
+/* WHATSAPP SHARE RULES POPUP OVERRIDE — DEMO */
+(function(){
+  var originalShare = window.doShareWA;
+  window.__chatEarnOriginalShare = originalShare;
+  window.doShareWA = function(){
+    var modal = document.getElementById('shareRulesModal');
+    if(modal){ modal.classList.add('show'); }
+  };
+  window.closeShareRules = function(){
+    var modal = document.getElementById('shareRulesModal');
+    if(modal){ modal.classList.remove('show'); }
+  };
+  window.continueShareRules = function(){
+    window.closeShareRules();
+    if(typeof window.__chatEarnOriginalShare === 'function'){
+      window.__chatEarnOriginalShare();
+    }
+  };
+})();
+</script>
 
 </body>
 </html>
