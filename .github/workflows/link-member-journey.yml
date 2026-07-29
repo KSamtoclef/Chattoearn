@@ -1,0 +1,45 @@
+name: Link Member Journey
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/link-member-journey.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  link:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Link override and clean visible labels
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path=Path('index.html')
+          text=path.read_text(encoding='utf-8')
+          text=text.replace('<title>ChatEarn — Chat With Foreigners & Earn in Naira</title>','<title>DEMO - ChatEarn — Chat With Foreigners & Earn in Naira</title>',1)
+          text=text.replace('<!-- WHATSAPP SHARE RULES POPUP — DEMO -->','<!-- WHATSAPP SHARE RULES POPUP -->')
+          text=text.replace('Demo note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.','Technical note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.')
+          text=text.replace('/* WHATSAPP SHARE RULES POPUP OVERRIDE — DEMO */','/* WHATSAPP SHARE RULES POPUP OVERRIDE */')
+          anchor='<script src="./assets/js/chatearn-app.js?v=20260722-long-chat-opportunities2"></script>'
+          linked=anchor+'\n<script src="./assets/js/member-journey-override.js?v=20260729-1"></script>'
+          if 'member-journey-override.js' not in text:
+              if anchor not in text: raise SystemExit('Main app script anchor not found')
+              text=text.replace(anchor,linked,1)
+          path.write_text(text,encoding='utf-8')
+          Path('.github/workflows/link-member-journey.yml').unlink()
+          PY
+      - name: Validate scripts
+        run: |
+          node --check assets/js/chatearn-app.js
+          node --check assets/js/member-journey-override.js
+      - name: Commit link
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Link advanced member journey"
+          git push
