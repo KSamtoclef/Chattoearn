@@ -91,11 +91,44 @@ function showProfile(s){
   modal.querySelector('button').onclick=()=>modal.remove();document.body.appendChild(modal);
 }
 
+function shareRulesAccepted(){
+  const entry=stateEntry();
+  return Boolean(entry?.state?.shareRulesAccepted===true);
+}
+
+function markShareRulesAccepted(){
+  const entry=stateEntry();if(!entry)return;
+  entry.state.shareRulesAccepted=true;
+  writeState(entry);
+}
+
+function configureShareRules(){
+  document.querySelector('.share-rules-note')?.remove();
+  document.querySelector('.share-rules-back')?.remove();
+  if(window.__memberShareRulesConfigured)return;
+  const originalShare=window.__chatEarnOriginalShare||window.doShareWA;
+  if(typeof originalShare!=='function')return;
+  window.__memberShareRulesConfigured=true;
+
+  window.doShareWA=()=>{
+    if(shareRulesAccepted()){
+      originalShare();
+      return;
+    }
+    $('shareRulesModal')?.classList.add('show');
+  };
+
+  window.continueShareRules=()=>{
+    markShareRulesAccepted();
+    $('shareRulesModal')?.classList.remove('show');
+    originalShare();
+  };
+}
+
 function showRulesAfterWithdrawal(){
   const entry=stateEntry();if(!entry)return;
   const s=entry.state||{};
-  if(activeScreen()!=='sharewall'||!s.withdrawal||s.shareRulesSeenAfterForm)return;
-  s.shareRulesSeenAfterForm=true;writeState(entry);
+  if(activeScreen()!=='sharewall'||!s.withdrawal||s.shareRulesAccepted===true)return;
   setTimeout(()=>$('shareRulesModal')?.classList.add('show'),120);
 }
 
@@ -136,6 +169,7 @@ function upgradeProcessingReturn(){
 
 function tick(){
   const screen=activeScreen();
+  configureShareRules();
   redirectFirstChatThroughDashboard();
   enforceFirstWithdrawal();
   if(screen==='chat')enhanceUnlockCard();
