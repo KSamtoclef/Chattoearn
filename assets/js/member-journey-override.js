@@ -7,6 +7,7 @@ const money=n=>`₦${Number(n||0).toLocaleString('en-NG')}`;
 let firstChatRedirected=false;
 let gateOpen=false;
 let lastScreen='';
+let pageWasHidden=false;
 
 function stateEntry(){
   const keys=Object.keys(localStorage).filter(key=>key.startsWith('ce-state-')&&key!=='ce-state-guest');
@@ -21,6 +22,35 @@ function writeState(entry){
 }
 function activeScreen(){return document.querySelector('.screen.active')?.id||''}
 function closeById(id){$(id)?.remove()}
+
+function enableMemberAds(resetSessionLocks=false){
+  const entry=stateEntry();if(!entry)return;
+  const s=entry.state||{};
+  let changed=false;
+  if(s.adsUnlocked!==true){s.adsUnlocked=true;changed=true}
+  if(!s.ad||typeof s.ad!=='object'){s.ad={replyCounter:0,nextInterval:3,shown:{},lastAdId:null,events:[]};changed=true}
+  if(!Number.isFinite(Number(s.ad.nextInterval))||Number(s.ad.nextInterval)<3){s.ad.nextInterval=3;changed=true}
+  if(!Number.isFinite(Number(s.ad.replyCounter))||Number(s.ad.replyCounter)<0){s.ad.replyCounter=0;changed=true}
+  if(resetSessionLocks){
+    sessionStorage.removeItem('ce-popup-shown');
+    sessionStorage.removeItem('ce-half-screen-shown');
+  }
+  if(changed)writeState(entry);
+}
+
+function handleMemberReturn(){
+  if(document.visibilityState==='hidden'){pageWasHidden=true;return}
+  if(document.visibilityState==='visible'&&pageWasHidden){
+    pageWasHidden=false;
+    enableMemberAds(true);
+  }
+}
+
+document.addEventListener('visibilitychange',handleMemberReturn);
+window.addEventListener('pageshow',event=>{
+  enableMemberAds(Boolean(event.persisted)||pageWasHidden);
+  pageWasHidden=false;
+});
 
 function showFirstWithdrawalGate(){
   if(gateOpen||$('firstWithdrawalGate'))return;
@@ -74,7 +104,7 @@ function mountMemberHub(){
   const status=!s.withdrawal?'Not started':s.paymentStatus==='pending_review'?'Under review':'Requirements in progress';
   hub.style.cssText='margin:0 16px 16px;padding:16px;border-radius:16px;background:#171b18;border:1px solid #303832';
   hub.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:10px;color:#88948d;letter-spacing:1px">MEMBER HOME</div><b style="font-size:18px">${String(s.name||'User').replace(/[<>]/g,'')}</b></div><div style="text-align:right"><div style="font-size:10px;color:#88948d">WITHDRAWAL</div><b style="color:#00E676">${status}</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button data-action="chat" style="padding:12px;border:0;border-radius:10px;background:#00C853;font-weight:900">CONTINUE CHAT</button><button data-action="earnings" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1d221e;color:#fff;font-weight:900">EARNINGS</button><button data-action="withdrawal" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1d221e;color:#fff;font-weight:900">WITHDRAWAL / STATUS</button><button data-action="profile" style="padding:12px;border:1px solid #39413b;border-radius:10px;background:#1d221e;color:#fff;font-weight:900">PROFILE</button></div>`;
-  hub.querySelector('[data-action="chat"]').onclick=()=>window.continueLastChat?.();
+  hub.querySelector('[data-action="chat"]').onclick=()=>{enableMemberAds(false);window.continueLastChat?.()};
   hub.querySelector('[data-action="earnings"]').onclick=()=>window.goScreen?.('earnings');
   hub.querySelector('[data-action="withdrawal"]').onclick=()=>{
     if(s.withdrawal)window.goScreen?.(s.paymentStatus==='pending_review'?'processing':Number(s.sharing?.count||0)<REQUIRED_SHARE_ACTIONS?'sharewall':'kyc');
@@ -163,7 +193,7 @@ function upgradeProcessingReturn(){
   if(activeScreen()!=='processing')return;
   const button=$('processingActions')?.querySelector('button');if(!button||button.dataset.memberReturn)return;
   button.dataset.memberReturn='1';button.textContent='RETURN TO MEMBER HOME';
-  button.onclick=()=>{window.goScreen?.('dashboard');setTimeout(mountMemberHub,0)};
+  button.onclick=()=>{enableMemberAds(false);window.goScreen?.('dashboard');setTimeout(mountMemberHub,0)};
 }
 
 function tick(){
@@ -171,6 +201,7 @@ function tick(){
   configureShareRules();
   redirectFirstChatThroughDashboard();
   enforceFirstWithdrawal();
+  if(screen==='chat'||screen==='dashboard')enableMemberAds(false);
   if(screen==='chat')enhanceUnlockCard();
   if(screen==='dashboard')mountMemberHub();
   showRulesAfterWithdrawal();
@@ -180,5 +211,5 @@ function tick(){
 }
 
 setInterval(tick,350);
-document.addEventListener('DOMContentLoaded',tick,{once:true});
+document.addEventListener('DOMContentLoaded',()=>{enableMemberAds(false);tick()},{once:true});
 })();
