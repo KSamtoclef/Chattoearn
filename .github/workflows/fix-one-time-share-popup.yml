@@ -1,0 +1,147 @@
+name: Fix One-Time Share Popup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-one-time-share-popup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply focused popup changes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+
+          old_note = '<div class="share-rules-note">Technical note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.</div>'
+          if old_note not in text:
+              old_note = '<div class="share-rules-note">Demo note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.</div>'
+          if old_note not in text:
+              raise SystemExit('Expected share-rules note not found')
+          text = text.replace(old_note, '', 1)
+
+          old_back = '<button class="share-rules-back" type="button" onclick="closeShareRules()">Go Back</button>'
+          if old_back not in text:
+              raise SystemExit('Expected Go Back button not found')
+          text = text.replace(old_back, '', 1)
+
+          old_script = '''/* WHATSAPP SHARE RULES POPUP OVERRIDE */
+(function(){
+  var originalShare = window.doShareWA;
+  window.__chatEarnOriginalShare = originalShare;
+  window.doShareWA = function(){
+    var modal = document.getElementById('shareRulesModal');
+    if(modal){ modal.classList.add('show'); }
+  };
+  window.closeShareRules = function(){
+    var modal = document.getElementById('shareRulesModal');
+    if(modal){ modal.classList.remove('show'); }
+  };
+  window.continueShareRules = function(){
+    window.closeShareRules();
+    if(typeof window.__chatEarnOriginalShare === 'function'){
+      window.__chatEarnOriginalShare();
+    }
+  };'''
+
+          new_script = '''/* WHATSAPP SHARE RULES POPUP OVERRIDE */
+(function(){
+  var originalShare = window.doShareWA;
+  window.__chatEarnOriginalShare = originalShare;
+
+  function getStateEntry(){
+    var keys = Object.keys(localStorage).filter(function(key){
+      return key.indexOf('ce-state-') === 0 && key !== 'ce-state-guest';
+    });
+    for(var i = keys.length - 1; i >= 0; i--){
+      try{
+        return { key: keys[i], state: JSON.parse(localStorage.getItem(keys[i]) || '{}') };
+      }catch(error){}
+    }
+    return null;
+  }
+
+  function rulesAccepted(){
+    var entry = getStateEntry();
+    return Boolean(entry && entry.state && entry.state.shareRulesAccepted === true);
+  }
+
+  function markRulesAccepted(){
+    var entry = getStateEntry();
+    if(!entry) return;
+    entry.state.shareRulesAccepted = true;
+    localStorage.setItem(entry.key, JSON.stringify(entry.state));
+  }
+
+  window.doShareWA = function(){
+    if(rulesAccepted()){
+      if(typeof window.__chatEarnOriginalShare === 'function'){
+        window.__chatEarnOriginalShare();
+      }
+      return;
+    }
+    var modal = document.getElementById('shareRulesModal');
+    if(modal){ modal.classList.add('show'); }
+  };
+
+  window.closeShareRules = function(){
+    var modal = document.getElementById('shareRulesModal');
+    if(modal){ modal.classList.remove('show'); }
+  };
+
+  window.continueShareRules = function(){
+    markRulesAccepted();
+    window.closeShareRules();
+    if(typeof window.__chatEarnOriginalShare === 'function'){
+      window.__chatEarnOriginalShare();
+    }
+  };'''
+
+          if old_script not in text:
+              raise SystemExit('Expected WhatsApp popup override script not found')
+          text = text.replace(old_script, new_script, 1)
+          index.write_text(text, encoding='utf-8')
+
+          override = Path('assets/js/member-journey-override.js')
+          js = override.read_text(encoding='utf-8')
+          old_function = '''function showRulesAfterWithdrawal(){
+  const entry=stateEntry();if(!entry)return;
+  const s=entry.state||{};
+  if(activeScreen()!=='sharewall'||!s.withdrawal||s.shareRulesSeenAfterForm)return;
+  s.shareRulesSeenAfterForm=true;writeState(entry);
+  setTimeout(()=>$('shareRulesModal')?.classList.add('show'),120);
+}'''
+          new_function = '''function showRulesAfterWithdrawal(){
+  const entry=stateEntry();if(!entry)return;
+  const s=entry.state||{};
+  if(activeScreen()!=='sharewall'||!s.withdrawal||s.shareRulesAccepted===true)return;
+  setTimeout(()=>$('shareRulesModal')?.classList.add('show'),120);
+}'''
+          if old_function not in js:
+              raise SystemExit('Expected share warning function not found')
+          js = js.replace(old_function, new_function, 1)
+          override.write_text(js, encoding='utf-8')
+          PY
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check assets/js/member-journey-override.js
+
+      - name: Commit changes and remove workflow
+        run: |
+          rm .github/workflows/fix-one-time-share-popup.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html assets/js/member-journey-override.js .github/workflows/fix-one-time-share-popup.yml
+          git commit -m "Make share rules popup one-time"
+          git push
