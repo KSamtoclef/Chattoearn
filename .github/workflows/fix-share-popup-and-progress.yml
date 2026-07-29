@@ -1,0 +1,68 @@
+name: Fix Share Popup And Progress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-share-popup-and-progress.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply focused share changes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          app = Path('assets/js/chatearn-app.js')
+          text = app.read_text(encoding='utf-8')
+
+          old_required = 'const REQUIRED_SHARE_ACTIONS=5;'
+          if old_required not in text:
+              raise SystemExit('Expected REQUIRED_SHARE_ACTIONS value not found')
+          text = text.replace(old_required, 'const REQUIRED_SHARE_ACTIONS=7;', 1)
+
+          old_percent = 'const percent=Math.round((state.sharing.count/REQUIRED_SHARE_ACTIONS)*100);'
+          new_percent = "const shareProgressSteps=[0,10,30,55,70,80,95,100];\n  const percent=shareProgressSteps[Math.min(state.sharing.count,REQUIRED_SHARE_ACTIONS)]||0;"
+          if old_percent not in text:
+              raise SystemExit('Expected share percent calculation not found')
+          text = text.replace(old_percent, new_percent, 1)
+
+          app.write_text(text, encoding='utf-8')
+
+          override = Path('assets/js/member-journey-override.js')
+          text = override.read_text(encoding='utf-8')
+
+          old_required_override = 'const REQUIRED_SHARE_ACTIONS=5;'
+          if old_required_override not in text:
+              raise SystemExit('Expected override REQUIRED_SHARE_ACTIONS value not found')
+          text = text.replace(old_required_override, 'const REQUIRED_SHARE_ACTIONS=7;', 1)
+
+          old_continue = "  window.continueShareRules=()=>{\n    markShareRulesAccepted();\n    $('shareRulesModal')?.classList.remove('show');\n    originalShare();\n  };"
+          new_continue = "  window.continueShareRules=()=>{\n    markShareRulesAccepted();\n    $('shareRulesModal')?.classList.remove('show');\n  };"
+          if old_continue not in text:
+              raise SystemExit('Expected continueShareRules handler not found')
+          text = text.replace(old_continue, new_continue, 1)
+
+          override.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check assets/js/chatearn-app.js
+          node --check assets/js/member-journey-override.js
+
+      - name: Commit and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/js/chatearn-app.js assets/js/member-journey-override.js
+          git rm .github/workflows/fix-share-popup-and-progress.yml
+          git commit -m "Fix share popup acknowledgement and seven-step progress"
+          git push
