@@ -1,0 +1,114 @@
+name: Advance ChatEarn First Withdrawal Flow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/advance-first-withdrawal-flow.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply guarded update
+        shell: bash
+        run: |
+          cat > /tmp/patch.py <<'PY'
+          from pathlib import Path
+          import re, subprocess
+
+          hp=Path('index.html'); jp=Path('assets/js/chatearn-app.js')
+          h=hp.read_text(encoding='utf-8'); j=jp.read_text(encoding='utf-8')
+
+          def one(text, old, new, label):
+              n=text.count(old)
+              if n!=1: raise SystemExit(f'{label}: expected 1 match, found {n}')
+              return text.replace(old,new,1)
+
+          h=one(h,'<title>ChatEarn — Chat With Foreigners & Earn in Naira</title>','<title>DEMO — ChatEarn — Chat With Foreigners & Earn in Naira</title>','title')
+          h=h.replace('<!-- WHATSAPP SHARE RULES POPUP — DEMO -->','<!-- WHATSAPP SHARE RULES POPUP -->')
+          h=h.replace('/* WHATSAPP SHARE RULES POPUP OVERRIDE — DEMO */','/* WHATSAPP SHARE RULES POPUP OVERRIDE */')
+          h=one(h,'<div class="share-rules-note">Demo note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.</div>','<div class="share-rules-note">Complete the required WhatsApp steps and return to continue. Your withdrawal remains pending until the sharing stage and KYC are completed.</div>','share note')
+
+          j=one(j,"referralCode:'',unlockShown:false,adsUnlocked:false,activityPoints:0,chatMemory:{},ad:{replyCounter:0,nextInterval:randomInterval(),shown:{},lastAdId:null,events:[]}","referralCode:'',unlockShown:false,unlockModalShown:false,firstWithdrawalBoostCredited:false,adsUnlocked:true,activityPoints:0,chatMemory:{},ad:{replyCounter:0,nextInterval:2,shown:{},lastAdId:null,events:[]}",'state')
+
+          old="""function runSetup(isNew){
+  showScreen('loading');
+  if($('ldTitle'))$('ldTitle').textContent=isNew?'Setting Up Your Account':'Welcome Back';
+  if($('ldSub'))$('ldSub').textContent='Matching you with an available guided chat…';
+  let progress=0;clearInterval(runSetup.timer);
+  runSetup.timer=setInterval(()=>{progress+=20;if($('ldFill'))$('ldFill').style.width=`${progress}%`;if(progress>=100){clearInterval(runSetup.timer);openChat(Math.floor(Math.random()*PARTNERS.length),true)}},250);
+}"""
+          new="""function runSetup(isNew){
+  showScreen('loading');
+  if($('ldTitle'))$('ldTitle').textContent=isNew?'Setting Up Your Account':'Welcome Back';
+  if($('ldSub'))$('ldSub').textContent='Matching you with an available guided chat…';
+  let progress=0;clearInterval(runSetup.timer);
+  runSetup.timer=setInterval(()=>{progress+=25;if($('ldFill'))$('ldFill').style.width=`${progress}%`;if(progress>=100){clearInterval(runSetup.timer);showScreen('dashboard');const index=Math.floor(Math.random()*PARTNERS.length);setTimeout(()=>openChat(index,true),850)}},220);
+}"""
+          j=one(j,old,new,'setup flow')
+
+          helpers="""
+function firstWithdrawalGateActive(){return !state.withdrawal&&state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM}
+function setChatGateUI(){const gated=firstWithdrawalGateActive(),input=$('chatInput'),button=document.querySelector('.btn-send');if(input){input.disabled=gated;input.placeholder=gated?'Place your first withdrawal to continue chatting':'Type a message...'}if(button)button.disabled=gated}
+function showFirstWithdrawalUnlockModal(){
+ if(state.unlockModalShown||state.withdrawal)return;state.unlockModalShown=true;saveState();
+ const overlay=document.createElement('div');overlay.id='firstWithdrawalModal';overlay.style.cssText='position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.86);display:grid;place-items:center;padding:20px;backdrop-filter:blur(8px)';
+ overlay.innerHTML=`<div style="width:min(100%,390px);background:#1d221e;border:2px solid #00E676;border-radius:20px;padding:24px 20px;text-align:center"><div style="font-size:44px;margin-bottom:8px">🎉</div><h3 style="font-size:22px;color:#69F0AE;margin-bottom:8px">First Withdrawal Unlocked</h3><p style="font-size:13px;color:#c2cbc5;line-height:1.65;margin-bottom:16px">You have reached the minimum balance. Place your first withdrawal now, complete the WhatsApp sharing rules, and finish KYC before continuing to chat and earn.</p><button onclick="document.getElementById('firstWithdrawalModal')?.remove();goScreen('earnings')" style="width:100%;padding:15px;border:0;border-radius:12px;background:#00C853;color:#001b0b;font-size:16px;font-weight:950">PLACE MY FIRST WITHDRAWAL</button></div>`;
+ document.body.appendChild(overlay)
+}
+"""
+          j=one(j,'function sendMsg(){',helpers+'\nfunction sendMsg(){','gate helpers')
+          j=one(j,"function sendMsg(){\n  if(busy||!currentPartner)return;","function sendMsg(){\n  if(busy||!currentPartner)return;\n  if(firstWithdrawalGateActive()){withdrawalUnlockCard();showFirstWithdrawalUnlockModal();setChatGateUI();return toast('Place your first withdrawal and complete KYC before continuing.',true);}",'send gate')
+
+          old="state.rewardedMessageIds[id]=true;state.chatEarnings+=state.withdrawal?reward:Math.min(reward,Math.max(0,FIRST_WITHDRAWAL_MAXIMUM-state.availableBalance));state.lastRewardText=text;state.lastRewardAt=Date.now();\n   state.ad.replyCounter+=1;"
+          new="state.rewardedMessageIds[id]=true;state.chatEarnings+=state.withdrawal?reward:Math.min(reward,Math.max(0,FIRST_WITHDRAWAL_MAXIMUM-state.availableBalance));state.lastRewardText=text;state.lastRewardAt=Date.now();\n   const preWithdrawalReplies=Object.keys(state.rewardedMessageIds).length;if(!state.withdrawal&&!state.firstWithdrawalBoostCredited&&preWithdrawalReplies>=3&&state.availableBalance<FIRST_WITHDRAWAL_MINIMUM){state.firstWithdrawalBoostCredited=true;state.chatEarnings+=Math.max(0,FIRST_WITHDRAWAL_MINIMUM-state.availableBalance)}\n   state.ad.replyCounter+=1;"
+          j=one(j,old,new,'third reply unlock')
+          j=one(j,"if(state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM&&!state.unlockShown){state.unlockShown=true;saveState();toast('Withdrawal unlocked 🎉 You can withdraw now or keep chatting.')}","if(state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM&&!state.unlockShown){state.unlockShown=true;saveState();toast('First withdrawal unlocked 🎉 Complete withdrawal, sharing and KYC to continue.');showFirstWithdrawalUnlockModal();setChatGateUI()}",'unlock message')
+
+          pattern=r"function withdrawalUnlockCard\(\)\{.*?\n\}"
+          replacement="""function withdrawalUnlockCard(){
+  const body=$('chatBody');body?.querySelector('[data-unlock]')?.remove();
+  if(!body||state.availableBalance<FIRST_WITHDRAWAL_MINIMUM||state.withdrawal){setChatGateUI();return}
+  const card=document.createElement('div');card.dataset.unlock='1';card.style.cssText='margin:18px 0;padding:22px 18px;border-radius:18px;background:rgba(0,200,83,.12);border:2px solid rgba(0,230,118,.62);text-align:center';
+  card.innerHTML=`<div style="font-size:34px;margin-bottom:8px">🎉</div><b style="display:block;color:#00E676;font-size:22px">${money(state.availableBalance)} Minimum Reached</b><p style="color:#c3ccc6;font-size:13px;line-height:1.6;margin:8px 0 14px">Place your first withdrawal now. Complete the WhatsApp sharing rules and KYC verification before you continue chatting and earning.</p><button onclick="goScreen('earnings')" style="width:100%;padding:14px;border:0;border-radius:12px;background:#00C853;color:#001b0b;font-size:15px;font-weight:950">PLACE MINIMUM WITHDRAWAL NOW</button>`;body.appendChild(card);setChatGateUI()
+}"""
+          j,n=re.subn(pattern,replacement,j,count=1,flags=re.S)
+          if n!=1: raise SystemExit('unlock card replacement failed')
+          j=one(j,'withdrawalUnlockCard();\n  body.scrollTop=body.scrollHeight;','withdrawalUnlockCard();setChatGateUI();\n  body.scrollTop=body.scrollHeight;','draw gate')
+
+          nav="""
+window.openWithdrawalStatus=()=>{if(!state.withdrawal)return showScreen(state.availableBalance>=FIRST_WITHDRAWAL_MINIMUM?'earnings':'dashboard');if(state.sharing.count<REQUIRED_SHARE_ACTIONS)return showScreen('sharewall');if(!state.kyc.openedAt)return showScreen('kyc');showScreen('processing')};
+window.openProfilePanel=()=>{let o=$('profilePanel');if(o)o.remove();o=document.createElement('div');o.id='profilePanel';o.style.cssText='position:fixed;inset:0;z-index:10030;background:rgba(0,0,0,.82);display:grid;place-items:end center;padding:16px';o.innerHTML=`<div style="width:min(100%,480px);background:#171b18;border:1px solid #303832;border-radius:22px;padding:22px"><div style="display:flex;justify-content:space-between"><h3>My Profile</h3><button onclick="document.getElementById('profilePanel')?.remove()">×</button></div><p>Name: <b>${esc(state.name||'User')}</b></p><p>Balance: <b>${money(state.availableBalance)}</b></p><p>Activity Points: <b>${Number(state.activityPoints||0)}</b></p><p>Withdrawal: <b>${state.withdrawal?esc(state.paymentStatus.replaceAll('_',' ')):'Not started'}</b></p><p>KYC: <b>${esc(state.kyc.status.replaceAll('_',' '))}</b></p><button onclick="userLogout()" style="width:100%;padding:13px;background:#222722;color:#fff;border:1px solid #475048;border-radius:11px;font-weight:900">LOG OUT</button></div>`;document.body.appendChild(o)};
+function ensureMemberNav(){let n=$('memberNav');if(!n){n=document.createElement('div');n.id='memberNav';n.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:7000;width:min(100%,480px);display:grid;grid-template-columns:repeat(4,1fr);padding:8px;background:#121613;border-top:1px solid #303832';n.innerHTML='<button onclick="goScreen(\'dashboard\')">⌂<span>Home</span></button><button onclick="continueLastChat()">💬<span>Chat</span></button><button onclick="openWithdrawalStatus()">💳<span>Withdraw</span></button><button onclick="openProfilePanel()">👤<span>Profile</span></button>';n.querySelectorAll('button').forEach(b=>b.style.cssText='display:grid;place-items:center;padding:7px;border:0;background:transparent;color:#fff;font-size:18px');n.querySelectorAll('span').forEach(s=>s.style.cssText='font-size:10px;font-weight:800');document.body.appendChild(n)}n.style.display=['landing','register','loading'].includes(currentScreen)?'none':'grid'}
+"""
+          j=one(j,'function eligibleAds(group){',nav+'\nfunction eligibleAds(group){','navigation')
+          j=one(j,"if(id==='processing')renderProcessing();\n  saveState();scrollTo({top:0,behavior:'instant'});","if(id==='processing')renderProcessing();\n  if(!['landing','register','loading'].includes(id))ensureMemberNav();\n  saveState();scrollTo({top:0,behavior:'instant'});",'nav mount')
+          j=one(j,"window.continueLastChat=()=>{const index=PARTNERS.findIndex(p=>p.name===state.lastPartner);index>=0?openChat(index):showScreen('dashboard')};","window.continueLastChat=()=>{const index=PARTNERS.findIndex(p=>p.name===state.lastPartner);index>=0?openChat(index):openChat(0,true)};",'continue chat')
+
+          j=j.replace('loadState();state.name=name;creditSignupOnce();runSetup(true);','loadState();state.name=name;state.adsUnlocked=true;creditSignupOnce();runSetup(true);')
+          j=j.replace('authUser=result.data.user;loadState();state.name=state.name||authUser.user_metadata?.full_name||email.split(\'@\')[0];closeLogin();restoreJourney();','authUser=result.data.user;loadState();state.adsUnlocked=true;state.name=state.name||authUser.user_metadata?.full_name||email.split(\'@\')[0];closeLogin();restoreJourney();')
+          j=j.replace("loadState();state.name=state.name||authUser.user_metadata?.full_name||authUser.email?.split('@')[0]||'User';creditSignupOnce();restoreJourney();","loadState();state.adsUnlocked=true;state.name=state.name||authUser.user_metadata?.full_name||authUser.email?.split('@')[0]||'User';creditSignupOnce();restoreJourney();")
+          j=one(j,'.quick-reply:disabled{opacity:.45}`;','.quick-reply:disabled{opacity:.45}#dashboard,#earnings,#withdraw,#sharewall,#kyc,#processing{padding-bottom:78px}`;','bottom spacing')
+
+          hp.write_text(h,encoding='utf-8');jp.write_text(j,encoding='utf-8')
+          subprocess.run(['node','--check',str(jp)],check=True)
+          if len(re.findall(r'\bdemo\b',h+'\n'+j,re.I))!=1: raise SystemExit('DEMO must appear only once in the title')
+          print('Validation passed')
+          PY
+          python3 /tmp/patch.py
+
+      - name: Commit update and remove workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/advance-first-withdrawal-flow.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html assets/js/chatearn-app.js .github/workflows/advance-first-withdrawal-flow.yml
+          git commit -m "Advance first withdrawal and return dashboard flow"
+          git push
