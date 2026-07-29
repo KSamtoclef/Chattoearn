@@ -23,83 +23,81 @@ jobs:
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
 
-          css = r'''
-/* WHATSAPP SHARE RULES POPUP — DEMO */
-.share-rules-modal{position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
-.share-rules-modal.show{display:flex}
-.share-rules-card{width:100%;max-width:390px;background:var(--card2);border:2px solid var(--gold);border-radius:20px;padding:24px 20px;text-align:left;box-shadow:0 22px 70px rgba(0,0,0,.55);animation:pop .3s ease}
-.share-rules-icon{font-size:42px;text-align:center;margin-bottom:10px}
-.share-rules-title{font-size:21px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:12px}
-.share-rules-copy{font-size:14px;color:var(--text);line-height:1.75;margin-bottom:14px}
-.share-rules-copy strong{color:var(--w)}
-.share-rules-note{font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:18px;padding:10px 12px;background:var(--bg3);border-radius:10px}
-.share-rules-continue{width:100%;padding:15px;background:var(--wa);color:#fff;border:none;border-radius:13px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px}
-.share-rules-cancel{width:100%;padding:11px;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:11px;font-size:12px;font-weight:700;cursor:pointer}
-'''
+          css_marker = '/* WHATSAPP SHARE RULES POPUP — DEMO */'
+          html_marker = '<!-- WHATSAPP SHARE RULES POPUP — DEMO -->'
+          js_marker = '/* WHATSAPP SHARE RULES POPUP OVERRIDE — DEMO */'
 
-          modal = r'''
-<div class="share-rules-modal" id="shareRulesModal" aria-hidden="true">
-  <div class="share-rules-card" role="dialog" aria-modal="true" aria-labelledby="shareRulesTitle">
-    <div class="share-rules-icon">⚠️</div>
-    <div class="share-rules-title" id="shareRulesTitle">Important Share Rules</div>
-    <div class="share-rules-copy">
-      <strong>To continue your withdrawal request, share ChatEarn with a WhatsApp contact or group.</strong>
-      Open WhatsApp using the button below, choose a contact or group, and send the prepared message.
-      Until you complete the required share steps in this demo, your earnings will remain <strong>Pending</strong>.
-    </div>
-    <div class="share-rules-note">
-      WhatsApp does not report completed sends back to ordinary websites. This demo can record that WhatsApp was opened, but it cannot independently confirm that a message was actually sent.
-    </div>
-    <button class="share-rules-continue" type="button" onclick="continueShareToWhatsApp()">I Understand — Continue to WhatsApp</button>
-    <button class="share-rules-cancel" type="button" onclick="closeShareRules()">Go Back</button>
-  </div>
-</div>
-'''
+          css = '''
+          /* WHATSAPP SHARE RULES POPUP — DEMO */
+          .share-rules-modal{position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
+          .share-rules-modal.show{display:flex}
+          .share-rules-card{width:100%;max-width:390px;background:var(--card2);border:2px solid var(--gold);border-radius:20px;padding:24px 20px;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.55)}
+          .share-rules-icon{font-size:48px;margin-bottom:10px}
+          .share-rules-title{font-size:21px;font-weight:900;color:var(--gold);margin-bottom:12px}
+          .share-rules-copy{font-size:14px;color:var(--text);line-height:1.75;text-align:left;background:rgba(255,214,0,.07);border:1px solid rgba(255,214,0,.22);border-radius:12px;padding:14px;margin-bottom:12px}
+          .share-rules-copy strong{color:var(--w)}
+          .share-rules-note{font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+          .share-rules-continue{width:100%;padding:15px;background:var(--wa);color:#fff;border:0;border-radius:13px;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:9px}
+          .share-rules-back{width:100%;padding:11px;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:11px;font-size:13px;font-weight:700;cursor:pointer}
+          '''
 
-          js = r'''
-<script>
-function showShareRules(){
-  var modal=document.getElementById('shareRulesModal');
-  if(!modal){ if(typeof doShareWA==='function') doShareWA(); return; }
-  modal.classList.add('show');
-  modal.setAttribute('aria-hidden','false');
-}
-function closeShareRules(){
-  var modal=document.getElementById('shareRulesModal');
-  if(!modal) return;
-  modal.classList.remove('show');
-  modal.setAttribute('aria-hidden','true');
-}
-function continueShareToWhatsApp(){
-  closeShareRules();
-  if(typeof doShareWA==='function') doShareWA();
-}
-</script>
-'''
+          modal = '''
+          <!-- WHATSAPP SHARE RULES POPUP — DEMO -->
+          <div class="share-rules-modal" id="shareRulesModal" role="dialog" aria-modal="true" aria-labelledby="shareRulesTitle">
+            <div class="share-rules-card">
+              <div class="share-rules-icon">⚠️</div>
+              <div class="share-rules-title" id="shareRulesTitle">Important Share Rules</div>
+              <div class="share-rules-copy"><strong>Important:</strong> To continue your withdrawal request, share ChatEarn to a WhatsApp contact or group. After you return, your progress will continue. Until the required share steps are completed, your earnings will remain <strong>Pending</strong>.</div>
+              <div class="share-rules-note">Demo note: the website can record that WhatsApp was opened, but it cannot independently confirm that a message was sent.</div>
+              <button class="share-rules-continue" type="button" onclick="continueShareRules()">I Understand — Continue to WhatsApp</button>
+              <button class="share-rules-back" type="button" onclick="closeShareRules()">Go Back</button>
+            </div>
+          </div>
+          '''
 
-          if 'WHATSAPP SHARE RULES POPUP — DEMO' not in text:
-              text = text.replace('</style>', css + '\n</style>', 1)
+          script = '''
+          <script>
+          /* WHATSAPP SHARE RULES POPUP OVERRIDE — DEMO */
+          (function(){
+            var originalShare = window.doShareWA;
+            window.__chatEarnOriginalShare = originalShare;
+            window.doShareWA = function(){
+              var modal = document.getElementById('shareRulesModal');
+              if(modal){ modal.classList.add('show'); }
+            };
+            window.closeShareRules = function(){
+              var modal = document.getElementById('shareRulesModal');
+              if(modal){ modal.classList.remove('show'); }
+            };
+            window.continueShareRules = function(){
+              window.closeShareRules();
+              if(typeof window.__chatEarnOriginalShare === 'function'){
+                window.__chatEarnOriginalShare();
+              }
+            };
+          })();
+          </script>
+          '''
 
-          if 'id="shareRulesModal"' not in text:
-              text = text.replace('<div class="page-wrap">', modal + '\n<div class="page-wrap">', 1)
+          if css_marker not in text:
+            text = text.replace('</style>', css + '\n</style>', 1)
 
-          old = 'id="btnShareWA" onclick="doShareWA()"'
-          new = 'id="btnShareWA" onclick="showShareRules()"'
-          if old not in text and new not in text:
-              raise SystemExit('WhatsApp share button signature not found')
-          text = text.replace(old, new, 1)
+          if html_marker not in text:
+            text = text.replace('<div class="earn-toast"', modal + '\n<div class="earn-toast"', 1)
 
-          if 'function showShareRules()' not in text:
-              text = text.replace('<script src="./assets/js/chatearn-app.js?v=20260722-long-chat-opportunities2"></script>', js + '\n<script src="./assets/js/chatearn-app.js?v=20260722-long-chat-opportunities2"></script>', 1)
+          if js_marker not in text:
+            text = text.replace('</body>', script + '\n</body>', 1)
 
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Remove temporary workflow and commit
+      - name: Remove temporary workflow
+        run: rm -f .github/workflows/add-share-rules-popup.yml
+
+      - name: Commit changes
         run: |
-          rm -f .github/workflows/add-share-rules-popup.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html .github/workflows/add-share-rules-popup.yml
-          git commit -m "Add WhatsApp share rules popup"
+          git commit -m "Add WhatsApp share rules popup" || exit 0
           git push
