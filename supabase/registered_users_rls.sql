@@ -5,7 +5,20 @@
 alter table public.registered_users
   add column if not exists user_id uuid,
   add column if not exists full_name text,
-  add column if not exists email text;
+  add column if not exists email text,
+  add column if not exists registered_at timestamptz;
+
+-- Make future inserts safe even when registered_at is omitted.
+alter table public.registered_users
+  alter column registered_at set default now();
+
+-- Fill any existing null timestamps before keeping the NOT NULL rule.
+update public.registered_users
+set registered_at = now()
+where registered_at is null;
+
+alter table public.registered_users
+  alter column registered_at set not null;
 
 -- Required for safe UPSERT operations.
 create unique index if not exists registered_users_user_id_uidx
@@ -20,11 +33,12 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.registered_users (user_id, full_name, email)
+  insert into public.registered_users (user_id, full_name, email, registered_at)
   values (
     new.id,
     coalesce(nullif(trim(new.raw_user_meta_data ->> 'full_name'), ''), split_part(coalesce(new.email, ''), '@', 1), 'User'),
-    new.email
+    new.email,
+    coalesce(new.created_at, now())
   )
   on conflict (user_id) do update
   set full_name = excluded.full_name,
@@ -41,11 +55,12 @@ after insert or update of email, raw_user_meta_data on auth.users
 for each row execute function public.sync_registered_user();
 
 -- Backfill users who already exist in Supabase Auth but are missing here.
-insert into public.registered_users (user_id, full_name, email)
+insert into public.registered_users (user_id, full_name, email, registered_at)
 select
   u.id,
   coalesce(nullif(trim(u.raw_user_meta_data ->> 'full_name'), ''), split_part(coalesce(u.email, ''), '@', 1), 'User'),
-  u.email
+  u.email,
+  coalesce(u.created_at, now())
 from auth.users u
 on conflict (user_id) do update
 set full_name = excluded.full_name,
