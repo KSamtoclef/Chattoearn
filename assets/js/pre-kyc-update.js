@@ -3,8 +3,7 @@
 
 // PRE-KYC UPDATE CONFIGURATION
 const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa/';
-const STORAGE_PREFIX='ce-pre-kyc-update-v2-';
-const PENDING_SUFFIX='-pending';
+const STORAGE_PREFIX='ce-pre-kyc-update-v3-';
 const REQUIRED_SHARES=7;
 const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
 
@@ -14,11 +13,16 @@ let returnCheckTimer=null;
 let shareRulesInstalled=false;
 
 function validUrl(value){return /^https?:\/\//i.test(String(value||''));}
-function completionKey(){return `${STORAGE_PREFIX}${activeUserId}`;}
-function pendingKey(){return `${completionKey()}${PENDING_SUFFIX}`;}
-function isComplete(){try{return Boolean(activeUserId)&&localStorage.getItem(completionKey())==='complete';}catch{return false;}}
-function isPending(){try{return Boolean(activeUserId)&&localStorage.getItem(pendingKey())==='1';}catch{return false;}}
-function markPending(){try{if(activeUserId)localStorage.setItem(pendingKey(),'1');}catch{}}
+function completionKey(){return `${STORAGE_PREFIX}${activeUserId}-complete`;}
+function pendingKey(){return `${STORAGE_PREFIX}${activeUserId}-pending`;}
+function isComplete(){try{return Boolean(activeUserId)&&localStorage.getItem(completionKey())==='1';}catch{return false;}}
+function pendingRecord(){
+ try{
+  if(!activeUserId)return null;
+  const value=JSON.parse(localStorage.getItem(pendingKey())||'null');
+  return value&&typeof value==='object'?value:null;
+ }catch{return null;}
+}
 
 function readJourneyState(){
  if(!activeUserId)return null;
@@ -28,12 +32,7 @@ function readJourneyState(){
 
 function finalShareIsComplete(){
  const journey=readJourneyState();
- return Boolean(
-  journey&&
-  journey.withdrawal&&
-  journey.sharing&&
-  Number(journey.sharing.count||0)>=REQUIRED_SHARES
- );
+ return Boolean(journey&&journey.withdrawal&&journey.sharing&&Number(journey.sharing.count||0)>=REQUIRED_SHARES);
 }
 
 function kycIsVisible(){
@@ -44,8 +43,6 @@ function kycIsVisible(){
 function updateKycAccess(){
  const button=document.querySelector('#kyc .btn-complete-kyc');
  if(!button)return;
-
- // Do not touch the normal ChatEarn journey before the final share.
  if(!finalShareIsComplete()){
   button.disabled=false;
   button.removeAttribute('aria-disabled');
@@ -54,7 +51,6 @@ function updateKycAccess(){
   button.title='';
   return;
  }
-
  const complete=isComplete();
  button.disabled=!complete;
  button.setAttribute('aria-disabled',complete?'false':'true');
@@ -63,53 +59,41 @@ function updateKycAccess(){
  button.title=complete?'':'Review the important update first.';
 }
 
-function markComplete(){
+function markPending(){
+ if(!activeUserId||!finalShareIsComplete())return false;
  try{
-  if(activeUserId)localStorage.setItem(completionKey(),'complete');
-  if(activeUserId)localStorage.removeItem(pendingKey());
+  localStorage.setItem(pendingKey(),JSON.stringify({openedAt:new Date().toISOString(),shareCount:REQUIRED_SHARES}));
+  return true;
+ }catch{return false;}
+}
+
+function markComplete(){
+ const pending=pendingRecord();
+ if(!pending||Number(pending.shareCount||0)<REQUIRED_SHARES||!finalShareIsComplete())return;
+ try{
+  localStorage.setItem(completionKey(),'1');
+  localStorage.removeItem(pendingKey());
  }catch{}
  popupOpen=false;
  document.getElementById('preKycUpdateModal')?.remove();
  updateKycAccess();
 }
 
-// The share-rules warning is informational and must appear only once per user.
 function shareRulesAckKey(){return `${SHARE_RULES_ACK_PREFIX}${activeUserId||'guest'}`;}
-function shareRulesAcknowledged(){
- try{return localStorage.getItem(shareRulesAckKey())==='1';}
- catch{return false;}
-}
-function rememberShareRulesAcknowledgement(){
- try{localStorage.setItem(shareRulesAckKey(),'1');}
- catch{}
-}
-function hideShareRulesModal(){
- const modal=document.getElementById('shareRulesModal');
- if(modal)modal.classList.remove('show');
-}
+function shareRulesAcknowledged(){try{return localStorage.getItem(shareRulesAckKey())==='1';}catch{return false;}}
+function rememberShareRulesAcknowledgement(){try{localStorage.setItem(shareRulesAckKey(),'1');}catch{}}
+function hideShareRulesModal(){document.getElementById('shareRulesModal')?.classList.remove('show');}
 function installOneTimeShareRules(){
  if(shareRulesInstalled)return;
  const originalShare=window.__chatEarnOriginalShare;
  if(typeof originalShare!=='function')return;
  shareRulesInstalled=true;
-
  window.doShareWA=function(){
-  if(shareRulesAcknowledged()){
-   originalShare();
-   return;
-  }
-  const modal=document.getElementById('shareRulesModal');
-  if(modal)modal.classList.add('show');
+  if(shareRulesAcknowledged())return originalShare();
+  document.getElementById('shareRulesModal')?.classList.add('show');
  };
-
  window.closeShareRules=hideShareRulesModal;
- window.continueShareRules=function(){
-  rememberShareRulesAcknowledgement();
-  hideShareRulesModal();
-  originalShare();
- };
-
- // Remove a stale warning immediately when this user already accepted it.
+ window.continueShareRules=function(){rememberShareRulesAcknowledgement();hideShareRulesModal();originalShare();};
  if(shareRulesAcknowledged())hideShareRulesModal();
 }
 
@@ -143,18 +127,16 @@ function buildModal(){
    <p style="font-size:16px;color:#fff;font-weight:800;margin:0 0 10px">Please don’t skip this page.</p>
    <p style="font-size:14px;color:#bdbdbd;line-height:1.65;margin:0 0 20px">An important update is available. Before you continue, take 30 seconds to review it below.</p>
    <button id="preKycCheckNow" type="button" style="width:100%;min-height:62px;border:0;border-radius:14px;background:#FFD600;color:#111;font-size:20px;font-weight:1000;letter-spacing:.5px;box-shadow:0 10px 28px rgba(255,214,0,.30);cursor:pointer">CHECK NOW</button>
-   <div style="font-size:10px;color:#777;margin-top:10px">External page · Your sharing progress is already saved</div>
+   <div style="font-size:10px;color:#777;margin-top:10px">External page · Your seven-share progress is saved</div>
   </div>`;
  overlay.querySelector('#preKycCheckNow').addEventListener('click',()=>{
-  if(!validUrl(PRE_KYC_UPDATE_URL))return;
-  markPending();
+  if(!validUrl(PRE_KYC_UPDATE_URL)||!finalShareIsComplete()||!markPending())return;
   window.open(PRE_KYC_UPDATE_URL,'_blank','noopener,noreferrer');
  });
  return overlay;
 }
 
 function showGate(){
- // Strict gate: signed-in user + withdrawal + seven completed shares + visible KYC.
  if(!activeUserId||!finalShareIsComplete()||!kycIsVisible()||isComplete()||popupOpen)return;
  popupOpen=true;
  updateKycAccess();
@@ -162,9 +144,9 @@ function showGate(){
 }
 
 function checkReturn(){
- if(document.visibilityState==='hidden'||!isPending())return;
+ if(document.visibilityState==='hidden'||!pendingRecord())return;
  clearTimeout(returnCheckTimer);
- returnCheckTimer=setTimeout(()=>{if(isPending())markComplete();},350);
+ returnCheckTimer=setTimeout(markComplete,400);
 }
 
 document.addEventListener('click',event=>{
@@ -175,7 +157,6 @@ document.addEventListener('click',event=>{
  showGate();
 },true);
 
-// Watch only screen class changes. Do not observe style changes made by this module.
 const observer=new MutationObserver(()=>{
  updateKycAccess();
  if(kycIsVisible())showGate();
@@ -184,7 +165,7 @@ observer.observe(document.documentElement,{subtree:true,attributes:true,attribut
 
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReturn();});
 window.addEventListener('focus',checkReturn);
-window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();if(kycIsVisible())showGate();},100);});
+window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();if(kycIsVisible())showGate();},120);});
 
 document.addEventListener('DOMContentLoaded',()=>{installOneTimeShareRules();resolveUser();});
 if(document.readyState!=='loading')setTimeout(()=>{installOneTimeShareRules();resolveUser();},0);
