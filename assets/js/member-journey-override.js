@@ -147,18 +147,15 @@ function configureShareRules(){
   if(window.__memberShareRulesConfigured)return;
   const originalShare=window.__chatEarnOriginalShare||window.doShareWA;if(typeof originalShare!=='function')return;
   window.__memberShareRulesConfigured=true;
-  window.doShareWA=()=>{if(shareRulesAccepted())return originalShare();$('shareRulesModal')?.classList.add('show')};
+  window.doShareWA=()=>{
+    if(shareRulesAccepted())return originalShare();
+    $('shareRulesModal')?.classList.add('show');
+  };
   window.continueShareRules=()=>{
     markShareRulesAccepted();
     $('shareRulesModal')?.classList.remove('show');
     originalShare();
   };
-}
-function showRulesAfterWithdrawal(){
-  const entry=stateEntry();if(!entry)return;
-  const s=entry.state||{};
-  if(activeScreen()!=='sharewall'||!s.withdrawal||s.shareRulesAccepted===true)return;
-  const modal=$('shareRulesModal');if(modal&&!modal.classList.contains('show'))modal.classList.add('show');
 }
 function mountJourneyAd(screenId){
   const entry=stateEntry();if(!entry||!kycCompleted(entry.state)){removeVisibleAds();return}
@@ -181,7 +178,6 @@ function tick(){
   syncMemberAds(false);
   if(screen==='chat')enhanceUnlockCard();
   if(screen==='dashboard')mountMemberHub();
-  showRulesAfterWithdrawal();
   mountJourneyAd(screen);
   upgradeProcessingReturn();
   if(screen!==lastScreen)lastScreen=screen;
