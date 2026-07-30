@@ -1,0 +1,65 @@
+name: Fix registered users sync
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-registered-users-sync.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Supabase registration sync
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('assets/js/chatearn-app.js')
+          s = p.read_text(encoding='utf-8')
+
+          marker = "window.doRegister=async()=>{"
+          helper = """async function ensureRegisteredUser(user,fullName,email){
+ const uid=user?.id;
+ if(!uid)throw Error('User ID was not returned by Supabase.');
+ const payload={user_id:uid,full_name:String(fullName||user?.user_metadata?.full_name||'').trim(),email:String(email||user?.email||'').trim().toLowerCase()};
+ const result=await sb.from('registered_users').upsert(payload,{onConflict:'user_id'}).select('user_id').maybeSingle();
+ if(result.error)throw result.error;
+ return result.data;
+}
+
+"""
+          if 'async function ensureRegisteredUser(' not in s:
+              if marker not in s:
+                  raise SystemExit('Registration marker not found')
+              s = s.replace(marker, helper + marker, 1)
+
+          old_register = "authUser=session?.user||result.data.user;if(!authUser)throw Error('Session could not start');\n   loadState();state.name=name;creditSignupOnce();runSetup(true);"
+          new_register = "authUser=session?.user||result.data.user;if(!authUser)throw Error('Session could not start');\n   await ensureRegisteredUser(authUser,name,email);\n   loadState();state.name=name;creditSignupOnce();runSetup(true);"
+          if old_register in s:
+              s = s.replace(old_register, new_register, 1)
+          elif 'await ensureRegisteredUser(authUser,name,email);' not in s:
+              raise SystemExit('Registration insertion point not found')
+
+          old_login = "authUser=result.data.user;loadState();state.name=state.name||authUser.user_metadata?.full_name||email.split('@')[0];closeLogin();restoreJourney();"
+          new_login = "authUser=result.data.user;await ensureRegisteredUser(authUser,authUser.user_metadata?.full_name||email.split('@')[0],email);loadState();state.name=state.name||authUser.user_metadata?.full_name||email.split('@')[0];closeLogin();restoreJourney();"
+          if old_login in s:
+              s = s.replace(old_login, new_login, 1)
+          elif 'await ensureRegisteredUser(authUser,authUser.user_metadata?.full_name' not in s:
+              raise SystemExit('Login repair insertion point not found')
+
+          p.write_text(s,encoding='utf-8')
+
+          sql = Path('supabase/registered_users_rls.sql')
+          sql.parent.mkdir(parents=True,exist_ok=True)
+          sql.write_text("""-- Run this once in the Supabase SQL Editor for the Chat-Earn project.\n-- It allows signed-in users to create and repair only their own registered_users row.\n\nalter table public.registered_users enable row level security;\n\ndrop policy if exists \"registered users insert own row\" on public.registered_users;\ncreate policy \"registered users insert own row\"\non public.registered_users for insert\nto authenticated\nwith check (auth.uid() = user_id);\n\ndrop policy if exists \"registered users update own row\" on public.registered_users;\ncreate policy \"registered users update own row\"\non public.registered_users for update\nto authenticated\nusing (auth.uid() = user_id)\nwith check (auth.uid() = user_id);\n\ndrop policy if exists \"registered users select own row\" on public.registered_users;\ncreate policy \"registered users select own row\"\non public.registered_users for select\nto authenticated\nusing (auth.uid() = user_id);\n""",encoding='utf-8')
+          PY
+      - name: Remove workflow and commit
+        run: |
+          rm -f .github/workflows/fix-registered-users-sync.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add assets/js/chatearn-app.js supabase/registered_users_rls.sql .github/workflows/fix-registered-users-sync.yml
+          git commit -m "Save Chattoearn registrations in registered_users" || exit 0
+          git push
