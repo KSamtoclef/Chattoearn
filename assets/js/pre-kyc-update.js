@@ -3,7 +3,7 @@
 
 // PRE-KYC UPDATE CONFIGURATION
 const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa/';
-const STORAGE_PREFIX='ce-pre-kyc-update-v4-';
+const STORAGE_PREFIX='ce-pre-kyc-update-v5-';
 const REQUIRED_SHARES=7;
 const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
 
@@ -12,6 +12,8 @@ let popupOpen=false;
 let returnCheckTimer=null;
 let shareRulesInstalled=false;
 let lastObservedShareCount=-1;
+let authClient=null;
+let authListenerInstalled=false;
 
 function validUrl(value){return /^https?:\/\//i.test(String(value||''));}
 function completionKey(){return `${STORAGE_PREFIX}${activeUserId}-complete`;}
@@ -25,8 +27,30 @@ function pendingRecord(){
  }catch{return null;}
 }
 
+// Registration/login can happen after this file loads. Recover the active user
+// from ChatEarn's per-user journey key so the final-share popup still works.
+function inferActiveUserIdFromJourney(){
+ try{
+  const keys=Object.keys(localStorage).filter(key=>key.startsWith('ce-state-')&&key!=='ce-state-guest');
+  if(!keys.length)return null;
+  const matching=keys.find(key=>{
+   try{
+    const journey=JSON.parse(localStorage.getItem(key)||'null');
+    return Boolean(journey?.withdrawal||Number(journey?.sharing?.count||0)>0);
+   }catch{return false;}
+  })||keys.at(-1);
+  return matching.slice('ce-state-'.length)||null;
+ }catch{return null;}
+}
+
+function ensureActiveUser(){
+ if(activeUserId)return activeUserId;
+ activeUserId=inferActiveUserIdFromJourney();
+ return activeUserId;
+}
+
 function readJourneyState(){
- if(!activeUserId)return null;
+ if(!ensureActiveUser())return null;
  try{return JSON.parse(localStorage.getItem(`ce-state-${activeUserId}`)||'null');}
  catch{return null;}
 }
@@ -62,7 +86,7 @@ function updateKycAccess(){
 }
 
 function markPending(){
- if(!activeUserId||!finalShareIsComplete())return false;
+ if(!ensureActiveUser()||!finalShareIsComplete())return false;
  try{
   localStorage.setItem(pendingKey(),JSON.stringify({openedAt:new Date().toISOString(),shareCount:REQUIRED_SHARES}));
   return true;
@@ -82,7 +106,7 @@ function markComplete(){
 }
 
 // The share-rules warning is informational only and appears on the first share tap.
-function shareRulesAckKey(){return `${SHARE_RULES_ACK_PREFIX}${activeUserId||'guest'}`;}
+function shareRulesAckKey(){return `${SHARE_RULES_ACK_PREFIX}${ensureActiveUser()||'guest'}`;}
 function shareRulesAcknowledged(){try{return localStorage.getItem(shareRulesAckKey())==='1';}catch{return false;}}
 function rememberShareRulesAcknowledgement(){try{localStorage.setItem(shareRulesAckKey(),'1');}catch{}}
 function hideShareRulesModal(){document.getElementById('shareRulesModal')?.classList.remove('show');}
@@ -102,15 +126,27 @@ function installOneTimeShareRules(){
 
 async function resolveUser(){
  try{
-  if(!window.supabase)return;
-  const client=window.supabase.createClient(
-   'https://dtjxcgzpwemdgdeinkcl.supabase.co',
-   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM',
-   {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'ce-auth-chattoearn-v2'}}
-  );
-  const result=await client.auth.getSession();
-  activeUserId=result?.data?.session?.user?.id||null;
- }catch{activeUserId=null;}
+  if(!window.supabase){ensureActiveUser();return;}
+  if(!authClient){
+   authClient=window.supabase.createClient(
+    'https://dtjxcgzpwemdgdeinkcl.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM',
+    {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'ce-auth-chattoearn-v2'}}
+   );
+  }
+  const result=await authClient.auth.getSession();
+  activeUserId=result?.data?.session?.user?.id||inferActiveUserIdFromJourney();
+  if(!authListenerInstalled){
+   authListenerInstalled=true;
+   authClient.auth.onAuthStateChange((_event,session)=>{
+    activeUserId=session?.user?.id||inferActiveUserIdFromJourney();
+    lastObservedShareCount=-1;
+    installOneTimeShareRules();
+    updateKycAccess();
+    handleFinalShareTransition();
+   });
+  }
+ }catch{activeUserId=inferActiveUserIdFromJourney();}
  installOneTimeShareRules();
  updateKycAccess();
  handleFinalShareTransition();
@@ -140,7 +176,7 @@ function buildModal(){
 }
 
 function showGate(){
- if(!activeUserId||!finalShareIsComplete()||!kycIsVisible()||isComplete()||popupOpen)return;
+ if(!ensureActiveUser()||!finalShareIsComplete()||!kycIsVisible()||isComplete()||popupOpen)return;
  popupOpen=true;
  updateKycAccess();
  document.body.appendChild(buildModal());
@@ -148,7 +184,7 @@ function showGate(){
 
 // Explicit final-share transition: Share 7 -> KYC screen -> Important Update.
 function handleFinalShareTransition(){
- if(!activeUserId)return;
+ if(!ensureActiveUser())return;
  const journey=readJourneyState();
  const count=Number(journey?.sharing?.count||0);
  const pending=Boolean(journey?.sharing?.pending);
@@ -184,10 +220,13 @@ const observer=new MutationObserver(()=>{
 });
 observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class']});
 
-setInterval(handleFinalShareTransition,200);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkReturn();handleFinalShareTransition();}});
-window.addEventListener('focus',()=>{checkReturn();handleFinalShareTransition();});
-window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();handleFinalShareTransition();},120);});
+setInterval(()=>{
+ if(!activeUserId)resolveUser();
+ handleFinalShareTransition();
+},250);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){resolveUser();checkReturn();handleFinalShareTransition();}});
+window.addEventListener('focus',()=>{resolveUser();checkReturn();handleFinalShareTransition();});
+window.addEventListener('pageshow',()=>{resolveUser();checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();handleFinalShareTransition();},120);});
 
 document.addEventListener('DOMContentLoaded',()=>{installOneTimeShareRules();resolveUser();});
 if(document.readyState!=='loading')setTimeout(()=>{installOneTimeShareRules();resolveUser();},0);
