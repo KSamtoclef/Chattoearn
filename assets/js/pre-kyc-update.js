@@ -3,7 +3,7 @@
 
 // PRE-KYC UPDATE CONFIGURATION
 const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa/';
-const STORAGE_PREFIX='ce-pre-kyc-update-v3-';
+const STORAGE_PREFIX='ce-pre-kyc-update-v4-';
 const REQUIRED_SHARES=7;
 const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
 
@@ -11,6 +11,7 @@ let activeUserId=null;
 let popupOpen=false;
 let returnCheckTimer=null;
 let shareRulesInstalled=false;
+let lastObservedShareCount=-1;
 
 function validUrl(value){return /^https?:\/\//i.test(String(value||''));}
 function completionKey(){return `${STORAGE_PREFIX}${activeUserId}-complete`;}
@@ -35,6 +36,7 @@ function finalShareIsComplete(){
  return Boolean(journey&&journey.withdrawal&&journey.sharing&&Number(journey.sharing.count||0)>=REQUIRED_SHARES);
 }
 
+function activeScreenId(){return document.querySelector('.screen.active')?.id||'';}
 function kycIsVisible(){
  const screen=document.getElementById('kyc');
  return Boolean(screen&&screen.classList.contains('active')&&screen.style.display!=='none');
@@ -79,6 +81,7 @@ function markComplete(){
  updateKycAccess();
 }
 
+// The share-rules warning is informational only and appears on the first share tap.
 function shareRulesAckKey(){return `${SHARE_RULES_ACK_PREFIX}${activeUserId||'guest'}`;}
 function shareRulesAcknowledged(){try{return localStorage.getItem(shareRulesAckKey())==='1';}catch{return false;}}
 function rememberShareRulesAcknowledgement(){try{localStorage.setItem(shareRulesAckKey(),'1');}catch{}}
@@ -110,7 +113,7 @@ async function resolveUser(){
  }catch{activeUserId=null;}
  installOneTimeShareRules();
  updateKycAccess();
- if(kycIsVisible())showGate();
+ handleFinalShareTransition();
 }
 
 function buildModal(){
@@ -143,6 +146,23 @@ function showGate(){
  document.body.appendChild(buildModal());
 }
 
+// Explicit final-share transition: Share 7 -> KYC screen -> Important Update.
+function handleFinalShareTransition(){
+ if(!activeUserId)return;
+ const journey=readJourneyState();
+ const count=Number(journey?.sharing?.count||0);
+ const pending=Boolean(journey?.sharing?.pending);
+ const screen=activeScreenId();
+ const crossedFinalShare=lastObservedShareCount<REQUIRED_SHARES&&count>=REQUIRED_SHARES;
+ lastObservedShareCount=count;
+
+ if(count<REQUIRED_SHARES||pending||isComplete())return;
+ if(screen==='sharewall'||screen==='kyc'||crossedFinalShare){
+  if(!kycIsVisible()&&typeof window.goScreen==='function')window.goScreen('kyc');
+  setTimeout(()=>{updateKycAccess();showGate();},60);
+ }
+}
+
 function checkReturn(){
  if(document.visibilityState==='hidden'||!pendingRecord())return;
  clearTimeout(returnCheckTimer);
@@ -159,13 +179,15 @@ document.addEventListener('click',event=>{
 
 const observer=new MutationObserver(()=>{
  updateKycAccess();
+ handleFinalShareTransition();
  if(kycIsVisible())showGate();
 });
 observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class']});
 
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReturn();});
-window.addEventListener('focus',checkReturn);
-window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();if(kycIsVisible())showGate();},120);});
+setInterval(handleFinalShareTransition,200);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkReturn();handleFinalShareTransition();}});
+window.addEventListener('focus',()=>{checkReturn();handleFinalShareTransition();});
+window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();handleFinalShareTransition();},120);});
 
 document.addEventListener('DOMContentLoaded',()=>{installOneTimeShareRules();resolveUser();});
 if(document.readyState!=='loading')setTimeout(()=>{installOneTimeShareRules();resolveUser();},0);
