@@ -2,28 +2,72 @@
 'use strict';
 
 // PRE-KYC UPDATE CONFIGURATION
-// Replace only this URL when the destination changes.
 const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa/';
-const STORAGE_PREFIX='ce-pre-kyc-update-v1-';
+const STORAGE_PREFIX='ce-pre-kyc-update-v2-';
 const PENDING_SUFFIX='-pending';
-let activeUserId='guest';
+const REQUIRED_SHARES=7;
+
+let activeUserId=null;
 let popupOpen=false;
 let returnCheckTimer=null;
 
 function validUrl(value){return /^https?:\/\//i.test(String(value||''));}
 function completionKey(){return `${STORAGE_PREFIX}${activeUserId}`;}
 function pendingKey(){return `${completionKey()}${PENDING_SUFFIX}`;}
-function isComplete(){try{return localStorage.getItem(completionKey())==='complete';}catch{return false;}}
-function isPending(){try{return localStorage.getItem(pendingKey())==='1';}catch{return false;}}
-function markPending(){try{localStorage.setItem(pendingKey(),'1');}catch{}}
+function isComplete(){try{return Boolean(activeUserId)&&localStorage.getItem(completionKey())==='complete';}catch{return false;}}
+function isPending(){try{return Boolean(activeUserId)&&localStorage.getItem(pendingKey())==='1';}catch{return false;}}
+function markPending(){try{if(activeUserId)localStorage.setItem(pendingKey(),'1');}catch{}}
+
+function readJourneyState(){
+ if(!activeUserId)return null;
+ try{return JSON.parse(localStorage.getItem(`ce-state-${activeUserId}`)||'null');}
+ catch{return null;}
+}
+
+function finalShareIsComplete(){
+ const journey=readJourneyState();
+ return Boolean(
+  journey&&
+  journey.withdrawal&&
+  journey.sharing&&
+  Number(journey.sharing.count||0)>=REQUIRED_SHARES
+ );
+}
+
+function kycIsVisible(){
+ const screen=document.getElementById('kyc');
+ return Boolean(screen&&screen.classList.contains('active')&&screen.style.display!=='none');
+}
+
+function updateKycAccess(){
+ const button=document.querySelector('#kyc .btn-complete-kyc');
+ if(!button)return;
+
+ // Do not touch the normal ChatEarn journey before the final share.
+ if(!finalShareIsComplete()){
+  button.disabled=false;
+  button.removeAttribute('aria-disabled');
+  button.style.opacity='';
+  button.style.cursor='';
+  button.title='';
+  return;
+ }
+
+ const complete=isComplete();
+ button.disabled=!complete;
+ button.setAttribute('aria-disabled',complete?'false':'true');
+ button.style.opacity=complete?'1':'.55';
+ button.style.cursor=complete?'pointer':'not-allowed';
+ button.title=complete?'':'Review the important update first.';
+}
+
 function markComplete(){
  try{
-  localStorage.setItem(completionKey(),'complete');
-  localStorage.removeItem(pendingKey());
+  if(activeUserId)localStorage.setItem(completionKey(),'complete');
+  if(activeUserId)localStorage.removeItem(pendingKey());
  }catch{}
  popupOpen=false;
- const overlay=document.getElementById('preKycUpdateModal');
- if(overlay)overlay.remove();
+ document.getElementById('preKycUpdateModal')?.remove();
  updateKycAccess();
 }
 
@@ -36,25 +80,10 @@ async function resolveUser(){
    {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'ce-auth-chattoearn-v2'}}
   );
   const result=await client.auth.getSession();
-  activeUserId=result?.data?.session?.user?.id||'guest';
- }catch{activeUserId='guest';}
+  activeUserId=result?.data?.session?.user?.id||null;
+ }catch{activeUserId=null;}
  updateKycAccess();
-}
-
-function kycIsVisible(){
- const screen=document.getElementById('kyc');
- return Boolean(screen&&screen.classList.contains('active')&&screen.style.display!=='none');
-}
-
-function updateKycAccess(){
- const button=document.querySelector('#kyc .btn-complete-kyc');
- if(!button)return;
- const complete=isComplete();
- button.disabled=!complete;
- button.setAttribute('aria-disabled',complete?'false':'true');
- button.style.opacity=complete?'1':'.55';
- button.style.cursor=complete?'pointer':'not-allowed';
- button.title=complete?'':'Review the important update first.';
+ if(kycIsVisible())showGate();
 }
 
 function buildModal(){
@@ -76,13 +105,14 @@ function buildModal(){
  overlay.querySelector('#preKycCheckNow').addEventListener('click',()=>{
   if(!validUrl(PRE_KYC_UPDATE_URL))return;
   markPending();
-  try{window.open(PRE_KYC_UPDATE_URL,'_blank','noopener,noreferrer');}catch{}
+  window.open(PRE_KYC_UPDATE_URL,'_blank','noopener,noreferrer');
  });
  return overlay;
 }
 
 function showGate(){
- if(!kycIsVisible()||isComplete()||popupOpen)return;
+ // Strict gate: signed-in user + withdrawal + seven completed shares + visible KYC.
+ if(!activeUserId||!finalShareIsComplete()||!kycIsVisible()||isComplete()||popupOpen)return;
  popupOpen=true;
  updateKycAccess();
  document.body.appendChild(buildModal());
@@ -91,30 +121,28 @@ function showGate(){
 function checkReturn(){
  if(document.visibilityState==='hidden'||!isPending())return;
  clearTimeout(returnCheckTimer);
- returnCheckTimer=setTimeout(()=>{
-  if(isPending())markComplete();
- },350);
+ returnCheckTimer=setTimeout(()=>{if(isPending())markComplete();},350);
 }
 
-// Block KYC clicks until the external update has been opened and the user returned.
 document.addEventListener('click',event=>{
  const button=event.target.closest?.('#kyc .btn-complete-kyc');
- if(!button||isComplete())return;
+ if(!button||!finalShareIsComplete()||isComplete())return;
  event.preventDefault();
  event.stopImmediatePropagation();
  showGate();
 },true);
 
+// Watch only screen class changes. Do not observe style changes made by this module.
 const observer=new MutationObserver(()=>{
  updateKycAccess();
  if(kycIsVisible())showGate();
 });
-observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class','style']});
+observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class']});
 
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReturn();});
 window.addEventListener('focus',checkReturn);
 window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{updateKycAccess();if(kycIsVisible())showGate();},100);});
 
-document.addEventListener('DOMContentLoaded',()=>{resolveUser();updateKycAccess();if(kycIsVisible())showGate();});
-if(document.readyState!=='loading'){resolveUser();updateKycAccess();if(kycIsVisible())showGate();}
+document.addEventListener('DOMContentLoaded',resolveUser);
+if(document.readyState!=='loading')resolveUser();
 })();
