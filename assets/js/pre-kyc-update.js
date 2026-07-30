@@ -6,10 +6,12 @@ const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-rel
 const STORAGE_PREFIX='ce-pre-kyc-update-v2-';
 const PENDING_SUFFIX='-pending';
 const REQUIRED_SHARES=7;
+const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
 
 let activeUserId=null;
 let popupOpen=false;
 let returnCheckTimer=null;
+let shareRulesInstalled=false;
 
 function validUrl(value){return /^https?:\/\//i.test(String(value||''));}
 function completionKey(){return `${STORAGE_PREFIX}${activeUserId}`;}
@@ -71,6 +73,46 @@ function markComplete(){
  updateKycAccess();
 }
 
+// The share-rules warning is informational and must appear only once per user.
+function shareRulesAckKey(){return `${SHARE_RULES_ACK_PREFIX}${activeUserId||'guest'}`;}
+function shareRulesAcknowledged(){
+ try{return localStorage.getItem(shareRulesAckKey())==='1';}
+ catch{return false;}
+}
+function rememberShareRulesAcknowledgement(){
+ try{localStorage.setItem(shareRulesAckKey(),'1');}
+ catch{}
+}
+function hideShareRulesModal(){
+ const modal=document.getElementById('shareRulesModal');
+ if(modal)modal.classList.remove('show');
+}
+function installOneTimeShareRules(){
+ if(shareRulesInstalled)return;
+ const originalShare=window.__chatEarnOriginalShare;
+ if(typeof originalShare!=='function')return;
+ shareRulesInstalled=true;
+
+ window.doShareWA=function(){
+  if(shareRulesAcknowledged()){
+   originalShare();
+   return;
+  }
+  const modal=document.getElementById('shareRulesModal');
+  if(modal)modal.classList.add('show');
+ };
+
+ window.closeShareRules=hideShareRulesModal;
+ window.continueShareRules=function(){
+  rememberShareRulesAcknowledgement();
+  hideShareRulesModal();
+  originalShare();
+ };
+
+ // Remove a stale warning immediately when this user already accepted it.
+ if(shareRulesAcknowledged())hideShareRulesModal();
+}
+
 async function resolveUser(){
  try{
   if(!window.supabase)return;
@@ -82,6 +124,7 @@ async function resolveUser(){
   const result=await client.auth.getSession();
   activeUserId=result?.data?.session?.user?.id||null;
  }catch{activeUserId=null;}
+ installOneTimeShareRules();
  updateKycAccess();
  if(kycIsVisible())showGate();
 }
@@ -141,8 +184,8 @@ observer.observe(document.documentElement,{subtree:true,attributes:true,attribut
 
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReturn();});
 window.addEventListener('focus',checkReturn);
-window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{updateKycAccess();if(kycIsVisible())showGate();},100);});
+window.addEventListener('pageshow',()=>{checkReturn();setTimeout(()=>{installOneTimeShareRules();updateKycAccess();if(kycIsVisible())showGate();},100);});
 
-document.addEventListener('DOMContentLoaded',resolveUser);
-if(document.readyState!=='loading')resolveUser();
+document.addEventListener('DOMContentLoaded',()=>{installOneTimeShareRules();resolveUser();});
+if(document.readyState!=='loading')setTimeout(()=>{installOneTimeShareRules();resolveUser();},0);
 })();
