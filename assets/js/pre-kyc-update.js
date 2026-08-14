@@ -2,7 +2,7 @@
 'use strict';
 
 // PRE-KYC UPDATE CONFIGURATION
-const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/';
+const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa/';
 const STORAGE_PREFIX='ce-pre-kyc-update-v5-';
 const REQUIRED_SHARES=7;
 const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
@@ -130,7 +130,7 @@ async function resolveUser(){
   if(!authClient){
    authClient=window.supabase.createClient(
     'https://dtjxcgzpwemdgdeinkcl.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0anhjZ3pwd2VtZGdkZWlua2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDg0ODQsImV4cCI6MjA5MzQ4NDQ4NH0.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoiZHRqeGNnenB3ZW1kZ2RlaW5rY2wiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3NzkwODQ4NCwiZXhwIjoyMDkzNDg0NDg0fQ.kGjtOZfK7onzr-3FVMuSljiJ3emllxtGdepxrFVUPPM',
     {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'ce-auth-chattoearn-v2'}}
    );
   }
