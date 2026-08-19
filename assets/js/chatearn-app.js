@@ -457,7 +457,16 @@ window.placeWithdrawal=()=>{
 
 function referralLink(){return`${location.origin}${location.pathname}?ref=${encodeURIComponent(state.referralCode)}`}
 function buildWhatsAppMessage(){
- return `💰 I just earned ${money(state.lifetimeEarnings)} on ChatEarn chatting!\nChatEarn gives users access to chat-based earning activities.\n✅ Free to join\n✅ Earn from approved replies\n✅ Withdraw through supported Nigerian banks\nSign up here 👇\n${referralLink()}\nMy withdrawal journey is currently in progress 🔥`;
+ return `Guys, I just came across this ChatEarn thing and decided to try it 
+
+Apparently, you can earn from chatting and approved replies. I’ve already made ${money(state.lifetimeEarnings)} from it, so I thought I should share it with you too.
+
+It’s free to sign up and you can withdraw through Opay or PalmPay.
+
+Sign up here👇
+${referralLink()}
+
+My withdrawal journey is currently in progress🔥`;
 }
 function shareCooldownRemaining(){return Math.max(0,Number(state.sharing.cooldownUntil||0)-Date.now())}
 function renderShare(){
