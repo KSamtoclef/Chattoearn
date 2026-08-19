@@ -2,7 +2,7 @@
 'use strict';
 
 // PRE-KYC UPDATE CONFIGURATION
-const PRE_KYC_UPDATE_URL='https://duty.naijabulletin.com/construction-jobs-with-visa-sponsorship-in-united-states-paying-90k-2026-guide/';
+const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa';
 const STORAGE_PREFIX='ce-pre-kyc-update-v5-';
 const REQUIRED_SHARES=7;
 const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
