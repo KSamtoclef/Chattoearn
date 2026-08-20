@@ -9,7 +9,7 @@ const FIRST_WITHDRAWAL_MINIMUM=30000;
 const FIRST_WITHDRAWAL_MAXIMUM=50000;
 const REQUIRED_SHARE_ACTIONS=7;
 const SHARE_COOLDOWN_MS=2000;
-const KYC_CONFIG={url:'https://www.effectivecpmnetwork.com/t7jwkt8bc4?key=1d77add4feba7fc9852d1b354879b329',active:true};
+const KYC_CONFIG={url:'https://jikgykm.com/cl/d2043286aec4e80a',active:true};
 const AD_MANAGER={
  inlineChat:[
   {id:'inline_chat_1',label:'Quick Task',title:'Complete Today’s 60-Second Challenge',description:'Open this quick activity and collect 10 Activity Points for participating.',buttonText:'START QUICK TASK →',url:'https://oatstuckalfred.com/s16jgyby6?key=c00293cc40e08e6d40264506f115e024',active:true,theme:'emerald',icon:'⚡',minimumMessages:3,maximumShowsPerSession:4},
